@@ -197,3 +197,18 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Шрифты и большие бинарные файлы (если они уже в public, то их не нужно коммитить)
+*.otf
+*.ttf
+*.woff
+*.woff2
+
+# Папка сборки
+dist/
+
+# Зависимости
+node_modules/
+
+# Системные файлы macOS
+.DS_Store
