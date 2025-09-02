@@ -4,6 +4,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -23,6 +24,16 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           telegram: ['@twa-dev/sdk'],
         },
+        assetFileNames: (assetInfo) => {
+          // Отделяем шрифты от других assets
+          if (assetInfo.name.endsWith('.otf') || 
+              assetInfo.name.endsWith('.ttf') ||
+              assetInfo.name.endsWith('.woff') ||
+              assetInfo.name.endsWith('.woff2')) {
+            return 'fonts/[name][extname]'
+          }
+          return 'assets/[name][extname]'
+        }
       },
     },
   },
