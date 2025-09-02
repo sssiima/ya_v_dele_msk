@@ -15,7 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          backgroundImage: "url('/images/bg-main.png')",
+          backgroundImage: "url('./images/bg-main.png')",
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'right top',
           backgroundSize: '500px auto'
