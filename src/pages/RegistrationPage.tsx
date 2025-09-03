@@ -28,7 +28,7 @@ const RegistrationPage = () => {
   const selectedRole = watch('role')
 
   const nextStep = () => setStep(2)
-  const prevStep = () => setStep(1)
+  // const prevStep = () => setStep(1)
 
   const onSubmit = (data: FormValues) => {
     console.log('register', data)
@@ -223,21 +223,13 @@ const RegistrationPage = () => {
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-  <button 
-    type="button"
-    onClick={prevStep}
-    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-4 rounded-full transition-colors flex items-center justify-center"
-  >
-    <h2 className="text-center">Назад</h2>
-  </button>
-  <button 
-    type="submit"
-    className="bg-brand text-white font-bold py-4 rounded-full transition-colors flex items-center justify-center"
-  >
-    <h2 className="text-center text-white">Продолжить</h2>
-  </button>
-</div>
+      <button 
+        type="button"
+        // onClick={nextStep}
+        className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
+      >
+        <h2 className="text-white">Продолжить</h2>
+      </button>
     </>
   )
 
