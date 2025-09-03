@@ -133,7 +133,7 @@ const RegistrationPage = () => {
         onClick={nextStep}
         className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
       >
-        <h1 className="text-white">Продолжить</h1>
+        <h2 className="text-white">Продолжить</h2>
       </button>
     </>
   )
@@ -229,13 +229,13 @@ const RegistrationPage = () => {
     onClick={prevStep}
     className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-4 rounded-full transition-colors flex items-center justify-center"
   >
-    <h1 className="text-center">Назад</h1>
+    <h2 className="text-center">Назад</h2>
   </button>
   <button 
     type="submit"
     className="bg-brand text-white font-bold py-4 rounded-full transition-colors flex items-center justify-center"
   >
-    <h1 className="text-center text-white">Продолжить</h1>
+    <h2 className="text-center text-white">Продолжить</h2>
   </button>
 </div>
     </>
@@ -244,7 +244,7 @@ const RegistrationPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
-        <h1 className="text-3xl font-bold text-white text-center mb-6 uppercase">РЕГИСТРАЦИЯ</h1>
+        <h1 className="text-2xl font-bold text-white text-center mb-6 uppercase">РЕГИСТРАЦИЯ</h1>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {step === 1 ? renderStep1() : renderStep2()}
