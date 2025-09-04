@@ -38,7 +38,7 @@ const AuthPage = () => {
           </div>
 
           <div className="text-center mt-2">
-            <a href="#" className="text-s text-white italic hover:underline">
+            <a href="/reset" className="text-s text-white italic hover:underline">
               Забыли логин или пароль?
             </a>
           </div>
