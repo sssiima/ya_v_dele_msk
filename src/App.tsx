@@ -6,6 +6,7 @@ import LoadingSpinner from './components/ui/LoadingSpinner'
 import HomePage from './pages/HomePage'
 import RegistrationPage from './pages/RegistrationPage'
 import ProfilePage from './pages/ProfilePage'
+import AuthPage from './pages/AuthPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/reg" element={<RegistrationPage />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

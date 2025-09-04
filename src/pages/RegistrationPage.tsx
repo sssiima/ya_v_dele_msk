@@ -79,7 +79,7 @@ const RegistrationPage = () => {
                 {...register('gender')}
                 className="mr-2"
               />
-              <span className="text-sm font-medium">М</span>
+              <span className="text-s font-medium">М</span>
             </label>
             <label className="flex items-center bg-gray-100 px-3 py-2 rounded-full">
               <input 
@@ -88,7 +88,7 @@ const RegistrationPage = () => {
                 {...register('gender')}
                 className="mr-2"
               />
-              <span className="text-sm font-medium">Ж</span>
+              <span className="text-s font-medium">Ж</span>
             </label>
           </div>
         </div>
