@@ -18,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
           backgroundImage: "url('./images/bg-main.png')",
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'right top',
-          backgroundSize: '500px auto'
+          backgroundSize: '100% auto'
         }}
       />
 

@@ -71,7 +71,7 @@ const RegistrationPage = () => {
         </div>
         <div>
           <label className="block text-s font-semibold text-white mb-2">Пол</label>
-          <div className="flex space-x-3">
+          <div className="flex space-x-1">
             <label className="flex items-center bg-gray-100 px-3 py-2 rounded-full">
               <input 
                 type="radio" 
@@ -79,7 +79,7 @@ const RegistrationPage = () => {
                 {...register('gender')}
                 className="mr-2"
               />
-              <span className="text-s font-medium">М</span>
+              <span className="text-xs font-medium">М</span>
             </label>
             <label className="flex items-center bg-gray-100 px-3 py-2 rounded-full">
               <input 
@@ -88,7 +88,7 @@ const RegistrationPage = () => {
                 {...register('gender')}
                 className="mr-2"
               />
-              <span className="text-s font-medium">Ж</span>
+              <span className="text-xs font-medium">Ж</span>
             </label>
           </div>
         </div>
