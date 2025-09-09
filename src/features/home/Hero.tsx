@@ -1,6 +1,12 @@
+import Header from "@/components/Header"
+
 const Hero = () => {
   return (
     <section className="card p-0 overflow-hidden">
+
+      <div className="relative z-10">
+        <Header />
+      </div>
       <div className="px-4 pb-8 flex justify-center">
         <img
           src="/images/heading-icon.png"

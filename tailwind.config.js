@@ -24,6 +24,8 @@ export default {
           light: '#ffffff',
         },
         brand: '#08A6A5',
+        pink: '#E94262',
+        orange: '#FF5500'
       },
       fontFamily: {
         sans: ['Montserrat', 'system-ui', 'sans-serif'],

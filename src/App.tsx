@@ -8,6 +8,7 @@ import RegistrationPage from './pages/RegistrationPage'
 import ProfilePage from './pages/ProfilePage'
 import AuthPage from './pages/AuthPage'
 import ResetPage from './pages/ResetPage'
+import RegistrationPageStructure from './pages/RegistrationPageStructure'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/reg" element={<RegistrationPage />} />
+          <Route path="/regstruct" element={<RegistrationPageStructure />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/reset" element={<ResetPage />} />
           <Route path="/profile" element={<ProfilePage />} />

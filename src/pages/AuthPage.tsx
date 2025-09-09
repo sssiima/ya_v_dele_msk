@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 interface LoginValues {
   username: string
@@ -11,6 +12,8 @@ const AuthPage = () => {
   const onSubmit = (data: LoginValues) => {
     console.log('login', data)
   }
+
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2">
@@ -46,6 +49,7 @@ const AuthPage = () => {
           <button 
             type="submit"
             className="w-full bg-brand font-bold rounded-full transition-colors pt-10"
+            onClick={() => navigate('/profile')}
           >
             <h2 className="text-3xl uppercase text-white">ВОЙТИ</h2>
           </button>

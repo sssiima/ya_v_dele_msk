@@ -1,13 +1,45 @@
 import { ReactNode } from 'react'
-// import { useLocation } from 'react-router-dom'
-import Header from './Header'
+import { useLocation } from 'react-router-dom'
 
 interface LayoutProps {
   children: ReactNode
 }
 
+// Конфигурация фона для разных страниц
+const backgroundConfig: Record<string, {
+  image: string
+  position?: string
+  size?: string
+  repeat?: string
+}> = {
+  '/': {
+    image: './images/bg-main.png',
+    position: 'right top',
+    size: '100% auto',
+    repeat: 'no-repeat'
+  },
+  '/reg': {
+    image: './images/bg-main.png',
+    position: 'right top',
+    size: '100% auto',
+    repeat: 'no-repeat'
+  }
+  // Добавьте другие страницы по необходимости
+}
+
+// Фон по умолчанию
+const defaultBackground = {
+  image: './images/bg-main.png',
+  position: 'right top',
+  size: '100% auto',
+  repeat: 'no-repeat'
+}
+
 const Layout = ({ children }: LayoutProps) => {
-  // const location = useLocation()
+  const location = useLocation()
+  
+  // Получаем настройки фона для текущей страницы
+  const currentBackground = backgroundConfig[location.pathname] || defaultBackground
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -15,16 +47,12 @@ const Layout = ({ children }: LayoutProps) => {
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          backgroundImage: "url('./images/bg-main.png')",
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right top',
-          backgroundSize: '100% auto'
+          backgroundImage: `url('${currentBackground.image}')`,
+          backgroundRepeat: currentBackground.repeat,
+          backgroundPosition: currentBackground.position,
+          backgroundSize: currentBackground.size
         }}
       />
-
-      <div className="relative z-10">
-        <Header />
-      </div>
 
       <main className="flex-1 relative z-10">
         <div className="container mx-auto px-4 py-4">

@@ -19,14 +19,13 @@ interface FormValues {
   role: 'member' | 'captain'
 }
 
-const RegistrationPage = () => {
+const RegistrationPageStructure = () => {
   const [step, setStep] = useState(1)
   const { register, handleSubmit, watch, setValue } = useForm<FormValues>({
     defaultValues: {
       role: 'member'
     }
   })
-
   const navigate = useNavigate()
 
   const selectedRole = watch('role')
@@ -108,13 +107,14 @@ const RegistrationPage = () => {
         />
       </div>
 
-       <div>
+      <div>
         <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education')}
         />
       </div>
+
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Фото</label>
@@ -133,7 +133,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Твой наставник</label>
+        <label className="block text-s font-semibold text-white mb-2">Твоя позиция</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('mentor')}
@@ -143,7 +143,7 @@ const RegistrationPage = () => {
       <button 
         type="button"
         onClick={nextStep}
-        className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
+        className="w-full bg-pink font-bold py-4 px-6 rounded-full transition-colors text-lg"
       >
         <h2 className="text-white">Продолжить</h2>
       </button>
@@ -238,7 +238,7 @@ const RegistrationPage = () => {
       <button 
         type="button"
         onClick={() => navigate('/profile')}
-        className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
+        className="w-full bg-pink font-bold py-4 px-6 rounded-full transition-colors text-lg"
       >
         <h2 className="text-white">Продолжить</h2>
       </button>
@@ -247,7 +247,7 @@ const RegistrationPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
+      <div className="card w-full max-w-md bg-pink rounded-2xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-white text-center mb-6 uppercase">РЕГИСТРАЦИЯ</h1>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -258,4 +258,4 @@ const RegistrationPage = () => {
   )
 }
 
-export default RegistrationPage
+export default RegistrationPageStructure
