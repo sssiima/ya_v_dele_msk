@@ -1,7 +1,7 @@
-import { useTelegram } from '../hooks/useTelegram'
+// import { useTelegram } from '../hooks/useTelegram'
 
 const ProfilePage = () => {
-  const { user } = useTelegram()
+  // const { user } = useTelegram()
 
   return (
     <div className="min-h-screen bg-white">
