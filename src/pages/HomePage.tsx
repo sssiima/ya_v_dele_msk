@@ -5,6 +5,7 @@ import FeaturesList from '../features/home/FeaturesList'
 import ProjectsShowcase from '../features/home/ProjectsShowcase'
 import Roadmap from '../features/home/Roadmap'
 import PartnersGrid from '../features/home/PartnersGrid'
+import CTA2 from '../features/home/CTA2'
 
 const HomePage = () => {
   return (
@@ -15,6 +16,7 @@ const HomePage = () => {
       <StatsBar />   
       <ProjectsShowcase />
       <Roadmap />    
+      <CTA2 />
       <PartnersGrid />
     </div>
   )

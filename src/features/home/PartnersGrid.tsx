@@ -29,6 +29,16 @@ const PartnersGrid = () => {
           </div>
         ))}
       </div>
+      <div className='flex justify-center space-x-4'>
+      <button 
+              className="w-[170px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
+        Регистрация для наставников
+      </button>
+      <button 
+              className="w-[170px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
+        Регистрация для экспертов
+      </button>
+      </div>
       <div
         style={{ backgroundColor: '#08A6A5' }}
         className="h-px w-auto"
