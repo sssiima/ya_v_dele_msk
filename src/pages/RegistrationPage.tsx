@@ -21,21 +21,46 @@ interface FormValues {
 
 const RegistrationPage = () => {
   const [step, setStep] = useState(1)
-  const { register, handleSubmit, watch, setValue } = useForm<FormValues>({
+  const { 
+    register, 
+    handleSubmit, 
+    watch, 
+    setValue, 
+    formState: { errors, isValid: isStep1Valid } 
+  } = useForm<FormValues>({
     defaultValues: {
       role: 'member'
-    }
+    },
+    mode: 'onChange' // Валидация при изменении полей
   })
 
   const navigate = useNavigate()
 
   const selectedRole = watch('role')
+  const watchAllFields = watch() // Следим за всеми полями
 
-  const nextStep = () => setStep(2)
-  // const prevStep = () => setStep(1)
+  // Проверяем валидность первого шага
+  const isStep1Complete = () => {
+    const requiredFields = [
+      'last_name', 'first_name', 'birth_date', 
+      'gender', 'vk_link', 'education', 'mentor'
+    ]
+    
+    return requiredFields.every(field => {
+      const value = watchAllFields[field as keyof FormValues]
+      return value !== undefined && value !== null && value !== ''
+    })
+  }
+
+  const nextStep = () => {
+    if (isStep1Complete()) {
+      setStep(2)
+    }
+  }
 
   const onSubmit = (data: FormValues) => {
     console.log('register', data)
+    navigate('/profile')
   }
 
   const renderStep1 = () => (
@@ -44,16 +69,22 @@ const RegistrationPage = () => {
         <label className="block text-s font-semibold text-white mb-2">Фамилия</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('last_name')}
+          {...register('last_name', { 
+            required: 'Фамилия обязательна'
+          })}
         />
+        {errors.last_name && <p className="text-red-300 text-xs mt-1">{errors.last_name.message}</p>}
       </div>
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Имя</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('first_name')}
+          {...register('first_name', { 
+            required: 'Имя обязательно'
+          })}
         />
+        {errors.first_name && <p className="text-red-300 text-xs mt-1">{errors.first_name.message}</p>}
       </div>
 
       <div>
@@ -70,8 +101,11 @@ const RegistrationPage = () => {
           <input 
             type="date"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            {...register('birth_date')}
+            {...register('birth_date', { 
+              required: 'Дата рождения обязательна'
+            })}
           />
+          {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
           <label className="block text-s font-semibold text-white mb-2">Пол</label>
@@ -80,7 +114,7 @@ const RegistrationPage = () => {
               <input 
                 type="radio" 
                 value="M" 
-                {...register('gender')}
+                {...register('gender', { required: 'Выберите пол' })}
                 className="mr-2 w-10 h-10"
               />
               <span className="text-s font-semibold text-white">М</span>
@@ -95,6 +129,7 @@ const RegistrationPage = () => {
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
           </div>
+          {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
         </div>
       </div>
 
@@ -104,16 +139,26 @@ const RegistrationPage = () => {
           type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://vk.com/username"
-          {...register('vk_link')}
+          {...register('vk_link', { 
+            required: 'Ссылка на ВКонтакте обязательна',
+            pattern: {
+              value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
+              message: 'Введите корректную ссылку на ВКонтакте'
+            }
+          })}
         />
+        {errors.vk_link && <p className="text-red-300 text-xs mt-1">{errors.vk_link.message}</p>}
       </div>
 
-       <div>
+      <div>
         <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('education')}
+          {...register('education', { 
+            required: 'Название ВУЗа обязательно'
+          })}
         />
+        {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
       </div>
 
       <div>
@@ -124,26 +169,42 @@ const RegistrationPage = () => {
             accept="image/*"
             className="hidden"
             id="photo-upload"
-            {...register('photo')}
+            {...register('photo', { 
+              required: 'Фото обязательно',
+              validate: {
+                lessThan2MB: files => 
+                  files[0]?.size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
+                acceptedFormats: files => 
+                  ['image/jpeg', 'image/png'].includes(files[0]?.type) || 
+                  'Только JPEG и PNG форматы'
+              }
+            })}
           />
-          <label htmlFor="photo-upload" className="cursor-pointer text-sm text-gray-600">
+          <label htmlFor="photo-upload" className="cursor-pointer text-xs text-white">
             Загрузи фото в формате PNG/JPEG не более 2 Мб
           </label>
         </div>
+        {errors.photo && <p className="text-red-300 text-xs mt-1">{errors.photo.message}</p>}
       </div>
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Твой наставник</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('mentor')}
+          {...register('mentor', { 
+            required: 'Имя наставника обязательно'
+          })}
         />
+        {errors.mentor && <p className="text-red-300 text-xs mt-1">{errors.mentor.message}</p>}
       </div>
 
       <button 
         type="button"
         onClick={nextStep}
-        className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
+        className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
+          isStep1Complete() ? '' : 'cursor-not-allowed'
+        }`}
+        // disabled={!isStep1Complete()}
       >
         <h2 className="text-white">Продолжить</h2>
       </button>
@@ -155,44 +216,48 @@ const RegistrationPage = () => {
       <div>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <div 
-          className={`text-center cursor-pointer py-2 rounded-lg ${
-          watch('role') === 'member' ? 'bg-white bg-opacity-20' : ''
-          }`}
-          onClick={() => setValue('role', 'member')}
+            className={`text-center cursor-pointer py-2 rounded-lg ${
+              watch('role') === 'member' ? 'bg-white bg-opacity-20' : ''
+            }`}
+            onClick={() => setValue('role', 'member')}
           >
             <span className={`text-s font-medium text-white ${
-            watch('role') === 'member' ? 'font-bold' : 'font-normal'
+              watch('role') === 'member' ? 'font-bold' : 'font-normal'
             }`}>
-            Я участник команды
+              Я участник команды
             </span>
           </div>
   
           <div className="bg-white h-4 w-px mx-2"></div>
   
           <div 
-          className={`text-center cursor-pointer py-2 rounded-lg ${
-          watch('role') === 'captain' ? 'bg-white bg-opacity-20' : ''
-          }`}
-          onClick={() => setValue('role', 'captain')}
+            className={`text-center cursor-pointer py-2 rounded-lg ${
+              watch('role') === 'captain' ? 'bg-white bg-opacity-20' : ''
+            }`}
+            onClick={() => setValue('role', 'captain')}
           >
             <span className={`text-s font-medium text-white ${
-            watch('role') === 'captain' ? 'font-bold' : 'font-normal'
+              watch('role') === 'captain' ? 'font-bold' : 'font-normal'
             }`}>
-            Я капитан команды
+              Я капитан команды
             </span>
           </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Придумай логин</label>
+        <label className="block text-s font-semibold text-white mb-2">Введи почту</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('username')}
+          {...register('username', { 
+            required: 'Email обязателен',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Введите корректный email'
+            }
+          })}
         />
-        <p className="text-xs text-white italic mt-1">
-          Логин должен быть не менее 8 символов, включать буквы в верхнем и нижнем регистре
-        </p>
+        {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
       </div>
 
       <div>
@@ -200,11 +265,22 @@ const RegistrationPage = () => {
         <input 
           type="password"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('password')}
+          {...register('password', { 
+            required: 'Пароль обязателен',
+            minLength: {
+              value: 8,
+              message: 'Пароль должен содержать минимум 8 символов'
+            },
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+              message: 'Пароль должен содержать буквы в верхнем и нижнем регистре, цифры и специальные символы'
+            }
+          })}
         />
         <p className="text-xs text-white mt-1 italic">
           Пароль должен быть не менее 8 символов, включать буквы в верхнем и нижнем регистре, содержать цифры и другие знаки
         </p>
+        {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
       </div>
 
       <div>
@@ -213,7 +289,13 @@ const RegistrationPage = () => {
         </label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('team_code')}
+          {...register('team_code', { 
+            required: 'Код команды обязателен',
+            minLength: {
+              value: 4,
+              message: 'Код команды должен содержать минимум 4 символа'
+            }
+          })}
         />
         <p className="text-xs text-white mt-1 italic">
           {selectedRole === 'member' 
@@ -221,6 +303,7 @@ const RegistrationPage = () => {
             : 'Код команды должен быть уникальным'
           }
         </p>
+        {errors.team_code && <p className="text-red-300 text-xs mt-1">{errors.team_code.message}</p>}
       </div>
 
       <div className="flex items-start">
@@ -228,17 +311,22 @@ const RegistrationPage = () => {
           type="checkbox"
           id="privacy-policy"
           className="mt-1 mr-3"
-          {...register('privacy_policy')}
+          {...register('privacy_policy', { 
+            required: 'Необходимо согласие с политикой конфиденциальности'
+          })}
         />
         <label htmlFor="privacy-policy" className="text-xs text-white italic">
           Отправляя данную форму, вы соглашаетесь с политикой конфиденциальности и правилами нашего сайта
         </label>
       </div>
+      {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
 
       <button 
-        type="button"
-        onClick={() => navigate('/profile')}
-        className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors text-lg"
+        type="submit"
+        className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
+          isStep1Valid ? '' : 'cursor-not-allowed'
+        }`}
+        // disabled={!isStep1Valid}
       >
         <h2 className="text-white">Продолжить</h2>
       </button>
@@ -246,7 +334,7 @@ const RegistrationPage = () => {
   )
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 py-32">
       <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-white text-center mb-6 uppercase">РЕГИСТРАЦИЯ</h1>
         

@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 const Partner = () => (
   <div className="w-full aspect-square rounded-xl bg-gray-200" />
 )
@@ -12,6 +14,8 @@ const FooterNote = () => (
 )
 
 const PartnersGrid = () => {
+  const navigate = useNavigate()
+
   return (
     <section className="space-y-4">
         <div
@@ -30,12 +34,12 @@ const PartnersGrid = () => {
         ))}
       </div>
       <div className='flex justify-center space-x-4'>
-      <button 
-              className="w-[170px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
+      <button onClick={() => navigate('/regstruct')}
+              className="w-[180px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
         Регистрация для наставников
       </button>
       <button 
-              className="w-[170px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
+              className="w-[180px] h-[34px] rounded-lg bg-brand hover:bg-teal-600 text-white font-bold text-[10px]">
         Регистрация для экспертов
       </button>
       </div>

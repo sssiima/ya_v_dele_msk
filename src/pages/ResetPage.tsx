@@ -1,6 +1,4 @@
 import { useForm } from 'react-hook-form'
-// import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface RecoveryValues {
   last_name: string
@@ -15,7 +13,6 @@ const ResetPage = () => {
     const onSubmit = (data: RecoveryValues) => {
     console.log('recovery', data)
   }
-    const navigate = useNavigate()
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
@@ -67,7 +64,6 @@ const ResetPage = () => {
 
           <button 
             type="submit"
-            onClick={() => navigate('/profile')}
             className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colorsmt-6"
           >
             <h2 className="uppercase text-white">Отправить форму</h2>

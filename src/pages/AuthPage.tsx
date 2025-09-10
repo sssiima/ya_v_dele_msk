@@ -7,10 +7,17 @@ interface LoginValues {
 }
 
 const AuthPage = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginValues>()
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isValid } 
+  } = useForm<LoginValues>({
+    mode: 'onChange' // Валидация при изменении полей
+  })
 
   const onSubmit = (data: LoginValues) => {
     console.log('login', data)
+    navigate('/profile') // Переход после успешной валидации
   }
 
   const navigate = useNavigate()
@@ -25,7 +32,9 @@ const AuthPage = () => {
             <label className="block text-s font-semibold text-white mb-2">Логин</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register('username', { required: 'Логин обязателен' })}
+              {...register('username', { 
+                required: 'Логин обязателен'
+              })}
             />
             {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           </div>
@@ -35,7 +44,9 @@ const AuthPage = () => {
             <input 
               type="password"
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register('password', { required: 'Пароль обязателен' })}
+              {...register('password', { 
+                required: 'Пароль обязателен'
+              })}
             />
             {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
           </div>
@@ -48,8 +59,10 @@ const AuthPage = () => {
           
           <button 
             type="submit"
-            className="w-full bg-brand font-bold rounded-full transition-colors pt-10"
-            onClick={() => navigate('/profile')}
+            className={`w-full font-bold rounded-full transition-colors pt-10 ${
+              isValid ? '': 'cursor-not-allowed'
+            }`}
+            disabled={!isValid}
           >
             <h2 className="text-3xl uppercase text-white">ВОЙТИ</h2>
           </button>

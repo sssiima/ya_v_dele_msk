@@ -19,9 +19,15 @@ const backgroundConfig: Record<string, {
     repeat: 'no-repeat'
   },
   '/reg': {
-    image: './images/bg-main.png',
-    position: 'right top',
-    size: '100% auto',
+    image: './images/bg-reg.png',
+    position: 'center center',
+    size: 'auto 103%',
+    repeat: 'no-repeat'
+  },
+  '/regstruct': {
+    image: './images/bg-regstruct.png',
+    position: 'center center',
+    size: 'auto 160%',
     repeat: 'no-repeat'
   }
   // Добавьте другие страницы по необходимости
