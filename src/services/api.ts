@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Базовый URL для API (будет настроен позже)
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'https://yavdelemsk-production.up.railway.app//api'
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
