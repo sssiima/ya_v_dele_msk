@@ -1,11 +1,13 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
+const cors = require('cors')
 const { verifyConnection, pool } = require('../src/services/db')
 
 dotenv.config()
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 app.get('/', (_req, res) => {
