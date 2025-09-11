@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { structureApi } from '@/services/api'
 
 interface FormValues {
   last_name: string
@@ -59,9 +60,31 @@ const RegistrationPageStructure = () => {
     }
   }
 
-  const onSubmit = (data: FormValues) => {
-    console.log('register', data)
-    navigate('/profile')
+  const onSubmit = async (data: FormValues) => {
+    const payload = {
+      last_name: data.last_name,
+      first_name: data.first_name,
+      patronymic: data.patronymic || undefined,
+      birth_date: data.birth_date,
+      gender: data.gender,
+      vk_link: data.vk_link,
+      education: data.education,
+      // photo is not uploaded yet, store URL placeholder or omit
+      pos: data.pos,
+      username: data.username,
+      password: data.password,
+      high_mentor: data.high_mentor || undefined,
+      coord: data.coord || undefined,
+      ro: data.ro || undefined,
+      privacy_policy: Boolean(data.privacy_policy),
+    }
+    try {
+      await structureApi.create(payload as any)
+      navigate('/profile')
+    } catch (e) {
+      console.error('structure registration failed', e)
+      alert('Ошибка сохранения. Попробуйте ещё раз.')
+    }
   }
 
   const renderStep1 = () => (

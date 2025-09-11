@@ -185,3 +185,29 @@ export const authApi = {
 }
 
 export default api
+
+// API для регистрации структуры
+export interface StructurePayload {
+  last_name: string
+  first_name: string
+  patronymic?: string
+  birth_date: string
+  gender: string
+  vk_link: string
+  education: string
+  photo_url?: string
+  pos: string
+  username: string
+  password: string
+  high_mentor?: string
+  coord?: string
+  ro?: string
+  privacy_policy: boolean
+}
+
+export const structureApi = {
+  create: async (payload: StructurePayload): Promise<ApiResponse<{ id: number }>> => {
+    const response = await api.post('/structure', payload)
+    return response.data
+  },
+}
