@@ -7,7 +7,14 @@ const { verifyConnection, pool } = require('../src/services/db')
 dotenv.config()
 
 const app = express()
-app.use(cors())
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 app.use(express.json())
 
 app.get('/', (_req, res) => {
