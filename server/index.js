@@ -14,7 +14,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 }
 app.use(cors(corsOptions))
-app.options('*', cors(corsOptions))
 // Explicit preflight handler to avoid 405 from any upstream/proxies
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*')
