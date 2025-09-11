@@ -14,7 +14,7 @@ app.get('/', (_req, res) => {
   res.send('API server is running. Use /api/* endpoints.')
 })
 
-app.get('/api/health', async (_req, res) => {
+app.get('/health', async (_req, res) => {
   try {
     await verifyConnection()
     res.json({ ok: true })
@@ -23,7 +23,7 @@ app.get('/api/health', async (_req, res) => {
   }
 })
 
-app.post('/api/structure', async (req, res) => {
+app.post('/structure', async (req, res) => {
   try {
     const {
       last_name,
