@@ -5,7 +5,7 @@ const API_BASE_URL = (import.meta as any).env?.VITE_API_URL ||
   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
 // Временная принудительная установка для продакшена
-const FORCE_API_URL = 'https://api-production-2fd7.up.railway.app/api'
+const FORCE_API_URL = 'https://yavdelemsk-production.up.railway.app/api'
 const FINAL_API_URL = window.location.hostname === 'localhost' ? API_BASE_URL : FORCE_API_URL
 
 console.log('API Base URL:', API_BASE_URL)
