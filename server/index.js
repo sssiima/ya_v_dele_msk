@@ -7,28 +7,42 @@ const { verifyConnection, pool } = require('../src/services/db')
 dotenv.config()
 
 const app = express()
-const corsOptions = {
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}
-app.use(cors(corsOptions))
-// Explicit preflight handler to avoid 405 from any upstream/proxies
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*')
+
+// Обработчик для всех OPTIONS запросов - должен быть первым
+app.options('*', (req, res) => {
+  console.log(`OPTIONS request to: ${req.url}`)
+  console.log('Headers:', req.headers)
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
   res.header('Access-Control-Allow-Credentials', 'true')
-  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204)
-  }
-  return next()
+  res.status(200).end()
+})
+
+// Глобальный обработчик CORS
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`)
+  
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+  res.header('Access-Control-Allow-Credentials', 'true')
+  
+  next()
 })
 app.use(express.json())
 
 app.get('/', (_req, res) => {
   res.send('API server is running. Use /api/* endpoints.')
+})
+
+app.get('/api', (_req, res) => {
+  res.json({ message: 'API is running', endpoints: ['/api/health', '/api/structure', '/api/test'] })
+})
+
+// Тестовый эндпоинт для проверки CORS
+app.get('/api/test', (_req, res) => {
+  res.json({ message: 'CORS test successful', timestamp: new Date().toISOString() })
 })
 
 app.get('/api/health', async (_req, res) => {
@@ -39,6 +53,7 @@ app.get('/api/health', async (_req, res) => {
     res.status(500).json({ ok: false })
   }
 })
+
 
 app.post('/api/structure', async (req, res) => {
   try {

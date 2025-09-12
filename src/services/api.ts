@@ -1,11 +1,24 @@
 import axios from 'axios'
 
-// Базовый URL для API (будет настроен позже)
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api'
+// Базовый URL для API
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+
+// Временная принудительная установка для продакшена
+const FORCE_API_URL = 'https://api-production-2fd7.up.railway.app/api'
+const FINAL_API_URL = window.location.hostname === 'localhost' ? API_BASE_URL : FORCE_API_URL
+
+console.log('API Base URL:', API_BASE_URL)
+console.log('Final API URL:', FINAL_API_URL)
+console.log('Environment check:', {
+  VITE_API_URL: (import.meta as any).env?.VITE_API_URL,
+  hostname: window.location.hostname,
+  isLocalhost: window.location.hostname === 'localhost'
+})
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: FINAL_API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -209,7 +222,25 @@ export interface StructurePayload {
 
 export const structureApi = {
   create: async (payload: StructurePayload): Promise<ApiResponse<{ id: number }>> => {
-    const response = await api.post('/structure', payload)
-    return response.data
+    try {
+      const response = await api.post('/structure', payload)
+      return response.data
+    } catch (error: any) {
+      // Fallback to fetch if axios fails
+      console.log('Axios failed, trying fetch...')
+      const response = await fetch(`${FINAL_API_URL}/structure`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      return await response.json()
+    }
   },
 }

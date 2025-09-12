@@ -13,7 +13,7 @@ interface FormValues {
   phone: string
   education: string
   grade: string
-  photo: FileList
+  photo?: FileList
   pos: string
   username: string
   password: string
@@ -31,9 +31,8 @@ const RegistrationPageStructure = () => {
     register, 
     handleSubmit, 
     watch, 
-    reset,
     setValue,
-    formState: { errors, isValid: isStep2Valid } 
+    formState: { errors, isValid } 
   } = useForm<FormValues>({
     mode: 'onChange' // Валидация при изменении полей
   })
@@ -63,15 +62,13 @@ const RegistrationPageStructure = () => {
       if (watchPosition) {
         setSelectedPosition(watchPosition)
       }
-      // Clear step 2 fields to prevent auto-filling
-      reset({
-        username: '',
-        password: '',
-        high_mentor: '',
-        coord: '',
-        ro: '',
-        privacy_policy: false
-      })
+      // Don't reset the form - just clear step 2 specific fields
+      setValue('username', '')
+      setValue('password', '')
+      setValue('high_mentor', '')
+      setValue('coord', '')
+      setValue('ro', '')
+      setValue('privacy_policy', false)
       setStep(2)
     } else {
       // Show validation errors for incomplete fields by triggering validation
@@ -114,6 +111,23 @@ const RegistrationPageStructure = () => {
   }
 
   const onSubmit = async (data: FormValues) => {
+    // Проверяем, что все обязательные поля заполнены
+    const requiredFields = [
+      'last_name', 'first_name', 'birth_date', 'gender', 'vk_link', 
+      'phone', 'education', 'grade', 'pos', 'username', 'password', 'privacy_policy'
+    ]
+    
+    const missingFields = requiredFields.filter(field => {
+      const value = data[field as keyof FormValues]
+      return value === undefined || value === null || value === '' || value === false
+    })
+    
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields)
+      alert(`Не заполнены обязательные поля: ${missingFields.join(', ')}`)
+      return
+    }
+    
     const payload = {
       last_name: data.last_name,
       first_name: data.first_name,
@@ -135,6 +149,7 @@ const RegistrationPageStructure = () => {
     }
     
     console.log('Sending payload:', JSON.stringify(payload, null, 2))
+    console.log('Form data:', data)
     
     try {
       await structureApi.create(payload as any)
@@ -288,12 +303,12 @@ const RegistrationPageStructure = () => {
             className="hidden"
             id="photo-upload"
             {...register('photo', { 
-              required: 'Фото обязательно',
+              required: selectedPhoto === null ? 'Фото обязательно' : false,
               validate: {
                 lessThan2MB: files => 
-                  files?.[0]?.size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
+                  !files?.[0] || files[0].size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
                 acceptedFormats: files => 
-                  ['image/jpeg', 'image/png'].includes(files?.[0]?.type) || 
+                  !files?.[0] || ['image/jpeg', 'image/png'].includes(files[0].type) || 
                   'Только JPEG и PNG форматы'
               }
             })}
@@ -453,9 +468,9 @@ const RegistrationPageStructure = () => {
         <button 
           type="submit"
           className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
-            isStep2Valid ? '' : 'cursor-not-allowed'
+            isValid ? '' : 'cursor-not-allowed'
           }`}
-          // disabled={!isStep2Valid}
+          disabled={!isValid}
         >
           <h2 className="text-white">Продолжить</h2>
         </button>
