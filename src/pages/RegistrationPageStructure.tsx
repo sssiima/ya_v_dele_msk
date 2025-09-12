@@ -24,10 +24,13 @@ interface FormValues {
 const RegistrationPageStructure = () => {
   const [step, setStep] = useState(1)
   const [selectedPosition, setSelectedPosition] = useState('')
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const { 
     register, 
     handleSubmit, 
     watch, 
+    reset,
+    setValue,
     formState: { errors, isValid: isStep2Valid } 
   } = useForm<FormValues>({
     mode: 'onChange' // Валидация при изменении полей
@@ -42,13 +45,15 @@ const RegistrationPageStructure = () => {
   const isStep1Complete = () => {
     const requiredFields = [
       'last_name', 'first_name', 'birth_date', 
-      'gender', 'vk_link', 'education', 'photo', 'pos'
+      'gender', 'vk_link', 'education', 'pos'
     ]
     
-    return requiredFields.every(field => {
+    const fieldsValid = requiredFields.every(field => {
       const value = watchAllFields[field as keyof FormValues]
       return value !== undefined && value !== null && value !== ''
     })
+    
+    return fieldsValid && selectedPhoto !== null
   }
 
   const nextStep = () => {
@@ -56,7 +61,53 @@ const RegistrationPageStructure = () => {
       if (watchPosition) {
         setSelectedPosition(watchPosition)
       }
+      // Clear step 2 fields to prevent auto-filling
+      reset({
+        username: '',
+        password: '',
+        high_mentor: '',
+        coord: '',
+        ro: '',
+        privacy_policy: false
+      })
       setStep(2)
+    } else {
+      // Show validation errors for incomplete fields by triggering validation
+      const requiredFields = [
+        'last_name', 'first_name', 'birth_date', 
+        'gender', 'vk_link', 'education', 'pos'
+      ]
+      
+      requiredFields.forEach(field => {
+        const value = watchAllFields[field as keyof FormValues]
+        if (!value || value === '') {
+          // Trigger validation by setting empty value to show error
+          setValue(field as keyof FormValues, '', { shouldValidate: true })
+        }
+      })
+      
+      // Show photo validation error if no photo selected
+      if (!selectedPhoto) {
+        setValue('photo', undefined as any, { shouldValidate: true })
+      }
+    }
+  }
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedPhoto(file)
+      setValue('photo', e.target.files as any, { shouldValidate: true })
+    }
+  }
+
+  const handlePhotoRemove = () => {
+    setSelectedPhoto(null)
+    setValue('photo', undefined as any, { shouldValidate: true })
+    // Reset the file input
+    const fileInput = document.getElementById('photo-upload') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
     }
   }
 
@@ -175,6 +226,23 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
+        <label className="block text-s font-semibold text-white mb-2">Номер телефона</label>
+        <input 
+          type="url"
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="8(999)999-99-99"
+          // {...register('phone', { 
+          //   required: 'Ссылка на ВКонтакте обязательна',
+          //   pattern: {
+          //     value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
+          //     message: 'Введите корректную ссылку на ВКонтакте'
+          //   }
+          // })}
+        />
+        {errors.vk_link && <p className="text-red-300 text-xs mt-1">{errors.vk_link.message}</p>}
+      </div>
+
+      <div>
         <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,6 +251,22 @@ const RegistrationPageStructure = () => {
           })}
         />
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-s font-semibold text-white mb-2">Курс</label>
+        <input 
+          type="url"
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          // {...register('grade', { 
+          //   required: 'Ссылка на ВКонтакте обязательна',
+          //   pattern: {
+          //     value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
+          //     message: 'Введите корректную ссылку на ВКонтакте'
+          //   }
+          // })}
+        />
+        {errors.vk_link && <p className="text-red-300 text-xs mt-1">{errors.vk_link.message}</p>}
       </div>
 
       <div>
@@ -197,17 +281,32 @@ const RegistrationPageStructure = () => {
               required: 'Фото обязательно',
               validate: {
                 lessThan2MB: files => 
-                  files[0]?.size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
+                  files?.[0]?.size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
                 acceptedFormats: files => 
-                  ['image/jpeg', 'image/png'].includes(files[0]?.type) || 
+                  ['image/jpeg', 'image/png'].includes(files?.[0]?.type) || 
                   'Только JPEG и PNG форматы'
               }
             })}
+            onChange={handlePhotoChange}
           />
           <label htmlFor="photo-upload" className="cursor-pointer text-xs text-white">
             Загрузи фото в формате PNG/JPEG не более 2 Мб
           </label>
         </div>
+        {selectedPhoto && (
+          <div className="mt-2 flex items-center justify-between bg-white bg-opacity-10 rounded-lg p-2">
+            <span className="text-xs text-white truncate flex-1">
+              {selectedPhoto.name}
+            </span>
+            <button
+              type="button"
+              onClick={handlePhotoRemove}
+              className="ml-2 text-red-300 hover:text-red-200 text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {errors.photo && <p className="text-red-300 text-xs mt-1">{errors.photo.message}</p>}
       </div>
 
@@ -230,10 +329,7 @@ const RegistrationPageStructure = () => {
       <button 
         type="button"
         onClick={nextStep}
-        className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
-          isStep1Complete() ? '' : 'cursor-not-allowed'
-        }`}
-        // disabled={!isStep1Complete()}
+        className="w-full font-bold py-4 px-6 rounded-full transition-colors text-lg"
       >
         <h2 className="text-white">Продолжить</h2>
       </button>
