@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 const Partner = () => (
   <div className="w-full aspect-square rounded-xl bg-gray-200" />
@@ -14,7 +14,7 @@ const FooterNote = () => (
 )
 
 const PartnersGrid = () => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   return (
     <section className="space-y-4">
