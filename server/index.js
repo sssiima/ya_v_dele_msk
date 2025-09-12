@@ -2,38 +2,12 @@ const express = require('express')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
-const multer = require('multer')
-const path = require('path')
-const { verifyConnection, pool } = require('../src/services/db')
+const { verifyConnection, pool } = require('./db')
 
 dotenv.config()
 
 const app = express()
 
-// Настройка multer для загрузки файлов
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname))
-  }
-})
-
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 2 * 1024 * 1024 // 2MB
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true)
-    } else {
-      cb(new Error('Только изображения разрешены'), false)
-    }
-  }
-})
 
 // Обработчик для всех OPTIONS запросов - должен быть первым
 app.use((req, res, next) => {
@@ -62,8 +36,6 @@ app.use((req, res, next) => {
 })
 app.use(express.json())
 
-// Обслуживание загруженных файлов
-app.use('/uploads', express.static('uploads'))
 
 app.get('/', (_req, res) => {
   res.send('API server is running. Use /api/* endpoints.')
@@ -78,14 +50,11 @@ app.get('/api/test', (_req, res) => {
   res.json({ message: 'CORS test successful', timestamp: new Date().toISOString() })
 })
 
-// Эндпоинт для загрузки фото
-app.post('/api/upload', upload.single('photo'), (req, res) => {
+// Эндпоинт для загрузки фото (заглушка)
+app.post('/api/upload', (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Файл не загружен' })
-    }
-    
-    const photoUrl = `/uploads/${req.file.filename}`
+    // Временно возвращаем заглушку для фото
+    const photoUrl = '/placeholder-photo.jpg'
     res.json({ success: true, photoUrl })
   } catch (error) {
     console.error('Upload error:', error)
