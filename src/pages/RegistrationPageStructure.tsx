@@ -10,7 +10,9 @@ interface FormValues {
   birth_date: string
   gender: string
   vk_link: string
+  phone: string
   education: string
+  grade: string
   photo: FileList
   pos: string
   username: string
@@ -45,7 +47,7 @@ const RegistrationPageStructure = () => {
   const isStep1Complete = () => {
     const requiredFields = [
       'last_name', 'first_name', 'birth_date', 
-      'gender', 'vk_link', 'education', 'pos'
+      'gender', 'vk_link','phone', 'education','grade', 'pos'
     ]
     
     const fieldsValid = requiredFields.every(field => {
@@ -75,7 +77,7 @@ const RegistrationPageStructure = () => {
       // Show validation errors for incomplete fields by triggering validation
       const requiredFields = [
         'last_name', 'first_name', 'birth_date', 
-        'gender', 'vk_link', 'education', 'pos'
+        'gender', 'vk_link', 'phone', 'education', 'grade', 'pos'
       ]
       
       requiredFields.forEach(field => {
@@ -119,6 +121,8 @@ const RegistrationPageStructure = () => {
       birth_date: data.birth_date,
       gender: data.gender,
       vk_link: data.vk_link,
+      phone: data.phone,
+      grade: data.grade,
       education: data.education,
       // photo is not uploaded yet, store URL placeholder or omit
       pos: data.pos,
@@ -230,16 +234,16 @@ const RegistrationPageStructure = () => {
         <input 
           type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="8(999)999-99-99"
-          // {...register('phone', { 
-          //   required: 'Ссылка на ВКонтакте обязательна',
-          //   pattern: {
-          //     value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
-          //     message: 'Введите корректную ссылку на ВКонтакте'
-          //   }
-          // })}
+          placeholder="89999999999"
+          {...register('phone', { 
+            required: 'Номер телефона обязателен',
+            pattern: {
+              value: /^(\+7|8)[0-9]{10}$/,
+              message: 'Введите корректный номер телефона'
+            }
+          })}
         />
-        {errors.vk_link && <p className="text-red-300 text-xs mt-1">{errors.vk_link.message}</p>}
+        {errors.phone && <p className="text-red-300 text-xs mt-1">{errors.phone.message}</p>}
       </div>
 
       <div>
@@ -254,19 +258,21 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Курс</label>
-        <input 
-          type="url"
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          // {...register('grade', { 
-          //   required: 'Ссылка на ВКонтакте обязательна',
-          //   pattern: {
-          //     value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
-          //     message: 'Введите корректную ссылку на ВКонтакте'
-          //   }
-          // })}
-        />
-        {errors.vk_link && <p className="text-red-300 text-xs mt-1">{errors.vk_link.message}</p>}
+        <label className="block text-s font-semibold text-white mb-2">Курс обучения</label>
+        <select 
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
+          {...register('grade', { 
+            required: 'Курс обязателен'
+          })}
+        >
+          <option value="first">1</option>
+          <option value="second">2</option>
+          <option value="third">3</option>
+          <option value="fourth">4</option>
+          <option value="fivth">5</option>
+          <option value="sixth">6</option>
+        </select>
+        {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
       </div>
 
       <div>
