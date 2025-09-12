@@ -2,7 +2,6 @@ const express = require('express')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
-const path = require('path')
 const { verifyConnection, pool } = require('../src/services/db')
 
 dotenv.config()
@@ -139,14 +138,6 @@ app.post('/api/structure', async (req, res) => {
     console.error('POST /api/structure error', err)
     return res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
-})
-
-// Обслуживание статических файлов фронтенда
-app.use(express.static(path.join(__dirname, '../dist')))
-
-// Fallback для SPA - все остальные запросы возвращают index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'))
 })
 
 const port = process.env.PORT || 3001

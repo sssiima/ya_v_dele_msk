@@ -10,7 +10,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "type-check": "tsc --noEmit",
-    "start": "npm run build && node server/index.js",
+    "start": "node server/index.js",
     "server": "node server/index.js",
     "migrate": "node scripts/migrate.js"
   },

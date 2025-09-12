@@ -4,12 +4,7 @@ import axios from 'axios'
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
-// Временная принудительная установка для продакшена
-const FORCE_API_URL = 'https://yavdelemsk-production.up.railway.app/api'
-const FINAL_API_URL = window.location.hostname === 'localhost' ? API_BASE_URL : FORCE_API_URL
-
 console.log('API Base URL:', API_BASE_URL)
-console.log('Final API URL:', FINAL_API_URL)
 console.log('Environment check:', {
   VITE_API_URL: (import.meta as any).env?.VITE_API_URL,
   hostname: window.location.hostname,
@@ -18,7 +13,7 @@ console.log('Environment check:', {
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
-  baseURL: FINAL_API_URL,
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -228,7 +223,7 @@ export const structureApi = {
     } catch (error: any) {
       // Fallback to fetch if axios fails
       console.log('Axios failed, trying fetch...')
-      const response = await fetch(`${FINAL_API_URL}/structure`, {
+      const response = await fetch(`${API_BASE_URL}/structure`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

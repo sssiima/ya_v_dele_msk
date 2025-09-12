@@ -1,0 +1,20 @@
+{
+  "name": "ya-v-dele-msk-api",
+  "version": "1.0.0",
+  "description": "API server for Ya v dele MSK",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
