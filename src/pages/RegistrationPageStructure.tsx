@@ -131,14 +131,18 @@ const RegistrationPageStructure = () => {
       high_mentor: data.high_mentor || undefined,
       coord: data.coord || undefined,
       ro: data.ro || undefined,
-      privacy_policy: Boolean(data.privacy_policy),
+      privacy_policy: data.privacy_policy === true,
     }
+    
+    console.log('Sending payload:', JSON.stringify(payload, null, 2))
+    
     try {
       await structureApi.create(payload as any)
       navigate('/profile')
-    } catch (e) {
+    } catch (e: any) {
       console.error('structure registration failed', e)
-      alert('Ошибка сохранения. Попробуйте ещё раз.')
+      console.error('Error details:', e.response?.data)
+      alert(`Ошибка сохранения: ${e.response?.data?.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
     }
   }
 
@@ -265,12 +269,12 @@ const RegistrationPageStructure = () => {
             required: 'Курс обязателен'
           })}
         >
-          <option value="first">1</option>
-          <option value="second">2</option>
-          <option value="third">3</option>
-          <option value="fourth">4</option>
-          <option value="fivth">5</option>
-          <option value="sixth">6</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
         </select>
         {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
       </div>

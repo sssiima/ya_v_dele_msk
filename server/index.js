@@ -42,6 +42,8 @@ app.get('/api/health', async (_req, res) => {
 
 app.post('/api/structure', async (req, res) => {
   try {
+    console.log('Received structure registration request:', JSON.stringify(req.body, null, 2))
+    
     const {
       last_name,
       first_name,
@@ -62,8 +64,28 @@ app.post('/api/structure', async (req, res) => {
       privacy_policy,
     } = req.body || {}
 
-    if (!last_name || !first_name || !birth_date || !gender || !vk_link || !phone || !education || !grade || !pos || !username || !password) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' })
+    // Проверяем каждое поле отдельно для лучшей диагностики
+    const missingFields = []
+    if (!last_name) missingFields.push('last_name')
+    if (!first_name) missingFields.push('first_name')
+    if (!birth_date) missingFields.push('birth_date')
+    if (!gender) missingFields.push('gender')
+    if (!vk_link) missingFields.push('vk_link')
+    if (!phone) missingFields.push('phone')
+    if (!education) missingFields.push('education')
+    if (!grade) missingFields.push('grade')
+    if (!pos) missingFields.push('pos')
+    if (!username) missingFields.push('username')
+    if (!password) missingFields.push('password')
+    if (privacy_policy === undefined || privacy_policy === null) missingFields.push('privacy_policy')
+
+    if (missingFields.length > 0) {
+      console.log('Missing required fields:', missingFields)
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing required fields', 
+        missingFields: missingFields 
+      })
     }
 
     const password_hash = await bcrypt.hash(password, 10)
