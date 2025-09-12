@@ -9,17 +9,20 @@ dotenv.config()
 const app = express()
 
 // Обработчик для всех OPTIONS запросов - должен быть первым
-app.options('*', (req, res) => {
-  console.log(`OPTIONS request to: ${req.url}`)
-  console.log('Headers:', req.headers)
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-  res.header('Access-Control-Allow-Credentials', 'true')
-  res.status(200).end()
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    console.log(`OPTIONS request to: ${req.url}`)
+    console.log('Headers:', req.headers)
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+    res.header('Access-Control-Allow-Credentials', 'true')
+    return res.status(200).end()
+  }
+  next()
 })
 
-// Глобальный обработчик CORS
+// Глобальный обработчик CORS для всех остальных запросов
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`)
   
