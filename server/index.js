@@ -49,7 +49,9 @@ app.post('/api/structure', async (req, res) => {
       birth_date,
       gender,
       vk_link,
+      phone,
       education,
+      grade,
       photo_url,
       pos,
       username,
@@ -67,7 +69,7 @@ app.post('/api/structure', async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10)
     const insertQuery = `
       INSERT INTO structure (
-        last_name, first_name, patronymic, birth_date, gender, vk_link, education, photo_url, pos,
+        last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, grade, photo_url, pos,
         username, password_hash, high_mentor, coord, ro, privacy_policy
       ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9,

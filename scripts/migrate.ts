@@ -15,6 +15,8 @@ async function createStructureTable() {
       birth_date DATE NOT NULL,
       gender CHAR(1) NOT NULL,
       vk_link TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      grade VARCHAR(64) NOT NULL, 
       education VARCHAR(255) NOT NULL,
       photo_url TEXT,
       pos VARCHAR(64) NOT NULL,
