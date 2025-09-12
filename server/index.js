@@ -62,7 +62,7 @@ app.post('/api/structure', async (req, res) => {
       privacy_policy,
     } = req.body || {}
 
-    if (!last_name || !first_name || !birth_date || !gender || !vk_link || !education || !pos || !username || !password) {
+    if (!last_name || !first_name || !birth_date || !gender || !vk_link || !phone || !education || !grade || !pos || !username || !password) {
       return res.status(400).json({ success: false, message: 'Missing required fields' })
     }
 
@@ -72,8 +72,7 @@ app.post('/api/structure', async (req, res) => {
         last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, grade, photo_url, pos,
         username, password_hash, high_mentor, coord, ro, privacy_policy
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        $10, $11, $12, $13, $14, $15
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
       ) RETURNING id
     `
     const values = [
@@ -83,7 +82,9 @@ app.post('/api/structure', async (req, res) => {
       birth_date,
       gender,
       vk_link,
+      phone,
       education,
+      grade,
       photo_url || null,
       pos,
       username,

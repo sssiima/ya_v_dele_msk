@@ -232,7 +232,7 @@ const RegistrationPageStructure = () => {
       <div>
         <label className="block text-s font-semibold text-white mb-2">Номер телефона</label>
         <input 
-          type="url"
+          type="tel"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="89999999999"
           {...register('phone', { 
