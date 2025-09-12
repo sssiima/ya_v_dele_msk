@@ -3,6 +3,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { structureApi } from '@/services/api'
 
+// Базовый URL для API
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+
 interface FormValues {
   last_name: string
   first_name: string
@@ -128,36 +132,55 @@ const RegistrationPageStructure = () => {
       return
     }
     
-    const payload = {
-      last_name: data.last_name,
-      first_name: data.first_name,
-      patronymic: data.patronymic || undefined,
-      birth_date: data.birth_date,
-      gender: data.gender,
-      vk_link: data.vk_link,
-      phone: data.phone,
-      grade: data.grade,
-      education: data.education,
-      // photo is not uploaded yet, store URL placeholder or omit
-      pos: data.pos,
-      username: data.username,
-      password: data.password,
-      high_mentor: data.high_mentor || undefined,
-      coord: data.coord || undefined,
-      ro: data.ro || undefined,
-      privacy_policy: data.privacy_policy === true,
-    }
-    
-    console.log('Sending payload:', JSON.stringify(payload, null, 2))
-    console.log('Form data:', data)
-    
     try {
+      // Загружаем фото, если оно выбрано
+      let photoUrl = undefined
+      if (selectedPhoto) {
+        const formData = new FormData()
+        formData.append('photo', selectedPhoto)
+        
+        const uploadResponse = await fetch(`${API_BASE_URL}/upload`, {
+          method: 'POST',
+          body: formData,
+        })
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Ошибка загрузки фото')
+        }
+        
+        const uploadData = await uploadResponse.json()
+        photoUrl = uploadData.photoUrl
+        console.log('Photo uploaded:', photoUrl)
+      }
+      
+      const payload = {
+        last_name: data.last_name,
+        first_name: data.first_name,
+        patronymic: data.patronymic || undefined,
+        birth_date: data.birth_date,
+        gender: data.gender,
+        vk_link: data.vk_link,
+        phone: data.phone,
+        grade: data.grade,
+        education: data.education,
+        photo_url: photoUrl,
+        pos: data.pos,
+        username: data.username,
+        password: data.password,
+        high_mentor: data.high_mentor || undefined,
+        coord: data.coord || undefined,
+        ro: data.ro || undefined,
+        privacy_policy: data.privacy_policy === true,
+      }
+      
+      console.log('Sending payload:', JSON.stringify(payload, null, 2))
+      
       await structureApi.create(payload as any)
       navigate('/profile')
     } catch (e: any) {
       console.error('structure registration failed', e)
       console.error('Error details:', e.response?.data)
-      alert(`Ошибка сохранения: ${e.response?.data?.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
+      alert(`Ошибка сохранения: ${e.response?.data?.message || e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
     }
   }
 
@@ -303,8 +326,9 @@ const RegistrationPageStructure = () => {
             className="hidden"
             id="photo-upload"
             {...register('photo', { 
-              required: selectedPhoto === null ? 'Фото обязательно' : false,
+              required: 'Фото обязательно',
               validate: {
+                hasFile: () => selectedPhoto !== null || 'Фото обязательно',
                 lessThan2MB: files => 
                   !files?.[0] || files[0].size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
                 acceptedFormats: files => 
