@@ -232,14 +232,14 @@ const RegistrationPageStructure = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Пол *</label>
+          <label className="block text-s font-semibold text-white mb-2 mt-6 sm:mt-0">Пол *</label>
           <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
                 type="radio" 
                 value="M" 
                 {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-5 h-5"
+                className="mr-2 w-7 h-7"
               />
               <span className="text-s font-semibold text-white">М</span>
             </label>
@@ -248,7 +248,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="F" 
                 {...register('gender')}
-                className="mr-2 w-5 h-5"
+                className="mr-2 w-7 h-7"
               />
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
