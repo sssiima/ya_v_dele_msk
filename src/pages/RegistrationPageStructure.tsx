@@ -187,7 +187,7 @@ const RegistrationPageStructure = () => {
   const renderStep1 = () => (
     <>
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Фамилия</label>
+        <label className="block text-s font-semibold text-white mb-2">Фамилия *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('last_name', { 
@@ -198,7 +198,7 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Имя</label>
+        <label className="block text-s font-semibold text-white mb-2">Имя *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('first_name', { 
@@ -214,11 +214,14 @@ const RegistrationPageStructure = () => {
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('patronymic')}
         />
+        <label className="text-xs text-white italic">
+            При наличии. Иначе поставь -
+          </label>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Дата рождения</label>
+          <label className="block text-s font-semibold text-white mb-2">Дата рождения *</label>
           <input 
             type="date"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -229,14 +232,14 @@ const RegistrationPageStructure = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Пол</label>
+          <label className="block text-s font-semibold text-white mb-2">Пол *</label>
           <div className="flex space-x-1">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
                 type="radio" 
                 value="M" 
                 {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-10 h-10"
+                className="mr-2 w-5 h-5"
               />
               <span className="text-s font-semibold text-white">М</span>
             </label>
@@ -245,7 +248,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="F" 
                 {...register('gender')}
-                className="mr-2 w-10 h-10"
+                className="mr-2 w-5 h-5"
               />
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
@@ -255,7 +258,7 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
+        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте *</label>
         <input 
           type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -272,7 +275,7 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Номер телефона</label>
+        <label className="block text-s font-semibold text-white mb-2">Номер телефона *</label>
         <input 
           type="tel"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -289,18 +292,21 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
+        <label className="block text-s font-semibold text-white mb-2">ВУЗ *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education', { 
-            required: 'Название ВУЗа обязательно'
+            required: 'Поле обязательно'
           })}
-        />
+          />
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
+        <label className="text-xs text-white italic">
+            Если ты не обучаешься в ВУЗе, поставь -
+          </label>
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Курс обучения</label>
+        <label className="block text-s font-semibold text-white mb-2">Курс обучения *</label>
         <select 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
           {...register('grade', { 
@@ -313,12 +319,13 @@ const RegistrationPageStructure = () => {
           <option value="4">4</option>
           <option value="5">5</option>
           <option value="6">6</option>
+          <option value="0">Не обучаюсь в ВУЗе</option>
         </select>
         {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Фото</label>
+        <label className="block text-s font-semibold text-white mb-2">Фото для кадровой карты *</label>
         <div className="border-2 border-dashed border-gray-300 rounded-full p-4 text-center">
           <input 
             type="file"
@@ -339,7 +346,7 @@ const RegistrationPageStructure = () => {
             onChange={handlePhotoChange}
           />
           <label htmlFor="photo-upload" className="cursor-pointer text-xs text-white">
-            Загрузи фото в формате PNG/JPEG не более 2 Мб
+            Загрузи портретное фото 2х2 в формате PNG/JPEG не более 2 Мб
           </label>
         </div>
         {selectedPhoto && (
@@ -360,7 +367,7 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Твоя позиция</label>
+        <label className="block text-s font-semibold text-white mb-2">Твоя позиция *</label>
         <select 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
           {...register('pos', { 
@@ -395,7 +402,7 @@ const RegistrationPageStructure = () => {
       <>
         {/* Почта и пароль всегда отображаются */}
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Введи почту</label>
+          <label className="block text-s font-semibold text-white mb-2">Электронная почта *</label>
           <input 
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
             {...register('username', { 
@@ -407,35 +414,27 @@ const RegistrationPageStructure = () => {
             })}
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
+          <label className="text-xs text-white italic">
+          Твой логин от учетной записи. Через нее можно восстановить доступ, поэтому рекомендуем писать актуальную почту
+          </label>
         </div>
 
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Придумай пароль</label>
+          <label className="block text-s font-semibold text-white mb-2">Пароль для твоего личного кабинета *</label>
           <input 
             type="password"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
             {...register('password', { 
-              required: 'Пароль обязателен',
-              minLength: {
-                value: 8,
-                message: 'Пароль должен содержать минимум 8 символов'
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-                message: 'Пароль должен содержать буквы в верхнем и нижнем регистре, цифры и специальные символы'
-              }
+              required: 'Пароль обязателен'
             })}
           />
-          <p className="text-xs text-white mt-1 italic">
-            Пароль должен быть не менее 8 символов, включать буквы в верхнем и нижнем регистре, содержать цифры и другие знаки
-          </p>
           {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
         </div>
 
         {/* Старший наставник (виден для наставника) */}
         {(showAllFields) && (
           <div>
-            <label className="block text-s font-semibold text-white mb-2">Старший наставник</label>
+            <label className="block text-s font-semibold text-white mb-2">Твой старший наставник *</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register('high_mentor', { 
@@ -443,13 +442,16 @@ const RegistrationPageStructure = () => {
               })}
             />
             {errors.high_mentor && <p className="text-red-300 text-xs mt-1">{errors.high_mentor.message}</p>}
+            <label className="text-xs text-white italic">
+            Введи Фамилию и Имя. Если забыл, уточни в чате!
+          </label>
           </div>
         )}
 
         {/* Координатор (виден для наставника и старшего наставника) */}
         {(showAllFields || showSeniorMentorFields) && (
           <div>
-            <label className="block text-s font-semibold text-white mb-2">Координатор</label>
+            <label className="block text-s font-semibold text-white mb-2">Твой координатор в структуре *</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register('coord', { 
@@ -463,7 +465,7 @@ const RegistrationPageStructure = () => {
         {/* РО (виден для наставника, старшего наставника и координатора) */}
         {(showAllFields || showSeniorMentorFields || showCoordinatorFields) && (
           <div>
-            <label className="block text-s font-semibold text-white mb-2">РО</label>
+            <label className="block text-s font-semibold text-white mb-2">Твой Руководитель округа *</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register('ro', { 
@@ -484,7 +486,7 @@ const RegistrationPageStructure = () => {
             })}
           />
           <label htmlFor="privacy-policy" className="text-xs text-white italic">
-            Отправляя данную форму, вы соглашаетесь с политикой конфиденциальности и правилами нашего сайта
+          Согласие на обработку персональных данных
           </label>
         </div>
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
@@ -496,7 +498,7 @@ const RegistrationPageStructure = () => {
           }`}
           disabled={!isValid}
         >
-          <h2 className="text-white">Продолжить</h2>
+          <h2 className="text-white">Зарегистрироваться</h2>
         </button>
       </>
     )
