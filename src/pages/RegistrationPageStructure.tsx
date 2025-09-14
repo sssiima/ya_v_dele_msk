@@ -233,7 +233,7 @@ const RegistrationPageStructure = () => {
         </div>
         <div>
           <label className="block text-s font-semibold text-white mb-2">Пол *</label>
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
                 type="radio" 
