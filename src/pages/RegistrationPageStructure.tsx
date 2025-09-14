@@ -232,7 +232,7 @@ const RegistrationPageStructure = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2 mt-4 sm:mt-0">Пол *</label>
+          <label className="block text-s font-semibold text-white mb-2 mt-3 sm:mt-0">Пол *</label>
           <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
@@ -422,7 +422,7 @@ const RegistrationPageStructure = () => {
         <div>
           <label className="block text-s font-semibold text-white mb-2">Пароль для личного кабинета *</label>
           <input 
-            type="password"
+            type="text"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
             {...register('password', { 
               required: 'Пароль обязателен'
@@ -498,7 +498,7 @@ const RegistrationPageStructure = () => {
           }`}
           disabled={!isValid}
         >
-          <h2 className="text-white text-sm">Зарегистрироваться</h2>
+          <h2 className="text-white">Отправить</h2>
         </button>
       </>
     )
