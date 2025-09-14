@@ -224,7 +224,7 @@ const RegistrationPageStructure = () => {
           <label className="block text-s font-semibold text-white mb-2">Дата рождения *</label>
           <input 
             type="date"
-            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             {...register('birth_date', { 
               required: 'Дата рождения обязательна'
             })}
@@ -369,7 +369,7 @@ const RegistrationPageStructure = () => {
       <div>
         <label className="block text-s font-semibold text-white mb-2">Твоя позиция *</label>
         <select 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink appearance-none"
           {...register('pos', { 
             required: 'Выберите позицию'
           })}
