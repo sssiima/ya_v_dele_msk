@@ -107,6 +107,6 @@ input[type="radio"] {
 }
 
 input[type="radio"]:checked {
-  background-color: #E94262 !important;
+  background-color: #767676 !important;
   border-color: white !important;
 }

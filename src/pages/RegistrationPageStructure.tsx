@@ -239,7 +239,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="M" 
                 {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7 border-white checked:bg-pink checked:border-4 checked:border-white cursor-pointer"
+                className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">М</span>
             </label>
@@ -248,7 +248,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="F" 
                 {...register('gender')}
-                className="mr-2 w-7 h-7 border-white checked:bg-pink checked:border-4 checked:border-white cursor-pointer"
+                className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
