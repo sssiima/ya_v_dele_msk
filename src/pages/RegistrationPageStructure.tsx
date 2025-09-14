@@ -239,7 +239,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="M" 
                 {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7"
+                className="mr-2 w-7 h-7 border-white checked:bg-pink checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">М</span>
             </label>
@@ -248,7 +248,7 @@ const RegistrationPageStructure = () => {
                 type="radio" 
                 value="F" 
                 {...register('gender')}
-                className="mr-2 w-7 h-7"
+                className="mr-2 w-7 h-7 border-white checked:bg-pink checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
@@ -415,12 +415,12 @@ const RegistrationPageStructure = () => {
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           <label className="text-xs text-white italic">
-          Твой логин от учетной записи. Через нее можно восстановить доступ, поэтому рекомендуем писать актуальную почту
+          Твой логин от учетной записи. Через нее можно восстановить доступ, рекомендуем писать актуальную почту
           </label>
         </div>
 
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Пароль для твоего личного кабинета *</label>
+          <label className="block text-s font-semibold text-white mb-2">Пароль для личного кабинета *</label>
           <input 
             type="password"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink"
@@ -498,7 +498,7 @@ const RegistrationPageStructure = () => {
           }`}
           disabled={!isValid}
         >
-          <h2 className="text-white">Зарегистрироваться</h2>
+          <h2 className="text-white text-sm">Зарегистрироваться</h2>
         </button>
       </>
     )
