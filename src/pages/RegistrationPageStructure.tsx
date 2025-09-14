@@ -215,7 +215,7 @@ const RegistrationPageStructure = () => {
           {...register('patronymic')}
         />
         <label className="text-xs text-white italic">
-            При наличии. Иначе поставь -
+            При наличии
           </label>
       </div>
 
@@ -232,7 +232,7 @@ const RegistrationPageStructure = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2 mt-6 sm:mt-0">Пол *</label>
+          <label className="block text-s font-semibold text-white mb-2 mt-4 sm:mt-0">Пол *</label>
           <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
