@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { structureApi } from '@/services/api'
 
 // Базовый URL для API
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+// const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+//   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
 interface FormValues {
   last_name: string
