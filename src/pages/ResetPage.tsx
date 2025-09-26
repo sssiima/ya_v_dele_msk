@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface RecoveryValues {
@@ -13,6 +14,9 @@ const ResetPage = () => {
     const onSubmit = (data: RecoveryValues) => {
     console.log('recovery', data)
   }
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">

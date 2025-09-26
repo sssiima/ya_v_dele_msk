@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { structureApi } from '@/services/api'
 
@@ -41,6 +41,10 @@ const RegistrationPageStructure = () => {
     mode: 'onChange' // Валидация при изменении полей
   })
   const navigate = useNavigate()
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [step]);
 
   // Следим за изменением позиции
   const watchPosition = watch('pos')

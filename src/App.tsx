@@ -10,6 +10,7 @@ import AuthPage from './pages/AuthPage'
 import ResetPage from './pages/ResetPage'
 import RegistrationPageStructure from './pages/RegistrationPageStructure'
 
+
 function App() {
   return (
     <Layout>

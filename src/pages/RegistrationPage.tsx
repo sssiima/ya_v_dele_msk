@@ -1,6 +1,11 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { structureApi } from '@/services/api'
+
+// Базовый URL для API
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
 interface FormValues {
   last_name: string
@@ -9,11 +14,14 @@ interface FormValues {
   birth_date: string
   gender: string
   vk_link: string
+  phone: string
   education: string
-  photo: FileList
-  mentor: string
+  grade: string
+  format: string
+  faculty: string
   username: string
   password: string
+  mentor: string
   team_code: string
   privacy_policy: boolean
   role: 'member' | 'captain'
@@ -21,31 +29,30 @@ interface FormValues {
 
 const RegistrationPage = () => {
   const [step, setStep] = useState(1)
-  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const { 
     register, 
     handleSubmit, 
     watch, 
-    setValue, 
-    reset,
-    formState: { errors, isValid: isStep1Valid } 
+    setValue,
+    formState: { errors, isValid } 
   } = useForm<FormValues>({
-    defaultValues: {
-      role: 'member'
-    },
     mode: 'onChange' // Валидация при изменении полей
   })
-
   const navigate = useNavigate()
-
   const selectedRole = watch('role')
+
+  // Следим за изменением позиции
   const watchAllFields = watch() // Следим за всеми полями
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Проверяем валидность первого шага
   const isStep1Complete = () => {
     const requiredFields = [
       'last_name', 'first_name', 'birth_date', 
-      'gender', 'vk_link', 'education', 'mentor'
+      'gender', 'vk_link','phone', 'education','grade', 'mentor'
     ]
     
     const fieldsValid = requiredFields.every(field => {
@@ -53,25 +60,23 @@ const RegistrationPage = () => {
       return value !== undefined && value !== null && value !== ''
     })
     
-    return fieldsValid && selectedPhoto !== null
+    return fieldsValid !== null
   }
 
   const nextStep = () => {
     if (isStep1Complete()) {
-      // Clear step 2 fields to prevent auto-filling
-      reset({
-        role: 'member',
-        username: '',
-        password: '',
-        team_code: '',
-        privacy_policy: false
-      })
+      // Don't reset the form - just clear step 2 specific fields
+      setValue('username', '')
+      setValue('password', '')
+      setValue('team_code', '')
+      setValue('role', 'member')
+      setValue('privacy_policy', false)
       setStep(2)
     } else {
       // Show validation errors for incomplete fields by triggering validation
       const requiredFields = [
-        'last_name', 'first_name', 'birth_date', 
-        'gender', 'vk_link', 'education', 'mentor'
+        'last_name', 'first_name', 'patronymic', 'birth_date', 
+        'gender', 'vk_link', 'phone', 'education', 'grade', 'mentor'
       ]
       
       requiredFields.forEach(field => {
@@ -82,40 +87,61 @@ const RegistrationPage = () => {
         }
       })
       
-      // Show photo validation error if no photo selected
-      if (!selectedPhoto) {
-        setValue('photo', undefined as any, { shouldValidate: true })
+    }
+  }
+
+  const onSubmit = async (data: FormValues) => {
+    // Проверяем, что все обязательные поля заполнены
+    const requiredFields = [
+      'last_name', 'first_name', 'patronymic', 'birth_date', 'gender', 'vk_link', 
+      'phone', 'education', 'grade', 'mentor', 'username', 'password', 'team_code', 'role', 'privacy_policy'
+    ]
+    
+    const missingFields = requiredFields.filter(field => {
+      const value = data[field as keyof FormValues]
+      return value === undefined || value === null || value === '' || value === false
+    })
+    
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields)
+      alert(`Не заполнены обязательные поля: ${missingFields.join(', ')}`)
+      return
+    }
+  
+    try {  
+      const payload = {
+        last_name: data.last_name,
+        first_name: data.first_name,
+        patronymic: data.patronymic,
+        birth_date: data.birth_date,
+        gender: data.gender,
+        vk_link: data.vk_link,
+        phone: data.phone,
+        grade: data.grade,
+        education: data.education,
+        username: data.username,
+        password: data.password,
+        mentor: data.mentor,
+        team_code: data.team_code,
+        role: data.role,
+        privacy_policy: data.privacy_policy === true,
       }
+      
+      console.log('Sending payload:', JSON.stringify(payload, null, 2))
+      
+      await structureApi.create(payload as any)
+      navigate('/profile')
+    } catch (e: any) {
+      console.error('user registration failed', e)
+      console.error('Error details:', e.response?.data)
+      alert(`Ошибка сохранения: ${e.response?.data?.message || e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
     }
-  }
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedPhoto(file)
-      setValue('photo', e.target.files as any, { shouldValidate: true })
-    }
-  }
-
-  const handlePhotoRemove = () => {
-    setSelectedPhoto(null)
-    setValue('photo', undefined as any, { shouldValidate: true })
-    // Reset the file input
-    const fileInput = document.getElementById('photo-upload') as HTMLInputElement
-    if (fileInput) {
-      fileInput.value = ''
-    }
-  }
-
-  const onSubmit = (data: FormValues) => {
-    console.log('register', data)
-    navigate('/profile')
   }
 
   const renderStep1 = () => (
     <>
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Фамилия</label>
+        <label className="block text-s font-semibold text-white mb-2">Фамилия *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('last_name', { 
@@ -126,7 +152,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Имя</label>
+        <label className="block text-s font-semibold text-white mb-2">Имя *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('first_name', { 
@@ -137,19 +163,25 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Отчество</label>
+        <label className="block text-s font-semibold text-white mb-2">Отчество *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('patronymic')}
+          {...register('patronymic', { 
+            required: 'Поле обязательно'
+          })}
         />
+        {errors.patronymic && <p className="text-red-300 text-xs mt-1">{errors.patronymic.message}</p>}
+        <label className="text-xs text-white italic">
+            При наличии. Иначе поставь -
+          </label>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Дата рождения</label>
+          <label className="block text-s font-semibold text-white mb-2">Дата рождения *</label>
           <input 
             type="date"
-            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
             {...register('birth_date', { 
               required: 'Дата рождения обязательна'
             })}
@@ -157,14 +189,14 @@ const RegistrationPage = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Пол</label>
-          <div className="flex space-x-1">
+          <label className="block text-s font-semibold text-white mb-2 mt-3 sm:mt-0">Пол *</label>
+          <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
                 type="radio" 
                 value="M" 
                 {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-10 h-10"
+                className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">М</span>
             </label>
@@ -173,7 +205,7 @@ const RegistrationPage = () => {
                 type="radio" 
                 value="F" 
                 {...register('gender')}
-                className="mr-2 w-10 h-10"
+                className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">Ж</span>
             </label>
@@ -183,7 +215,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
+        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте *</label>
         <input 
           type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -200,65 +232,97 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
+        <label className="block text-s font-semibold text-white mb-2">Номер телефона *</label>
+        <input 
+          type="tel"
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="89999999999"
+          {...register('phone', { 
+            required: 'Номер телефона обязателен',
+            pattern: {
+              value: /^(\+7|8)[0-9]{10}$/,
+              message: 'Введите корректный номер телефона'
+            }
+          })}
+        />
+        {errors.phone && <p className="text-red-300 text-xs mt-1">{errors.phone.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-s font-semibold text-white mb-2">ВУЗ *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education', { 
-            required: 'Название ВУЗа обязательно'
+            required: 'Поле обязательно'
           })}
-        />
-        {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
-      </div>
-
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Фото</label>
-        <div className="border-2 border-dashed border-gray-300 rounded-full p-4 text-center">
-          <input 
-            type="file"
-            accept="image/*"
-            className="hidden"
-            id="photo-upload"
-            {...register('photo', { 
-              required: 'Фото обязательно',
-              validate: {
-                lessThan2MB: files => 
-                  files?.[0]?.size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
-                acceptedFormats: files => 
-                  ['image/jpeg', 'image/png'].includes(files?.[0]?.type) || 
-                  'Только JPEG и PNG форматы'
-              }
-            })}
-            onChange={handlePhotoChange}
           />
-          <label htmlFor="photo-upload" className="cursor-pointer text-xs text-white">
-            Загрузи фото в формате PNG/JPEG не более 2 Мб
+        {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
+        <label className="text-xs text-white italic">
+            Если ты не обучаешься в ВУЗе, поставь -
           </label>
-        </div>
-        {selectedPhoto && (
-          <div className="mt-2 flex items-center justify-between bg-white bg-opacity-10 rounded-lg p-2">
-            <span className="text-xs text-white truncate flex-1">
-              {selectedPhoto.name}
-            </span>
-            <button
-              type="button"
-              onClick={handlePhotoRemove}
-              className="ml-2 text-red-300 hover:text-red-200 text-xs"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-        {errors.photo && <p className="text-red-300 text-xs mt-1">{errors.photo.message}</p>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+      <div>
+        <label className="block text-s font-semibold text-white mb-2">Курс обучения *</label>
+        <select 
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+          {...register('grade', { 
+            required: 'Курс обязателен'
+          })}
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="0">Не обучаюсь в ВУЗе</option>
+        </select>
+        {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Твой наставник</label>
+        <label className="block text-s font-semibold text-white mb-2">Форма обучения *</label>
+        <select 
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+          {...register('format', { 
+            required: 'Форма обязательна'
+          })}
+        >
+          <option value="очная">Очная</option>
+          <option value="очнозаочная">Очно-заочная</option>
+          <option value="заочная">Заочная</option>
+          <option value="нет">Не обучаюсь в ВУЗе</option>
+        </select>
+        {errors.format && <p className="text-red-300 text-xs mt-1">{errors.format.message}</p>}
+      </div>
+      </div>
+
+      <div>
+        <label className="block text-s font-semibold text-white mb-2">Факультет *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('mentor', { 
-            required: 'Имя наставника обязательно'
+          {...register('faculty', { 
+            required: 'Поле обязательно'
           })}
         />
+        {errors.faculty && <p className="text-red-300 text-xs mt-1">{errors.faculty.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-s font-semibold text-white mb-2">Твой наставник *</label>
+        <select 
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand appearance-none"
+          {...register('mentor', { 
+            required: 'Выберите наставника'
+          })}
+        >
+          <option value="наставник">Наставник</option>
+          <option value="старший наставник">Старший наставник</option>
+          <option value="координатор">Координатор</option>
+          <option value="РО">РО</option>
+        </select>
         {errors.mentor && <p className="text-red-300 text-xs mt-1">{errors.mentor.message}</p>}
       </div>
 
@@ -272,9 +336,12 @@ const RegistrationPage = () => {
     </>
   )
 
-  const renderStep2 = () => (
-    <>
-      <div>
+  const renderStep2 = () => {
+
+    return (
+      <>
+        {/* Почта и пароль всегда отображаются */}
+        <div>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <div 
             className={`text-center cursor-pointer py-2 rounded-lg ${
@@ -306,47 +373,38 @@ const RegistrationPage = () => {
         </div>
       </div>
 
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Введи почту</label>
-        <input 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('username', { 
-            required: 'Email обязателен',
-            pattern: {
-              value: /^\S+@\S+$/i,
-              message: 'Введите корректный email'
-            }
-          })}
-        />
-        {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
-      </div>
+        <div>
+          <label className="block text-s font-semibold text-white mb-2">Электронная почта *</label>
+          <input 
+            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+            {...register('username', { 
+              required: 'Email обязателен',
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: 'Введите корректный email'
+              }
+            })}
+          />
+          {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
+          <label className="text-xs text-white italic">
+          Твой логин от учетной записи. Через нее можно восстановить доступ, рекомендуем писать актуальную почту
+          </label>
+        </div>
 
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Придумай пароль</label>
-        <input 
-          type="password"
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('password', { 
-            required: 'Пароль обязателен',
-            minLength: {
-              value: 8,
-              message: 'Пароль должен содержать минимум 8 символов'
-            },
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-              message: 'Пароль должен содержать буквы в верхнем и нижнем регистре, цифры и специальные символы'
-            }
-          })}
-        />
-        <p className="text-xs text-white mt-1 italic">
-          Пароль должен быть не менее 8 символов, включать буквы в верхнем и нижнем регистре, содержать цифры и другие знаки
-        </p>
-        {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
-      </div>
-
-      <div>
+        <div>
+          <label className="block text-s font-semibold text-white mb-2">Пароль для личного кабинета *</label>
+          <input 
+            type="text"
+            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+            {...register('password', { 
+              required: 'Пароль обязателен'
+            })}
+          />
+          {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
+        </div>
+        <div>
         <label className="block text-s font-semibold text-white mb-2">
-          {selectedRole === 'member' ? 'Введи код команды' : 'Придумай код команды'}
+          {selectedRole === 'member' ? 'Введи код команды *' : 'Придумай код команды *'}
         </label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -367,32 +425,33 @@ const RegistrationPage = () => {
         {errors.team_code && <p className="text-red-300 text-xs mt-1">{errors.team_code.message}</p>}
       </div>
 
-      <div className="flex items-start">
-        <input 
-          type="checkbox"
-          id="privacy-policy"
-          className="mt-1 mr-3"
-          {...register('privacy_policy', { 
-            required: 'Необходимо согласие с политикой конфиденциальности'
-          })}
-        />
-        <label htmlFor="privacy-policy" className="text-xs text-white italic">
-          Отправляя данную форму, вы соглашаетесь с политикой конфиденциальности и правилами нашего сайта
-        </label>
-      </div>
-      {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
+        <div className="flex items-start">
+          <input 
+            type="checkbox"
+            id="privacy-policy"
+            className="mt-1 mr-3"
+            {...register('privacy_policy', { 
+              required: 'Необходимо согласие с политикой конфиденциальности'
+            })}
+          />
+          <label htmlFor="privacy-policy" className="text-xs text-white italic">
+          Согласие на обработку персональных данных
+          </label>
+        </div>
+        {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
 
-      <button 
-        type="submit"
-        className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
-          isStep1Valid ? '' : 'cursor-not-allowed'
-        }`}
-        // disabled={!isStep1Valid}
-      >
-        <h2 className="text-white">Продолжить</h2>
-      </button>
-    </>
-  )
+        <button 
+          type="submit"
+          className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
+            isValid ? '' : 'cursor-not-allowed'
+          }`}
+          disabled={!isValid}
+        >
+          <h2 className="text-white">Отправить</h2>
+        </button>
+      </>
+    )
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-32">
