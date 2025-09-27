@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { structureApi } from '@/services/api'
+import { structureApi, vusesApi } from '@/services/api'
 
 // Базовый URL для API
 // const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
@@ -27,8 +27,29 @@ interface FormValues {
   role: 'member' | 'captain'
 }
 
+interface Vus {
+  id: number
+  vus: string
+}
+
 const RegistrationPage = () => {
   const [step, setStep] = useState(1)
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [vuses, setVuses] = useState<Vus[]>([])
+  const [filteredVuses, setFilteredVuses] = useState<Vus[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleClick = () => {
+    if (isDisabled) return;
+    
+    setIsDisabled(true);
+
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 1000);
+  };
+
   const { 
     register, 
     handleSubmit, 
@@ -40,6 +61,45 @@ const RegistrationPage = () => {
   })
   const navigate = useNavigate()
   const selectedRole = watch('role')
+  const educationValue = watch('education')
+
+  useEffect(() => {
+    const fetchVuses = async () => {
+      setLoading(true)
+      try {
+        const response = await vusesApi.getAll()
+        if (response.success) {
+          setVuses(response.data)
+          setFilteredVuses(response.data)
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки ВУЗов:', error)
+        // Fallback: можно добавить заглушку или оставить пустой список
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVuses()
+  }, [])
+
+  useEffect(() => {
+    if (educationValue && educationValue.length > 1) {
+      const filtered = vuses.filter(vus => 
+        vus.vus.toLowerCase().includes(educationValue.toLowerCase())
+      )
+      setFilteredVuses(filtered)
+      setShowSuggestions(true)
+    } else {
+      setFilteredVuses(vuses)
+      setShowSuggestions(false)
+    }
+  }, [educationValue, vuses])
+
+  const handleVusSelect = (vusName: string) => {
+    setValue('education', vusName, { shouldValidate: true })
+    setShowSuggestions(false)
+  }
 
   // Следим за изменением позиции
   const watchAllFields = watch() // Следим за всеми полями
@@ -248,18 +308,44 @@ const RegistrationPage = () => {
         {errors.phone && <p className="text-red-300 text-xs mt-1">{errors.phone.message}</p>}
       </div>
 
-      <div>
+      <div className="relative">
         <label className="block text-s font-semibold text-white mb-2">ВУЗ *</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education', { 
             required: 'Поле обязательно'
           })}
-          />
+          autoComplete="off"
+          onFocus={() => educationValue && educationValue.length > 1 && setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+        />
+        
+        {/* Выпадающий список с предложениями */}
+        {showSuggestions && filteredVuses.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {filteredVuses.map((vus) => (
+              <div
+                key={vus.id}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-800"
+                onClick={() => handleVusSelect(vus.vus)}
+                onMouseDown={(e) => e.preventDefault()}
+              >
+                {vus.vus}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {loading && (
+          <div className="absolute right-3 top-10">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+          </div>
+        )}
+
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
         <label className="text-xs text-white italic">
-            Если ты не обучаешься в ВУЗе, поставь -
-          </label>
+          Если ты не обучаешься в ВУЗе, поставь -
+        </label>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -442,10 +528,11 @@ const RegistrationPage = () => {
 
         <button 
           type="submit"
+          onClick={handleClick}
+          disabled={isDisabled}
           className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
             isValid ? '' : 'cursor-not-allowed'
           }`}
-          disabled={!isValid}
         >
           <h2 className="text-white">Отправить</h2>
         </button>

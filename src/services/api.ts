@@ -239,3 +239,30 @@ export const structureApi = {
     }
   },
 }
+// Добавьте этот интерфейс после существующих интерфейсов
+export interface Vus {
+  id: number
+  vus: string
+}
+
+// Добавьте этот API метод в конец файла, после structureApi
+export const vusesApi = {
+  // Получить все ВУЗы
+  getAll: async (search?: string): Promise<ApiResponse<Vus[]>> => {
+    const params = search ? { search } : {}
+    const response = await api.get('/vuses', { params })
+    return response.data
+  },
+
+  // Получить ВУЗ по ID
+  getById: async (id: number): Promise<ApiResponse<Vus>> => {
+    const response = await api.get(`/vuses/${id}`)
+    return response.data
+  },
+
+  // Создать новый ВУЗ (если нужно)
+  create: async (vusData: { vus: string }): Promise<ApiResponse<Vus>> => {
+    const response = await api.post('/vuses', vusData)
+    return response.data
+  },
+}

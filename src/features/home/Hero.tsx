@@ -11,7 +11,7 @@ const Hero = () => {
         <img
           src="/images/heading-icon.png"
           alt="Элемент перед заголовком"
-          className="-rotate-[7deg] w-[420px] h-[350px]"
+          className="-rotate-[7deg] w-[420px] h-[340px]"
         />
       </div>
       <div className="px-4 pb-0">
