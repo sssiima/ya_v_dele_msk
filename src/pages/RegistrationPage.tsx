@@ -473,6 +473,12 @@ const RegistrationPage = () => {
             ))}
           </div>
         )}
+
+        {mentorLoading && (
+          <div className="absolute right-3 top-10">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+          </div>
+        )}
         {errors.mentor && <p className="text-red-300 text-xs mt-1">{errors.mentor.message}</p>}
       </div>
 
