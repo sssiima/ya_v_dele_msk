@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { structureApi, vusesApi } from '@/services/api'
+import { mentorsApi, structureApi, vusesApi } from '@/services/api'
 
 // Базовый URL для API
 // const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
@@ -32,6 +32,14 @@ interface Vus {
   vus: string
 }
 
+interface Mentor {
+  id: number
+  full_name: string
+  first_name: string
+  last_name: string
+  pos: string
+}
+
 const RegistrationPage = () => {
   const [step, setStep] = useState(1)
   const [isDisabled, setIsDisabled] = useState(false);
@@ -39,6 +47,11 @@ const RegistrationPage = () => {
   const [filteredVuses, setFilteredVuses] = useState<Vus[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const [mentors, setMentors] = useState<Mentor[]>([])
+  const [filteredMentors, setFilteredMentors] = useState<Mentor[]>([])
+  const [showMentorSuggestions, setShowMentorSuggestions] = useState(false)
+  const [mentorLoading, setMentorLoading] = useState(false)
 
   const handleClick = () => {
     if (isDisabled) return;
@@ -62,6 +75,7 @@ const RegistrationPage = () => {
   const navigate = useNavigate()
   const selectedRole = watch('role')
   const educationValue = watch('education')
+  const mentorValue = watch('mentor')
 
   useEffect(() => {
     const fetchVuses = async () => {
@@ -84,6 +98,24 @@ const RegistrationPage = () => {
   }, [])
 
   useEffect(() => {
+    const fetchMentors = async () => {
+      setMentorLoading(true)
+      try {
+        const response = await mentorsApi.getAll()
+        if (response.success) {
+          setMentors(response.data)
+          setFilteredMentors(response.data)
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки наставников:', error)
+      } finally {
+        setMentorLoading(false)
+      }
+    }
+    fetchMentors()
+  }, [])
+
+  useEffect(() => {
     if (educationValue && educationValue.length > 1) {
       const filtered = vuses.filter(vus => 
         vus.vus.toLowerCase().includes(educationValue.toLowerCase())
@@ -96,9 +128,27 @@ const RegistrationPage = () => {
     }
   }, [educationValue, vuses])
 
+  useEffect(() => {
+    if (mentorValue && mentorValue.length > 1) {
+      const filtered = mentors.filter(mentor => 
+        mentor.full_name.toLowerCase().includes(mentorValue.toLowerCase())
+      )
+      setFilteredMentors(filtered)
+      setShowMentorSuggestions(true)
+    } else {
+      setFilteredMentors(mentors)
+      setShowMentorSuggestions(false)
+    }
+  }, [mentorValue, mentors])
+
   const handleVusSelect = (vusName: string) => {
     setValue('education', vusName, { shouldValidate: true })
     setShowSuggestions(false)
+  }
+
+  const handleMentorSelect = (mentorName: string) => {
+    setValue('mentor', mentorName, { shouldValidate: true })
+    setShowMentorSuggestions(false)
   }
 
   // Следим за изменением позиции
@@ -396,19 +446,33 @@ const RegistrationPage = () => {
         {errors.faculty && <p className="text-red-300 text-xs mt-1">{errors.faculty.message}</p>}
       </div>
 
-      <div>
+      <div className="relative">
         <label className="block text-s font-semibold text-white mb-2">Твой наставник *</label>
-        <select 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand appearance-none"
+        <input 
+          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('mentor', { 
             required: 'Выберите наставника'
           })}
-        >
-          <option value="наставник">Наставник</option>
-          <option value="старший наставник">Старший наставник</option>
-          <option value="координатор">Координатор</option>
-          <option value="РО">РО</option>
-        </select>
+          autoComplete="off"
+          onFocus={() => mentorValue && mentorValue.length > 1 && setShowMentorSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowMentorSuggestions(false), 200)}
+        />
+        
+        {showMentorSuggestions && filteredMentors.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {filteredMentors.map((mentor) => (
+              <div
+                key={mentor.id}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-800"
+                onClick={() => handleMentorSelect(mentor.full_name)}
+                onMouseDown={(e) => e.preventDefault()}
+              >
+                <div className="font-medium">{mentor.full_name}</div>
+                <div className="text-xs text-gray-600">{mentor.pos}</div>
+              </div>
+            ))}
+          </div>
+        )}
         {errors.mentor && <p className="text-red-300 text-xs mt-1">{errors.mentor.message}</p>}
       </div>
 
