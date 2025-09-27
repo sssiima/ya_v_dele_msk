@@ -62,77 +62,6 @@ app.post('/api/upload', (req, res) => {
   }
 })
 
-app.get('/api/health', async (_req, res) => {
-  try {
-    await verifyConnection()
-    res.json({ ok: true })
-  } catch (e) {
-    res.status(500).json({ ok: false })
-  }
-})
-
-app.get('/api/vuses', async (req, res) => {
-  try {
-    console.log('GET /api/vuses requested');
-    
-    const client = await pool.connect();
-    const result = await client.query('SELECT id, vus FROM vuses ORDER BY vus');
-    client.release();
-    
-    res.json({
-      success: true,
-      data: result.rows
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-
-// routes/mentors.js или в server.js
-app.get('/api/mentors', async (req, res) => {
-  let client;
-  try {
-    console.log('🔍 GET /api/mentors requested');
-    
-    client = await pool.connect();
-    
-    // Запрос для получения наставников
-    const result = await client.query(`
-      SELECT 
-        id,
-        first_name,
-        last_name,
-        CONCAT(first_name, ' ', last_name) as full_name,
-        pos
-      FROM structure 
-      WHERE pos IN ('наставник', 'старший наставник')
-      ORDER BY first_name, last_name
-    `);
-    
-    console.log(`✅ Found ${result.rows.length} mentors`);
-    
-    res.json({
-      success: true,
-      data: result.rows
-    });
-    
-  } catch (error) {
-    console.error('❌ Database error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  } finally {
-    if (client) client.release();
-  }
-});
-
-
 app.post('/api/structure', async (req, res) => {
   try {
     console.log('Received structure registration request:', JSON.stringify(req.body, null, 2))
@@ -217,6 +146,77 @@ app.post('/api/structure', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })
+
+app.get('/api/health', async (_req, res) => {
+  try {
+    await verifyConnection()
+    res.json({ ok: true })
+  } catch (e) {
+    res.status(500).json({ ok: false })
+  }
+})
+
+app.get('/api/vuses', async (req, res) => {
+  try {
+    console.log('GET /api/vuses requested');
+    
+    const client = await pool.connect();
+    const result = await client.query('SELECT id, vus FROM vuses ORDER BY vus');
+    client.release();
+    
+    res.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+
+// routes/mentors.js или в server.js
+app.get('/api/mentors', async (req, res) => {
+  let client;
+  try {
+    console.log('🔍 GET /api/mentors requested');
+    
+    client = await pool.connect();
+    
+    // Запрос для получения наставников
+    const result = await client.query(`
+      SELECT 
+        id,
+        first_name,
+        last_name,
+        CONCAT(first_name, ' ', last_name) as full_name,
+        pos
+      FROM structure 
+      WHERE pos IN ('наставник', 'старший наставник')
+      ORDER BY first_name, last_name
+    `);
+    
+    console.log(`✅ Found ${result.rows.length} mentors`);
+    
+    res.json({
+      success: true,
+      data: result.rows
+    });
+    
+  } catch (error) {
+    console.error('❌ Database error:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
