@@ -266,3 +266,31 @@ export const vusesApi = {
     return response.data
   },
 }
+
+// Добавьте интерфейс для наставника
+export interface Mentor {
+  id: number
+  full_name: string
+  first_name: string
+  last_name: string
+  pos: string
+}
+
+// Добавьте API метод для наставников
+export const mentorsApi = {
+  // Получить всех наставников
+  getAll: async (search?: string): Promise<ApiResponse<Mentor[]>> => {
+    try {
+      const params = search ? { search } : {}
+      const response = await api.get('/mentors', { params })
+      return response.data
+    } catch (error) {
+      console.warn('Mentors API failed, using fallback data:', error)
+      // Заглушка будет добавлена позже
+      return {
+        success: true,
+        data: []
+      }
+    }
+  },
+}
