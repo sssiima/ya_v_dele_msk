@@ -71,6 +71,27 @@ app.get('/api/health', async (_req, res) => {
   }
 })
 
+app.get('/api/vuses', async (req, res) => {
+  try {
+    console.log('GET /api/vuses requested');
+    
+    const client = await pool.connect();
+    const result = await client.query('SELECT id, vus FROM vuses ORDER BY vus');
+    client.release();
+    
+    res.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 
 app.post('/api/structure', async (req, res) => {
   try {
