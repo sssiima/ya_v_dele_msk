@@ -79,7 +79,8 @@ const RegistrationPage = () => {
   } = useForm<FormValues>({
     mode: 'onChange', // Валидация при изменении полей
     defaultValues: {
-      education: '' // Убрали значение по умолчанию
+      education: '', // Убрали значение по умолчанию
+      role: 'member' // Устанавливаем значение по умолчанию "участник"
     }
   })
   const navigate = useNavigate()
@@ -232,7 +233,7 @@ const RegistrationPage = () => {
     
     // Добавляем поля образования только если они должны быть заполнены
     if (showEducationFields) {
-      fieldsToValidate.push('grade', 'specialty')
+      fieldsToValidate.push('level', 'grade', 'format', 'faculty', 'specialty')
     }
     
     // Проверяем только те поля, которые должны быть валидны
@@ -244,6 +245,8 @@ const RegistrationPage = () => {
     const isValid = await isStep1Valid()
     if (isValid) {
       setStep(2)
+      setValue('username', '')
+      setValue('password', '')
     } else {
       // Создаем массив полей для валидации
       const fieldsToValidate: (keyof FormValues)[] = [
@@ -252,7 +255,7 @@ const RegistrationPage = () => {
       ]
       
       if (showEducationFields) {
-        fieldsToValidate.push('grade', 'specialty')
+        fieldsToValidate.push('level', 'grade', 'format', 'faculty', 'specialty')
       }
       
       await trigger(fieldsToValidate)
@@ -358,43 +361,43 @@ const RegistrationPage = () => {
         {errors.patronymic && <p className="text-red-300 text-xs mt-1">{errors.patronymic.message}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
-          <input 
-            type="date"
-            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-            {...register('birth_date', { 
-              required: 'Дата рождения обязательна'
-            })}
-          />
-          {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white mb-2 mt-3 sm:mt-0">Пол</label>
-          <div className="flex space-x-1 mt-3">
-            <label className="flex items-center px-2 py-2 rounded-full">
-              <input 
-                type="radio" 
-                value="M" 
-                {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
-              />
-              <span className="text-s font-semibold text-white">М</span>
-            </label>
-            <label className="flex items-center px-2 py-2 rounded-full">
-              <input 
-                type="radio" 
-                value="F" 
-                {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
-              />
-              <span className="text-s font-semibold text-white">Ж</span>
-            </label>
-          </div>
-          {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
-        </div>
-      </div>
+      <div className="grid grid-cols-2 gap-4 items-start">
+  <div>
+    <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
+    <input 
+      type="date"
+      className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none min-h-[48px]"
+      {...register('birth_date', { 
+        required: 'Дата рождения обязательна'
+      })}
+    />
+    {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
+  </div>
+  <div>
+    <label className="block text-xs font-semibold text-white mb-2">Пол</label>
+    <div className="flex space-x-1 h-[48px] items-center">
+      <label className="flex items-center px-2 py-2 rounded-full">
+        <input 
+          type="radio" 
+          value="M" 
+          {...register('gender', { required: 'Выберите пол' })}
+          className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
+        />
+        <span className="text-s font-semibold text-white">М</span>
+      </label>
+      <label className="flex items-center px-2 py-2 rounded-full">
+        <input 
+          type="radio" 
+          value="F" 
+          {...register('gender', { required: 'Выберите пол' })}
+          className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
+        />
+        <span className="text-s font-semibold text-white">Ж</span>
+      </label>
+    </div>
+    {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
+  </div>
+</div>
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
@@ -473,13 +476,17 @@ const RegistrationPage = () => {
             <label className="block text-s font-semibold text-white mb-2">Уровень подготовки</label>
             <select 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-              {...register('level')}
+              {...register('level', { 
+                required: 'Уровень подготовки обязателен'
+              })}
             >
+              <option value="">Выберите уровень</option>
               <option value="бакалавриат">Бакалавриат</option>
               <option value="специалитет">Специалитет</option>
               <option value="магистратура">Магистратура</option>
               <option value="аспирантура">Аспирантура</option>
             </select>
+            {errors.level && <p className="text-red-300 text-xs mt-1">{errors.level.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -491,6 +498,7 @@ const RegistrationPage = () => {
                   required: 'Курс обязателен'
                 })}
               >
+                <option value="">Выберите курс</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -504,12 +512,16 @@ const RegistrationPage = () => {
               <label className="block text-xs font-semibold text-white mb-2">Форма обучения</label>
               <select 
                 className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-                {...register('format')}
+                {...register('format', { 
+                  required: 'Форма обучения обязательна'
+                })}
               >
+                <option value="">Выберите форму</option>
                 <option value="очная">Очная</option>
                 <option value="очнозаочная">Очно-заочная</option>
                 <option value="заочная">Заочная</option>
               </select>
+              {errors.format && <p className="text-red-300 text-xs mt-1">{errors.format.message}</p>}
             </div>
           </div>
 
@@ -517,9 +529,12 @@ const RegistrationPage = () => {
             <label className="block text-s font-semibold text-white mb-2">Факультет</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-              {...register('faculty')}
+              {...register('faculty', { 
+                required: 'Факультет обязателен'
+              })}
               placeholder='Лечебный'
             />
+            {errors.faculty && <p className="text-red-300 text-xs mt-1">{errors.faculty.message}</p>}
           </div>
 
           <div>
@@ -583,6 +598,7 @@ const RegistrationPage = () => {
   )
 
   const renderStep2 = () => {
+    
     return (
       <>
         <div>
@@ -591,7 +607,7 @@ const RegistrationPage = () => {
               className={`text-center cursor-pointer py-2 rounded-lg ${
                 watch('role') === 'member' ? 'bg-white bg-opacity-20' : ''
               }`}
-              onClick={() => setValue('role', 'member')}
+              onClick={() => setValue('role', 'member', { shouldValidate: true })}
             >
               <span className={`text-s font-medium text-white ${
                 watch('role') === 'member' ? 'font-bold' : 'font-normal'
@@ -606,7 +622,7 @@ const RegistrationPage = () => {
               className={`text-center cursor-pointer py-2 rounded-lg ${
                 watch('role') === 'captain' ? 'bg-white bg-opacity-20' : ''
               }`}
-              onClick={() => setValue('role', 'captain')}
+              onClick={() => setValue('role', 'captain', { shouldValidate: true })}
             >
               <span className={`text-s font-medium text-white ${
                 watch('role') === 'captain' ? 'font-bold' : 'font-normal'
@@ -628,6 +644,7 @@ const RegistrationPage = () => {
                 message: 'Введите корректный email'
               }
             })}
+            autoComplete="off" // Отключаем автозаполнение
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           <label className="text-xs text-white italic">
@@ -643,6 +660,7 @@ const RegistrationPage = () => {
             {...register('password', { 
               required: 'Пароль обязателен'
             })}
+            autoComplete="off" // Отключаем автозаполнение
           />
           {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
         </div>
@@ -718,16 +736,18 @@ const RegistrationPage = () => {
         </div>
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
 
-        <button 
-          type="submit"
-          onClick={handleClick}
-          disabled={isDisabled}
-          className={`w-full font-bold py-4 px-6 rounded-full transition-colors text-lg ${
-            isValid ? '' : 'cursor-not-allowed'
-          }`}
-        >
-          <h2 className="text-white">Отправить</h2>
-        </button>
+        <div className="flex gap-4">
+          <button 
+            type="submit"
+            onClick={handleClick}
+            disabled={isDisabled}
+            className={`flex-1 font-bold py-4 px-6 rounded-full transition-colors text-lg ${
+              isValid ? '' : 'cursor-not-allowed'
+            }`}
+          >
+            <h2 className="text-white">Отправить</h2>
+          </button>
+        </div>
       </>
     )
   }
