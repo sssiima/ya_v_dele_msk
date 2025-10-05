@@ -184,6 +184,40 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Валидация team_code
+    if (role === 'captain') {
+      // Для капитана: код команды должен быть уникальным
+      const existingCode = await pool.query(
+        'SELECT id FROM members WHERE team_code = $1',
+        [team_code]
+      );
+      if (existingCode.rows.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Этот код команды уже используется'
+        });
+      }
+      // Капитан должен указать название команды
+      if (!team_name || team_name.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Название команды обязательно для капитана'
+        });
+      }
+    } else if (role === 'member') {
+      // Для участника: код команды должен существовать у капитана
+      const captainWithCode = await pool.query(
+        "SELECT id FROM members WHERE team_code = $1 AND role = 'captain'",
+        [team_code]
+      );
+      if (captainWithCode.rows.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Неверный код команды. Обратитесь к капитану за правильным кодом'
+        });
+      }
+    }
+
     // Хеширование пароля
     const password_hash = await bcrypt.hash(password, 10);
 
