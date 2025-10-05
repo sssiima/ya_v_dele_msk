@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { mentorsApi, structureApi, vusesApi } from '@/services/api'
+import { mentorsApi, vusesApi } from '@/services/api'
 
 // Базовый URL для API
-// const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-//   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
 interface FormValues {
   last_name: string
@@ -77,10 +77,10 @@ const RegistrationPage = () => {
     trigger,
     formState: { errors, isValid } 
   } = useForm<FormValues>({
-    mode: 'onChange', // Валидация при изменении полей
+    mode: 'onChange',
     defaultValues: {
-      education: '', // Убрали значение по умолчанию
-      role: 'member' // Устанавливаем значение по умолчанию "участник"
+      education: '',
+      role: 'member'
     }
   })
   const navigate = useNavigate()
@@ -121,7 +121,6 @@ const RegistrationPage = () => {
       await navigator.clipboard.writeText(generatedTeamCode)
     } catch (err) {
       console.error('Ошибка копирования: ', err)
-      // Fallback для старых браузеров
       const textArea = document.createElement('textarea')
       textArea.value = generatedTeamCode
       document.body.appendChild(textArea)
@@ -200,7 +199,6 @@ const RegistrationPage = () => {
       setShowEducationFields(true)
     } else {
       setShowEducationFields(false)
-      // Очищаем поля образования при пустом поле ВУЗа
       setValue('level', '')
       setValue('grade', '')
       setValue('format', '')
@@ -225,18 +223,15 @@ const RegistrationPage = () => {
 
   // Проверяем валидность первого шага
   const isStep1Valid = async () => {
-    // Создаем массив полей для валидации
     const fieldsToValidate: (keyof FormValues)[] = [
       'last_name', 'first_name', 'patronymic', 'birth_date', 
       'gender', 'vk_link', 'phone', 'education', 'mentor'
     ]
     
-    // Добавляем поля образования только если они должны быть заполнены
     if (showEducationFields) {
       fieldsToValidate.push('level', 'grade', 'format', 'faculty', 'specialty')
     }
     
-    // Проверяем только те поля, которые должны быть валидны
     const result = await trigger(fieldsToValidate)
     return result
   }
@@ -245,10 +240,7 @@ const RegistrationPage = () => {
     const isValid = await isStep1Valid()
     if (isValid) {
       setStep(2)
-      setValue('username', '')
-      setValue('password', '')
     } else {
-      // Создаем массив полей для валидации
       const fieldsToValidate: (keyof FormValues)[] = [
         'last_name', 'first_name', 'patronymic', 'birth_date', 
         'gender', 'vk_link', 'phone', 'education', 'mentor'
@@ -264,12 +256,10 @@ const RegistrationPage = () => {
 
   // Проверяем валидность второго шага
   const isStep2Valid = async () => {
-    // Создаем массив полей для валидации
     const fieldsToValidate: (keyof FormValues)[] = [
       'username', 'password', 'team_code', 'role', 'privacy_policy'
     ]
     
-    // Для капитана проверяем также название команды
     if (selectedRole === 'captain') {
       fieldsToValidate.push('team_name')
     }
@@ -278,8 +268,34 @@ const RegistrationPage = () => {
     return result
   }
 
+  const prevStep = () => {
+    setStep(1)
+  }
+
+  // Функция для отправки данных в таблицу members
+  const createMember = async (data: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Error creating member:', error)
+      throw error
+    }
+  }
+
   const onSubmit = async (data: FormValues) => {
-    // Проверяем валидность всей формы
     const isStep1ValidResult = await isStep1Valid()
     const isStep2ValidResult = await isStep2Valid()
     
@@ -289,7 +305,6 @@ const RegistrationPage = () => {
     }
   
     try {  
-      // Если поле ВУЗа пустое, устанавливаем значение "не обучаюсь в вузе"
       const finalEducation = data.education.trim() === '' ? 'не обучаюсь в вузе' : data.education;
       
       const payload = {
@@ -304,7 +319,7 @@ const RegistrationPage = () => {
         grade: data.grade,
         faculty: data.faculty,
         format: data.format,
-        education: finalEducation, // Используем обработанное значение
+        education: finalEducation,
         specialty: data.specialty,
         username: data.username,
         password: data.password,
@@ -315,12 +330,15 @@ const RegistrationPage = () => {
         privacy_policy: data.privacy_policy === true,
       }
       
-      console.log('Sending payload:', JSON.stringify(payload, null, 2))
+      console.log('Sending payload to members table:', JSON.stringify(payload, null, 2))
       
-      await structureApi.create(payload as any)
+      // Отправляем данные в таблицу members
+      await createMember(payload)
+      
+      alert('Регистрация прошла успешно!')
       navigate('/profile')
     } catch (e: any) {
-      console.error('user registration failed', e)
+      console.error('Member registration failed', e)
       console.error('Error details:', e.response?.data)
       alert(`Ошибка сохранения: ${e.response?.data?.message || e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
     }
@@ -362,42 +380,42 @@ const RegistrationPage = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4 items-start">
-  <div>
-    <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
-    <input 
-      type="date"
-      className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none min-h-[48px]"
-      {...register('birth_date', { 
-        required: 'Дата рождения обязательна'
-      })}
-    />
-    {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
-  </div>
-  <div>
-    <label className="block text-xs font-semibold text-white mb-2">Пол</label>
-    <div className="flex space-x-1 h-[48px] items-center">
-      <label className="flex items-center px-2 py-2 rounded-full">
-        <input 
-          type="radio" 
-          value="M" 
-          {...register('gender', { required: 'Выберите пол' })}
-          className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
-        />
-        <span className="text-s font-semibold text-white">М</span>
-      </label>
-      <label className="flex items-center px-2 py-2 rounded-full">
-        <input 
-          type="radio" 
-          value="F" 
-          {...register('gender', { required: 'Выберите пол' })}
-          className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
-        />
-        <span className="text-s font-semibold text-white">Ж</span>
-      </label>
-    </div>
-    {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
-  </div>
-</div>
+        <div>
+          <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
+          <input 
+            type="date"
+            className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none min-h-[48px]"
+            {...register('birth_date', { 
+              required: 'Дата рождения обязательна'
+            })}
+          />
+          {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-white mb-2">Пол</label>
+          <div className="flex space-x-1 h-[48px] items-center">
+            <label className="flex items-center px-2 py-2 rounded-full">
+              <input 
+                type="radio" 
+                value="M" 
+                {...register('gender', { required: 'Выберите пол' })}
+                className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
+              />
+              <span className="text-s font-semibold text-white">М</span>
+            </label>
+            <label className="flex items-center px-2 py-2 rounded-full">
+              <input 
+                type="radio" 
+                value="F" 
+                {...register('gender', { required: 'Выберите пол' })}
+                className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
+              />
+              <span className="text-s font-semibold text-white">Ж</span>
+            </label>
+          </div>
+          {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
+        </div>
+      </div>
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
@@ -438,13 +456,12 @@ const RegistrationPage = () => {
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education')}
-          placeholder="не обучаюсь в вузе" // Добавляем плейсхолдер
+          placeholder="не обучаюсь в вузе"
           autoComplete="off"
           onFocus={() => educationValue && educationValue.length > 1 && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         />
         
-        {/* Выпадающий список с предложениями */}
         {showSuggestions && filteredVuses.length > 0 && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {filteredVuses.map((vus) => (
@@ -469,7 +486,6 @@ const RegistrationPage = () => {
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
       </div>
 
-      {/* Поля образования показываются только если выбран ВУЗ (не пустое поле) */}
       {showEducationFields && (
         <>
           <div>
@@ -598,7 +614,6 @@ const RegistrationPage = () => {
   )
 
   const renderStep2 = () => {
-    
     return (
       <>
         <div>
@@ -644,7 +659,7 @@ const RegistrationPage = () => {
                 message: 'Введите корректный email'
               }
             })}
-            autoComplete="off" // Отключаем автозаполнение
+            autoComplete="new-email"
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           <label className="text-xs text-white italic">
@@ -660,7 +675,7 @@ const RegistrationPage = () => {
             {...register('password', { 
               required: 'Пароль обязателен'
             })}
-            autoComplete="off" // Отключаем автозаполнение
+            autoComplete="new-password"
           />
           {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
         </div>
@@ -737,6 +752,13 @@ const RegistrationPage = () => {
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
 
         <div className="flex gap-4">
+          <button 
+            type="button"
+            onClick={prevStep}
+            className="flex-1 font-bold py-4 px-6 rounded-full transition-colors text-lg border border-white"
+          >
+            <h2 className="text-white">Назад</h2>
+          </button>
           <button 
             type="submit"
             onClick={handleClick}
