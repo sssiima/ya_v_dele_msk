@@ -16,6 +16,7 @@ interface FormValues {
   vk_link: string
   phone: string
   education: string
+  level: string
   grade: string
   format: string
   faculty: string
@@ -23,6 +24,7 @@ interface FormValues {
   password: string
   mentor: string
   team_code: string
+  team_name: string
   privacy_policy: boolean
   role: 'member' | 'captain'
 }
@@ -53,6 +55,9 @@ const RegistrationPage = () => {
   const [showMentorSuggestions, setShowMentorSuggestions] = useState(false)
   const [mentorLoading, setMentorLoading] = useState(false)
 
+  const [showEducationFields, setShowEducationFields] = useState(false)
+  const [generatedTeamCode, setGeneratedTeamCode] = useState('')
+
   const handleClick = () => {
     if (isDisabled) return;
     
@@ -70,12 +75,58 @@ const RegistrationPage = () => {
     setValue,
     formState: { errors, isValid } 
   } = useForm<FormValues>({
-    mode: 'onChange' // Валидация при изменении полей
+    mode: 'onChange', // Валидация при изменении полей
+    defaultValues: {
+      education: 'не обучаюсь в вузе'
+    }
   })
   const navigate = useNavigate()
   const selectedRole = watch('role')
   const educationValue = watch('education')
   const mentorValue = watch('mentor')
+
+  // Функция для генерации кода команды в формате XXXX XXXX
+  const generateTeamCode = () => {
+    const numbers = '0123456789'
+    let code = ''
+    for (let i = 0; i < 8; i++) {
+      if (i === 4) code += ' '
+      code += numbers[Math.floor(Math.random() * numbers.length)]
+    }
+    return code
+  }
+
+  // Генерируем код команды при выборе роли капитана
+  useEffect(() => {
+    if (selectedRole === 'captain' && !generatedTeamCode) {
+      const newCode = generateTeamCode()
+      setGeneratedTeamCode(newCode)
+      setValue('team_code', newCode)
+    }
+  }, [selectedRole, generatedTeamCode, setValue])
+
+  // Сбрасываем сгенерированный код при смене роли на участника
+  useEffect(() => {
+    if (selectedRole === 'member') {
+      setGeneratedTeamCode('')
+      setValue('team_code', '')
+    }
+  }, [selectedRole, setValue])
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedTeamCode)
+    } catch (err) {
+      console.error('Ошибка копирования: ', err)
+      // Fallback для старых браузеров
+      const textArea = document.createElement('textarea')
+      textArea.value = generatedTeamCode
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    }
+  }
 
   useEffect(() => {
     const fetchVuses = async () => {
@@ -83,12 +134,20 @@ const RegistrationPage = () => {
       try {
         const response = await vusesApi.getAll()
         if (response.success) {
-          setVuses(response.data)
-          setFilteredVuses(response.data)
+          // Добавляем опцию "не обучаюсь в вузе" в начало списка
+          const vusesWithOption = [
+            { id: 0, vus: 'не обучаюсь в вузе' },
+            ...response.data
+          ]
+          setVuses(vusesWithOption)
+          setFilteredVuses(vusesWithOption)
         }
       } catch (error) {
         console.error('Ошибка загрузки ВУЗов:', error)
-        // Fallback: можно добавить заглушку или оставить пустой список
+        // Fallback: добавляем только опцию "не обучаюсь в вузе"
+        const fallbackVuses = [{ id: 0, vus: 'не обучаюсь в вузе' }]
+        setVuses(fallbackVuses)
+        setFilteredVuses(fallbackVuses)
       } finally {
         setLoading(false)
       }
@@ -141,6 +200,20 @@ const RegistrationPage = () => {
     }
   }, [mentorValue, mentors])
 
+  // Следим за изменением поля "ВУЗ" для показа/скрытия дополнительных полей
+  useEffect(() => {
+    if (educationValue && educationValue !== 'не обучаюсь в вузе') {
+      setShowEducationFields(true)
+    } else {
+      setShowEducationFields(false)
+      // Очищаем поля образования при выборе "не обучаюсь в вузе"
+      setValue('level', '')
+      setValue('grade', '')
+      setValue('format', '')
+      setValue('faculty', '')
+    }
+  }, [educationValue, setValue])
+
   const handleVusSelect = (vusName: string) => {
     setValue('education', vusName, { shouldValidate: true })
     setShowSuggestions(false)
@@ -162,8 +235,13 @@ const RegistrationPage = () => {
   const isStep1Complete = () => {
     const requiredFields = [
       'last_name', 'first_name', 'birth_date', 
-      'gender', 'vk_link','phone', 'education','grade', 'mentor'
+      'gender', 'vk_link','phone', 'education','mentor'
     ]
+    
+    // Если пользователь учится в вузе, проверяем дополнительные поля
+    if (showEducationFields) {
+      requiredFields.push('grade')
+    }
     
     const fieldsValid = requiredFields.every(field => {
       const value = watchAllFields[field as keyof FormValues]
@@ -186,8 +264,13 @@ const RegistrationPage = () => {
       // Show validation errors for incomplete fields by triggering validation
       const requiredFields = [
         'last_name', 'first_name', 'patronymic', 'birth_date', 
-        'gender', 'vk_link', 'phone', 'education', 'grade', 'mentor'
+        'gender', 'vk_link', 'phone', 'education', 'mentor'
       ]
+      
+      // Добавляем поля образования только если они должны быть заполнены
+      if (showEducationFields) {
+        requiredFields.push('grade')
+      }
       
       requiredFields.forEach(field => {
         const value = watchAllFields[field as keyof FormValues]
@@ -204,8 +287,18 @@ const RegistrationPage = () => {
     // Проверяем, что все обязательные поля заполнены
     const requiredFields = [
       'last_name', 'first_name', 'patronymic', 'birth_date', 'gender', 'vk_link', 
-      'phone', 'education', 'grade', 'mentor', 'username', 'password', 'team_code', 'role', 'privacy_policy'
+      'phone', 'education', 'mentor', 'username', 'password', 'team_code', 'role', 'privacy_policy'
     ]
+    
+    // Добавляем поле grade только если пользователь учится в вузе
+    if (showEducationFields) {
+      requiredFields.push('grade')
+    }
+    
+    // Для капитана проверяем также название команды
+    if (selectedRole === 'captain') {
+      requiredFields.push('team_name')
+    }
     
     const missingFields = requiredFields.filter(field => {
       const value = data[field as keyof FormValues]
@@ -227,12 +320,16 @@ const RegistrationPage = () => {
         gender: data.gender,
         vk_link: data.vk_link,
         phone: data.phone,
+        level: data.level,
         grade: data.grade,
+        faculty: data.faculty,
+        format: data.format,
         education: data.education,
         username: data.username,
         password: data.password,
         mentor: data.mentor,
         team_code: data.team_code,
+        team_name: data.team_name,
         role: data.role,
         privacy_policy: data.privacy_policy === true,
       }
@@ -251,7 +348,7 @@ const RegistrationPage = () => {
   const renderStep1 = () => (
     <>
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Фамилия *</label>
+        <label className="block text-s font-semibold text-white mb-2">Фамилия</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('last_name', { 
@@ -262,7 +359,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Имя *</label>
+        <label className="block text-s font-semibold text-white mb-2">Имя</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('first_name', { 
@@ -273,7 +370,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Отчество *</label>
+        <label className="block text-s font-semibold text-white mb-2">Отчество</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('patronymic', { 
@@ -281,14 +378,11 @@ const RegistrationPage = () => {
           })}
         />
         {errors.patronymic && <p className="text-red-300 text-xs mt-1">{errors.patronymic.message}</p>}
-        <label className="text-xs text-white italic">
-            При наличии. Иначе поставь -
-          </label>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Дата рождения *</label>
+          <label className="block text-s font-semibold text-white mb-2">Дата рождения</label>
           <input 
             type="date"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
@@ -299,7 +393,7 @@ const RegistrationPage = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2 mt-3 sm:mt-0">Пол *</label>
+          <label className="block text-s font-semibold text-white mb-2 mt-3 sm:mt-0">Пол</label>
           <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
@@ -325,7 +419,7 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте *</label>
+        <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
         <input 
           type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -342,15 +436,15 @@ const RegistrationPage = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Номер телефона *</label>
+        <label className="block text-s font-semibold text-white mb-2">Номер телефона</label>
         <input 
-          type="tel"
+          type="url"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="89999999999"
           {...register('phone', { 
             required: 'Номер телефона обязателен',
             pattern: {
-              value: /^(\+7|8)[0-9]{10}$/,
+              value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
               message: 'Введите корректный номер телефона'
             }
           })}
@@ -359,7 +453,7 @@ const RegistrationPage = () => {
       </div>
 
       <div className="relative">
-        <label className="block text-s font-semibold text-white mb-2">ВУЗ *</label>
+        <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('education', { 
@@ -393,61 +487,68 @@ const RegistrationPage = () => {
         )}
 
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
-        <label className="text-xs text-white italic">
-          Если ты не обучаешься в ВУЗе, поставь -
-        </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Курс обучения *</label>
-        <select 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-          {...register('grade', { 
-            required: 'Курс обязателен'
-          })}
-        >
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="0">Не обучаюсь в ВУЗе</option>
-        </select>
-        {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
-      </div>
+      {/* Поля образования показываются только если выбран ВУЗ (не "не обучаюсь в вузе") */}
+      {showEducationFields && (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-s font-semibold text-white mb-2">Уровень подготовки</label>
+              <select 
+                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+                {...register('level')}
+              >
+                <option value="бакалавриат">Бакалавриат</option>
+                <option value="специалитет">Специалитет</option>
+                <option value="магистратура">Магистратура</option>
+                <option value="аспирантура">Аспирантура</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-s font-semibold text-white mb-2">Курс обучения</label>
+              <select 
+                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+                {...register('grade', { 
+                  required: 'Курс обязателен'
+                })}
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
+            </div>
+          </div>
 
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Форма обучения *</label>
-        <select 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-          {...register('format', { 
-            required: 'Форма обязательна'
-          })}
-        >
-          <option value="очная">Очная</option>
-          <option value="очнозаочная">Очно-заочная</option>
-          <option value="заочная">Заочная</option>
-          <option value="нет">Не обучаюсь в ВУЗе</option>
-        </select>
-        {errors.format && <p className="text-red-300 text-xs mt-1">{errors.format.message}</p>}
-      </div>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-s font-semibold text-white mb-2">Факультет</label>
+              <input 
+                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+                {...register('faculty')}
+              />
+            </div>
 
-      <div>
-        <label className="block text-s font-semibold text-white mb-2">Факультет *</label>
-        <input 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('faculty', { 
-            required: 'Поле обязательно'
-          })}
-        />
-        {errors.faculty && <p className="text-red-300 text-xs mt-1">{errors.faculty.message}</p>}
-      </div>
+            <div>
+              <label className="block text-s font-semibold text-white mb-2">Форма обучения</label>
+              <select 
+                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+                {...register('format')}
+              >
+                <option value="очная">Очная</option>
+                <option value="очнозаочная">Очно-заочная</option>
+                <option value="заочная">Заочная</option>
+              </select>
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="relative">
-        <label className="block text-s font-semibold text-white mb-2">Твой наставник *</label>
+        <label className="block text-s font-semibold text-white mb-2">Твой наставник</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register('mentor', { 
@@ -493,44 +594,42 @@ const RegistrationPage = () => {
   )
 
   const renderStep2 = () => {
-
     return (
       <>
-        {/* Почта и пароль всегда отображаются */}
         <div>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-          <div 
-            className={`text-center cursor-pointer py-2 rounded-lg ${
-              watch('role') === 'member' ? 'bg-white bg-opacity-20' : ''
-            }`}
-            onClick={() => setValue('role', 'member')}
-          >
-            <span className={`text-s font-medium text-white ${
-              watch('role') === 'member' ? 'font-bold' : 'font-normal'
-            }`}>
-              Я участник команды
-            </span>
-          </div>
-  
-          <div className="bg-white h-4 w-px mx-2"></div>
-  
-          <div 
-            className={`text-center cursor-pointer py-2 rounded-lg ${
-              watch('role') === 'captain' ? 'bg-white bg-opacity-20' : ''
-            }`}
-            onClick={() => setValue('role', 'captain')}
-          >
-            <span className={`text-s font-medium text-white ${
-              watch('role') === 'captain' ? 'font-bold' : 'font-normal'
-            }`}>
-              Я капитан команды
-            </span>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <div 
+              className={`text-center cursor-pointer py-2 rounded-lg ${
+                watch('role') === 'member' ? 'bg-white bg-opacity-20' : ''
+              }`}
+              onClick={() => setValue('role', 'member')}
+            >
+              <span className={`text-s font-medium text-white ${
+                watch('role') === 'member' ? 'font-bold' : 'font-normal'
+              }`}>
+                Я участник команды
+              </span>
+            </div>
+    
+            <div className="bg-white h-4 w-px mx-2"></div>
+    
+            <div 
+              className={`text-center cursor-pointer py-2 rounded-lg ${
+                watch('role') === 'captain' ? 'bg-white bg-opacity-20' : ''
+              }`}
+              onClick={() => setValue('role', 'captain')}
+            >
+              <span className={`text-s font-medium text-white ${
+                watch('role') === 'captain' ? 'font-bold' : 'font-normal'
+              }`}>
+                Я капитан команды
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Электронная почта *</label>
+          <label className="block text-s font-semibold text-white mb-2">Электронная почта</label>
           <input 
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
             {...register('username', { 
@@ -543,12 +642,12 @@ const RegistrationPage = () => {
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           <label className="text-xs text-white italic">
-          Твой логин от учетной записи. Через нее можно восстановить доступ, рекомендуем писать актуальную почту
+            Твой логин от учетной записи. Через нее можно восстановить доступ, рекомендуем писать актуальную почту
           </label>
         </div>
 
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Пароль для личного кабинета *</label>
+          <label className="block text-s font-semibold text-white mb-2">Пароль для личного кабинета</label>
           <input 
             type="text"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
@@ -558,28 +657,60 @@ const RegistrationPage = () => {
           />
           {errors.password && <p className="text-red-300 text-xs mt-1">{errors.password.message}</p>}
         </div>
+
         <div>
-        <label className="block text-s font-semibold text-white mb-2">
-          {selectedRole === 'member' ? 'Введи код команды *' : 'Придумай код команды *'}
-        </label>
-        <input 
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('team_code', { 
-            required: 'Код команды обязателен',
-            minLength: {
-              value: 4,
-              message: 'Код команды должен содержать минимум 4 символа'
+          <label className="block text-s font-semibold text-white mb-2">
+            {selectedRole === 'member' ? 'Введи код команды' : 'Код вашей команды'}
+          </label>
+          {selectedRole === 'captain' ? (
+            <div className="relative">
+              <input 
+                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
+                value={generatedTeamCode}
+                readOnly
+                {...register('team_code')}
+              />
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-brand text-white px-3 py-1 rounded-lg text-sm hover:bg-gray-500 transition-colors"
+              >
+                Копировать
+              </button>
+            </div>
+          ) : (
+            <input 
+              className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register('team_code', { 
+                required: 'Код команды обязателен',
+                minLength: {
+                  value: 4,
+                  message: 'Код команды должен содержать минимум 4 символа'
+                }
+              })}
+            />
+          )}
+          <p className="text-xs text-white mt-1 italic">
+            {selectedRole === 'member' 
+              ? 'Код команды нужно узнать у капитана команды' 
+              : 'Скопируйте и передайте этот код участникам команды'
             }
-          })}
-        />
-        <p className="text-xs text-white mt-1 italic">
-          {selectedRole === 'member' 
-            ? 'Код команды нужно узнать у капитана команды' 
-            : 'Код команды должен быть уникальным'
-          }
-        </p>
-        {errors.team_code && <p className="text-red-300 text-xs mt-1">{errors.team_code.message}</p>}
-      </div>
+          </p>
+          {errors.team_code && <p className="text-red-300 text-xs mt-1">{errors.team_code.message}</p>}
+        </div>
+
+        {selectedRole === 'captain' && (
+          <div>
+            <label className="block text-s font-semibold text-white mb-2">Название вашей команды</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register('team_name', { 
+                required: 'Название обязательно'
+              })}
+            />
+            {errors.team_name && <p className="text-red-300 text-xs mt-1">{errors.team_name.message}</p>}
+          </div>
+        )}
 
         <div className="flex items-start">
           <input 
@@ -591,7 +722,7 @@ const RegistrationPage = () => {
             })}
           />
           <label htmlFor="privacy-policy" className="text-xs text-white italic">
-          Согласие на обработку персональных данных
+            Согласие на обработку персональных данных
           </label>
         </div>
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
