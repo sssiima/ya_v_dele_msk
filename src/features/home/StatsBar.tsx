@@ -7,19 +7,19 @@ const StatsBar = () => {
       />
       
       <div className="flex items-center justify-between py-4">
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">3200 участников</h3>
+        <h3 className="text-brand text-[9px] text-center  normal-case">2800 охват студентов</h3>
         {/* <img src="images/line1.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">23 ВУЗа</h3>
+        <h3 className="text-brand text-[9px] text-center  normal-case">74 ВУЗа</h3>
         {/* <img src="images/line2.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">43 эксперта</h3>
+        <h3 className="text-brand text-[9px] text-center  normal-case">1650 наставников</h3>
       </div>
-      <div className="rounded-xl bg-gray-200 h-36" />
+      <img src='images/stats.png' alt='video' className="rounded-xl bg-gray-200" />
       <div className="flex items-center justify-between pt-4">
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">10 партнеров</h3>
+        <h3 className="text-brand text-[9px] text-center normal-case">12600 выпускников</h3>
         {/* <img src="images/line1.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">38 менторов</h3>
+        <h3 className="text-brand text-[9px] text-center normal-case">460 экспертов</h3>
         {/* <img src="images/line2.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
-        <h3 className="text-brand text-[9px] text-center flex-1 normal-case">753 проекта</h3>
+        <h3 className="text-brand text-[9px] text-center normal-case">3200 бизнес-идеи</h3>
       </div>
     </section>
   )

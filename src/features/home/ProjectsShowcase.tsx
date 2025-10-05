@@ -2,12 +2,10 @@
 const Card = ({ title, subtitle, image }: { title?: string, subtitle?:string, image?: string }) => (
   <div className='flex flex-col'>
   <div className="relative rounded-xl h-36 w-48 flex-shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url('${image}')` }}>
-    {title && subtitle && (
-      <div className="absolute bottom-4 left-0 right-0">
-        <div className="bg-gradient-to-r from-white via-white to-transparent h-4 w-full" />
-        
-        <div className="absolute bottom-0 left-0 right-0 px-2 py-0.5 h-4 flex items-center">
-          <h2 className="text-left text-brand font-bold text-xs capitalize">
+    {title && (
+      <div className="absolute bottom-4 left-0 right-0">     
+        <div className="absolute bottom-0  w-full px-2 py-0.5 flex items-center bg-gradient-to-r from-white via-white to-transparent ">
+          <h2 className="text-left text-brand font-bold text-xs normal-case">
             {title}
           </h2>
         </div>
@@ -32,6 +30,16 @@ const ProjectsShowcase = () => {
                       [-webkit-overflow-scrolling:touch]">
         <Card title="NutriCheck" subtitle='Приложение, которое создает разнообразные рационы с учетом повышенного потребления продуктов с дефицитными показателями' image='images/nutricheck.png'/>
         <Card title="Модуль" subtitle='Производство модульных ювелирных украшений — можно комбинировать детали между собой, получая уникальный результат из компонентов' image='images/module.png'/>
+        <Card title="ПроОбраз-21" subtitle='Образовательная экосистема для школьников и педагогов. Помогаем школьникам с профориентацией, а педагогам — осваивать новые технологии через офлайн-кружки, экспертные встречи и онлайн-школу.' image='images/proobraz.png'/>
+        <Card title="PyramidPack" subtitle='Защищаем товары от повреждений при перевозке с помощью амортизирующего каркаса из перерабатываемых материалов.' image='images/pyramidpack.png'/>
+        <Card title="Fillfood" subtitle='Фестиваль уличной еды со всего мира. Объединяем лучшие блюда разных культур — от привычных вкусов до редкой экзотики, чтобы открыть гастрономию планеты каждому.' image='images/fillfood.png'/>
+        <Card title="FUN" subtitle='Цифровой сервис для соседей. Помогаем людям быстрее адаптироваться к новому месту через Telegram-бот: ищем соседей, объединяем в чаты и поддерживаем' image='images/fun.png'/>
+        <Card title="fatdata" subtitle='Сервис BI-аналитики социальных сетей. Помогаем интернет-маркетологам собирать статистику и проводить всесторонний анализ текста и контента для эффективных решений' image='images/fatdata.png'/>
+        <Card title="ШЕПот" subtitle='Телеграм-бот для студентов. Помогаем адаптироваться в университете: отвечаем на бытовые вопросы и упрощаем поиск нужной информации.' image='images/shepot.png'/>
+        <Card title="Вглубь" subtitle='Мастер-классы по медиа для школьников в регионах. Даем подросткам новые знания в сфере медиа и возможность создать документальные фильмы о своей малой родине.' image='images/vblub.png'/>
+        <Card title="TeaVibe" subtitle='Телеграм-бот для студентов. Помогаем адаптироваться в университете: отвечаем на бытовые вопросы и упрощаем поиск нужной информации.' image='images/teavibe.png'/>
+        <Card title="Бионический протез пальца" subtitle='Телеграм-бот для студентов. Помогаем адаптироваться в университете: отвечаем на бытовые вопросы и упрощаем поиск нужной информации.' image='images/palets.png'/>
+        <Card title="Н - Водород" subtitle='Телеграм-бот для студентов. Помогаем адаптироваться в университете: отвечаем на бытовые вопросы и упрощаем поиск нужной информации.' image='images/h.png'/>
       </div>
     </section>
   )

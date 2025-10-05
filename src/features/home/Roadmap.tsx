@@ -6,7 +6,9 @@ const Roadmap = () => {
         className="h-px w-auto"
       />
       <h3 className="text-center text-brand font-extrabold text-[18px]">Дорожная карта{<br></br>}8 сезона</h3>
-      <div className="rounded-xl bg-gray-200 h-32" />
+      <div className="rounded-xl mb-2" >
+        <img src='images/roadmap.png' alt='roadmap' className="w-full" />
+      </div>
     </section>
   )
 }
