@@ -2,7 +2,7 @@
 
 const Partner = ({ name, image }: { name?: string, image?: string }) => (
   <div className="flex justify-center">
-    <div className="w-full max-w-[110px]">
+    <div className="w-full max-w-[95px]">
       <img src={image} alt='vus' className="w-full rounded-xl" />
       <div className="text-[8px] text-center text-gray-500 mt-1">
             {name}

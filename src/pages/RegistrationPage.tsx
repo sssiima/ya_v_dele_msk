@@ -79,7 +79,7 @@ const RegistrationPage = () => {
   } = useForm<FormValues>({
     mode: 'onChange', // Валидация при изменении полей
     defaultValues: {
-      education: 'не обучаюсь в вузе'
+      education: '' // Убрали значение по умолчанию
     }
   })
   const navigate = useNavigate()
@@ -136,20 +136,11 @@ const RegistrationPage = () => {
       try {
         const response = await vusesApi.getAll()
         if (response.success) {
-          // Добавляем опцию "не обучаюсь в вузе" в начало списка
-          const vusesWithOption = [
-            { id: 0, vus: 'не обучаюсь в вузе' },
-            ...response.data
-          ]
-          setVuses(vusesWithOption)
-          setFilteredVuses(vusesWithOption)
+          setVuses(response.data)
+          setFilteredVuses(response.data)
         }
       } catch (error) {
         console.error('Ошибка загрузки ВУЗов:', error)
-        // Fallback: добавляем только опцию "не обучаюсь в вузе"
-        const fallbackVuses = [{ id: 0, vus: 'не обучаюсь в вузе' }]
-        setVuses(fallbackVuses)
-        setFilteredVuses(fallbackVuses)
       } finally {
         setLoading(false)
       }
@@ -204,11 +195,11 @@ const RegistrationPage = () => {
 
   // Следим за изменением поля "ВУЗ" для показа/скрытия дополнительных полей
   useEffect(() => {
-    if (educationValue && educationValue !== 'не обучаюсь в вузе') {
+    if (educationValue && educationValue.trim() !== '') {
       setShowEducationFields(true)
     } else {
       setShowEducationFields(false)
-      // Очищаем поля образования при выборе "не обучаюсь в вузе"
+      // Очищаем поля образования при пустом поле ВУЗа
       setValue('level', '')
       setValue('grade', '')
       setValue('format', '')
@@ -295,6 +286,9 @@ const RegistrationPage = () => {
     }
   
     try {  
+      // Если поле ВУЗа пустое, устанавливаем значение "не обучаюсь в вузе"
+      const finalEducation = data.education.trim() === '' ? 'не обучаюсь в вузе' : data.education;
+      
       const payload = {
         last_name: data.last_name,
         first_name: data.first_name,
@@ -307,7 +301,7 @@ const RegistrationPage = () => {
         grade: data.grade,
         faculty: data.faculty,
         format: data.format,
-        education: data.education,
+        education: finalEducation, // Используем обработанное значение
         specialty: data.specialty,
         username: data.username,
         password: data.password,
@@ -366,7 +360,7 @@ const RegistrationPage = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-s font-semibold text-white mb-2">Дата рождения</label>
+          <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
           <input 
             type="date"
             className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
@@ -377,7 +371,7 @@ const RegistrationPage = () => {
           {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         <div>
-          <label className="block text-s font-semibold text-white mb-2 mt-3 sm:mt-0">Пол</label>
+          <label className="block text-xs font-semibold text-white mb-2 mt-3 sm:mt-0">Пол</label>
           <div className="flex space-x-1 mt-3">
             <label className="flex items-center px-2 py-2 rounded-full">
               <input 
@@ -440,9 +434,8 @@ const RegistrationPage = () => {
         <label className="block text-s font-semibold text-white mb-2">ВУЗ</label>
         <input 
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register('education', { 
-            required: 'Поле обязательно'
-          })}
+          {...register('education')}
+          placeholder="не обучаюсь в вузе" // Добавляем плейсхолдер
           autoComplete="off"
           onFocus={() => educationValue && educationValue.length > 1 && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
@@ -473,24 +466,25 @@ const RegistrationPage = () => {
         {errors.education && <p className="text-red-300 text-xs mt-1">{errors.education.message}</p>}
       </div>
 
-      {/* Поля образования показываются только если выбран ВУЗ (не "не обучаюсь в вузе") */}
+      {/* Поля образования показываются только если выбран ВУЗ (не пустое поле) */}
       {showEducationFields && (
         <>
+          <div>
+            <label className="block text-s font-semibold text-white mb-2">Уровень подготовки</label>
+            <select 
+              className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+              {...register('level')}
+            >
+              <option value="бакалавриат">Бакалавриат</option>
+              <option value="специалитет">Специалитет</option>
+              <option value="магистратура">Магистратура</option>
+              <option value="аспирантура">Аспирантура</option>
+            </select>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-s font-semibold text-white mb-2">Уровень подготовки</label>
-              <select 
-                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-                {...register('level')}
-              >
-                <option value="бакалавриат">Бакалавриат</option>
-                <option value="специалитет">Специалитет</option>
-                <option value="магистратура">Магистратура</option>
-                <option value="аспирантура">Аспирантура</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-s font-semibold text-white mb-2">Курс обучения</label>
+              <label className="block text-xs font-semibold text-white mb-2">Курс обучения</label>
               <select 
                 className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
                 {...register('grade', { 
@@ -505,19 +499,9 @@ const RegistrationPage = () => {
               </select>
               {errors.grade && <p className="text-red-300 text-xs mt-1">{errors.grade.message}</p>}
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-s font-semibold text-white mb-2">Факультет</label>
-              <input 
-                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
-                {...register('faculty')}
-              />
-            </div>
 
             <div>
-              <label className="block text-s font-semibold text-white mb-2">Форма обучения</label>
+              <label className="block text-xs font-semibold text-white mb-2">Форма обучения</label>
               <select 
                 className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
                 {...register('format')}
@@ -528,6 +512,16 @@ const RegistrationPage = () => {
               </select>
             </div>
           </div>
+
+          <div>
+            <label className="block text-s font-semibold text-white mb-2">Факультет</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-brand"
+              {...register('faculty')}
+              placeholder='Лечебный'
+            />
+          </div>
+
           <div>
             <label className="block text-s font-semibold text-white mb-2">Специальность</label>
             <input 
