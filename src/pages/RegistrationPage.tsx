@@ -45,7 +45,6 @@ interface Mentor {
 
 const RegistrationPage = () => {
   const [step, setStep] = useState(1)
-  const [isDisabled, setIsDisabled] = useState(false);
   const [vuses, setVuses] = useState<Vus[]>([])
   const [filteredVuses, setFilteredVuses] = useState<Vus[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -59,15 +58,7 @@ const RegistrationPage = () => {
   const [showEducationFields, setShowEducationFields] = useState(false)
   const [generatedTeamCode, setGeneratedTeamCode] = useState('')
 
-  const handleClick = () => {
-    if (isDisabled) return;
-    
-    setIsDisabled(true);
-
-    setTimeout(() => {
-      setIsDisabled(false);
-    }, 1000);
-  };
+  // Убрано временное отключение кнопки, чтобы не блокировать submit
 
   const { 
     register, 
@@ -730,8 +721,6 @@ const onSubmit = async (data: FormValues) => {
         <div className="flex gap-4">
           <button 
             type="submit"
-            onClick={handleClick}
-            disabled={isDisabled}
             className={`flex-1 font-bold py-4 px-6 rounded-full transition-colors text-lg ${
               isValid ? '' : 'cursor-not-allowed'
             }`}
