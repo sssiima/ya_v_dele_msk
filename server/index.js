@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
+const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
 dotenv.config()
@@ -130,6 +131,93 @@ app.get('/api/mentors', async (req, res) => {
     if (client) client.release();
   }
 });
+
+// server/routes/members.js
+
+
+// POST /api/members - создание нового участника
+router.post('/', async (req, res) => {
+  try {
+    const {
+      last_name,
+      first_name,
+      patronymic,
+      birth_date,
+      gender,
+      vk_link,
+      phone,
+      education,
+      level,
+      grade,
+      format,
+      faculty,
+      specialty,
+      username,
+      password,
+      mentor,
+      team_code,
+      team_name,
+      role,
+      privacy_policy
+    } = req.body;
+
+    // Проверка обязательных полей
+    if (!last_name || !first_name || !patronymic || !birth_date || !gender || 
+        !vk_link || !phone || !username || !password || !mentor || !team_code || 
+        !role || privacy_policy === undefined) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Все обязательные поля должны быть заполнены' 
+      });
+    }
+
+    // Проверка уникальности email (username)
+    const existingMember = await db.query(
+      'SELECT id FROM members WHERE username = $1',
+      [username]
+    );
+
+    if (existingMember.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Пользователь с таким email уже существует'
+      });
+    }
+
+    // Вставка данных в базу
+    const query = `
+      INSERT INTO members (
+        last_name, first_name, patronymic, birth_date, gender, vk_link, phone,
+        education, level, grade, format, faculty, specialty, username, password,
+        mentor, team_code, team_name, role, privacy_policy
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+      RETURNING *
+    `;
+
+    const values = [
+      last_name, first_name, patronymic, birth_date, gender, vk_link, phone,
+      education, level, grade, format, faculty, specialty, username, password,
+      mentor, team_code, team_name, role, privacy_policy
+    ];
+
+    const result = await db.query(query, values);
+
+    res.status(201).json({
+      success: true,
+      message: 'Участник успешно зарегистрирован',
+      data: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Error creating member:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка сервера при создании участника'
+    });
+  }
+});
+
+module.exports = router;
 
 
 app.post('/api/structure', async (req, res) => {

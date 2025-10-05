@@ -294,3 +294,64 @@ export const mentorsApi = {
     }
   },
 }
+
+// src/services/membersApi.ts
+export interface MemberData {
+  last_name: string;
+  first_name: string;
+  patronymic: string;
+  birth_date: string;
+  gender: string;
+  vk_link: string;
+  phone: string;
+  education: string;
+  level?: string;
+  grade?: string;
+  format?: string;
+  faculty?: string;
+  specialty?: string;
+  username: string;
+  password: string;
+  mentor: string;
+  team_code: string;
+  team_name?: string;
+  role: 'member' | 'captain';
+  privacy_policy: boolean;
+}
+
+export const membersApi = {
+  async create(memberData: MemberData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memberData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating member:', error);
+      throw error;
+    }
+  },
+
+  async getAll() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/members`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      throw error;
+    }
+  }
+};
