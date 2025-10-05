@@ -20,6 +20,7 @@ interface FormValues {
   grade: string
   format: string
   faculty: string
+  specialty: string
   username: string
   password: string
   mentor: string
@@ -73,6 +74,7 @@ const RegistrationPage = () => {
     handleSubmit, 
     watch, 
     setValue,
+    trigger,
     formState: { errors, isValid } 
   } = useForm<FormValues>({
     mode: 'onChange', // Валидация при изменении полей
@@ -101,7 +103,7 @@ const RegistrationPage = () => {
     if (selectedRole === 'captain' && !generatedTeamCode) {
       const newCode = generateTeamCode()
       setGeneratedTeamCode(newCode)
-      setValue('team_code', newCode)
+      setValue('team_code', newCode, { shouldValidate: true })
     }
   }, [selectedRole, generatedTeamCode, setValue])
 
@@ -109,7 +111,7 @@ const RegistrationPage = () => {
   useEffect(() => {
     if (selectedRole === 'member') {
       setGeneratedTeamCode('')
-      setValue('team_code', '')
+      setValue('team_code', '', { shouldValidate: true })
     }
   }, [selectedRole, setValue])
 
@@ -211,6 +213,7 @@ const RegistrationPage = () => {
       setValue('grade', '')
       setValue('format', '')
       setValue('faculty', '')
+      setValue('specialty', '')
     }
   }, [educationValue, setValue])
 
@@ -224,90 +227,70 @@ const RegistrationPage = () => {
     setShowMentorSuggestions(false)
   }
 
-  // Следим за изменением позиции
-  const watchAllFields = watch() // Следим за всеми полями
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   // Проверяем валидность первого шага
-  const isStep1Complete = () => {
-    const requiredFields = [
-      'last_name', 'first_name', 'birth_date', 
-      'gender', 'vk_link','phone', 'education','mentor'
+  const isStep1Valid = async () => {
+    // Создаем массив полей для валидации
+    const fieldsToValidate: (keyof FormValues)[] = [
+      'last_name', 'first_name', 'patronymic', 'birth_date', 
+      'gender', 'vk_link', 'phone', 'education', 'mentor'
     ]
     
-    // Если пользователь учится в вузе, проверяем дополнительные поля
+    // Добавляем поля образования только если они должны быть заполнены
     if (showEducationFields) {
-      requiredFields.push('grade')
+      fieldsToValidate.push('grade', 'specialty')
     }
     
-    const fieldsValid = requiredFields.every(field => {
-      const value = watchAllFields[field as keyof FormValues]
-      return value !== undefined && value !== null && value !== ''
-    })
-    
-    return fieldsValid !== null
+    // Проверяем только те поля, которые должны быть валидны
+    const result = await trigger(fieldsToValidate)
+    return result
   }
 
-  const nextStep = () => {
-    if (isStep1Complete()) {
-      // Don't reset the form - just clear step 2 specific fields
-      setValue('username', '')
-      setValue('password', '')
-      setValue('team_code', '')
-      setValue('role', 'member')
-      setValue('privacy_policy', false)
+  const nextStep = async () => {
+    const isValid = await isStep1Valid()
+    if (isValid) {
       setStep(2)
     } else {
-      // Show validation errors for incomplete fields by triggering validation
-      const requiredFields = [
+      // Создаем массив полей для валидации
+      const fieldsToValidate: (keyof FormValues)[] = [
         'last_name', 'first_name', 'patronymic', 'birth_date', 
         'gender', 'vk_link', 'phone', 'education', 'mentor'
       ]
       
-      // Добавляем поля образования только если они должны быть заполнены
       if (showEducationFields) {
-        requiredFields.push('grade')
+        fieldsToValidate.push('grade', 'specialty')
       }
       
-      requiredFields.forEach(field => {
-        const value = watchAllFields[field as keyof FormValues]
-        if (!value || value === '') {
-          // Trigger validation by setting empty value to show error
-          setValue(field as keyof FormValues, '', { shouldValidate: true })
-        }
-      })
-      
+      await trigger(fieldsToValidate)
     }
   }
 
-  const onSubmit = async (data: FormValues) => {
-    // Проверяем, что все обязательные поля заполнены
-    const requiredFields = [
-      'last_name', 'first_name', 'patronymic', 'birth_date', 'gender', 'vk_link', 
-      'phone', 'education', 'mentor', 'username', 'password', 'team_code', 'role', 'privacy_policy'
+  // Проверяем валидность второго шага
+  const isStep2Valid = async () => {
+    // Создаем массив полей для валидации
+    const fieldsToValidate: (keyof FormValues)[] = [
+      'username', 'password', 'team_code', 'role', 'privacy_policy'
     ]
-    
-    // Добавляем поле grade только если пользователь учится в вузе
-    if (showEducationFields) {
-      requiredFields.push('grade')
-    }
     
     // Для капитана проверяем также название команды
     if (selectedRole === 'captain') {
-      requiredFields.push('team_name')
+      fieldsToValidate.push('team_name')
     }
     
-    const missingFields = requiredFields.filter(field => {
-      const value = data[field as keyof FormValues]
-      return value === undefined || value === null || value === '' || value === false
-    })
+    const result = await trigger(fieldsToValidate)
+    return result
+  }
+
+  const onSubmit = async (data: FormValues) => {
+    // Проверяем валидность всей формы
+    const isStep1ValidResult = await isStep1Valid()
+    const isStep2ValidResult = await isStep2Valid()
     
-    if (missingFields.length > 0) {
-      console.error('Missing required fields:', missingFields)
-      alert(`Не заполнены обязательные поля: ${missingFields.join(', ')}`)
+    if (!isStep1ValidResult || !isStep2ValidResult) {
+      alert('Пожалуйста, заполните все обязательные поля правильно')
       return
     }
   
@@ -325,6 +308,7 @@ const RegistrationPage = () => {
         faculty: data.faculty,
         format: data.format,
         education: data.education,
+        specialty: data.specialty,
         username: data.username,
         password: data.password,
         mentor: data.mentor,
@@ -408,7 +392,7 @@ const RegistrationPage = () => {
               <input 
                 type="radio" 
                 value="F" 
-                {...register('gender')}
+                {...register('gender', { required: 'Выберите пол' })}
                 className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
               />
               <span className="text-s font-semibold text-white">Ж</span>
@@ -438,14 +422,14 @@ const RegistrationPage = () => {
       <div>
         <label className="block text-s font-semibold text-white mb-2">Номер телефона</label>
         <input 
-          type="url"
+          type="tel"
           className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="89999999999"
           {...register('phone', { 
             required: 'Номер телефона обязателен',
             pattern: {
-              value: /^(https?:\/\/)?(www\.)?vk\.com\/.+/,
-              message: 'Введите корректный номер телефона'
+              value: /^[0-9]{11}$/,
+              message: 'Введите корректный номер телефона (11 цифр)'
             }
           })}
         />
@@ -543,6 +527,17 @@ const RegistrationPage = () => {
                 <option value="заочная">Заочная</option>
               </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-s font-semibold text-white mb-2">Специальность</label>
+            <input 
+              className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register('specialty', { 
+                required: 'Специальность обязательна'
+              })}
+              placeholder="31.05.01 Лечебное дело"
+            />
+            {errors.specialty && <p className="text-red-300 text-xs mt-1">{errors.specialty.message}</p>}
           </div>
         </>
       )}
@@ -668,7 +663,9 @@ const RegistrationPage = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
                 value={generatedTeamCode}
                 readOnly
-                {...register('team_code')}
+                {...register('team_code', { 
+                  required: 'Код команды обязателен'
+                })}
               />
               <button
                 type="button"
