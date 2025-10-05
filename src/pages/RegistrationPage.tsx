@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { mentorsApi, vusesApi } from '@/services/api'
+import { mentorsApi, vusesApi, membersApi } from '@/services/api'
 
 // Базовый URL для API
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+// const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+//   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
 interface FormValues {
   last_name: string
@@ -268,81 +268,57 @@ const RegistrationPage = () => {
     return result
   }
 
-  const prevStep = () => {
-    setStep(1)
-  }
-
   // Функция для отправки данных в таблицу members
-  const createMember = async (data: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/members`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      return result
-    } catch (error) {
-      console.error('Error creating member:', error)
-      throw error
-    }
-  }
-
-  const onSubmit = async (data: FormValues) => {
-    const isStep1ValidResult = await isStep1Valid()
+// Удалите старую функцию createMember и используйте вместо нее:
+const onSubmit = async (data: FormValues) => {
+  const isStep1ValidResult = await isStep1Valid()
     const isStep2ValidResult = await isStep2Valid()
     
     if (!isStep1ValidResult || !isStep2ValidResult) {
       alert('Пожалуйста, заполните все обязательные поля правильно')
       return
     }
-  
-    try {  
-      const finalEducation = data.education.trim() === '' ? 'не обучаюсь в вузе' : data.education;
-      
-      const payload = {
-        last_name: data.last_name,
-        first_name: data.first_name,
-        patronymic: data.patronymic,
-        birth_date: data.birth_date,
-        gender: data.gender,
-        vk_link: data.vk_link,
-        phone: data.phone,
-        level: data.level,
-        grade: data.grade,
-        faculty: data.faculty,
-        format: data.format,
-        education: finalEducation,
-        specialty: data.specialty,
-        username: data.username,
-        password: data.password,
-        mentor: data.mentor,
-        team_code: data.team_code,
-        team_name: data.team_name,
-        role: data.role,
-        privacy_policy: data.privacy_policy === true,
-      }
-      
-      console.log('Sending payload to members table:', JSON.stringify(payload, null, 2))
-      
-      // Отправляем данные в таблицу members
-      await createMember(payload)
-      
-      alert('Регистрация прошла успешно!')
-      navigate('/profile')
-    } catch (e: any) {
-      console.error('Member registration failed', e)
-      console.error('Error details:', e.response?.data)
-      alert(`Ошибка сохранения: ${e.response?.data?.message || e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
+
+  try {  
+    const finalEducation = data.education.trim() === '' ? 'не обучаюсь в вузе' : data.education;
+    
+    const payload = {
+      last_name: data.last_name,
+      first_name: data.first_name,
+      patronymic: data.patronymic,
+      birth_date: data.birth_date,
+      gender: data.gender,
+      vk_link: data.vk_link,
+      phone: data.phone,
+      level: data.level,
+      grade: data.grade,
+      faculty: data.faculty,
+      format: data.format,
+      education: finalEducation,
+      specialty: data.specialty,
+      username: data.username,
+      password: data.password,
+      mentor: data.mentor,
+      team_code: data.team_code,
+      team_name: data.team_name,
+      role: data.role,
+      privacy_policy: data.privacy_policy === true,
     }
+    
+    console.log('Sending payload to members table:', JSON.stringify(payload, null, 2))
+    
+    // Используем membersApi вместо structureApi
+    await membersApi.create(payload)
+    
+    alert('Регистрация прошла успешно!')
+    navigate('/profile')
+  } catch (e: any) {
+    console.error('Member registration failed', e)
+    alert(`Ошибка сохранения: ${e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
   }
+}
+
 
   const renderStep1 = () => (
     <>
@@ -752,13 +728,6 @@ const RegistrationPage = () => {
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}
 
         <div className="flex gap-4">
-          <button 
-            type="button"
-            onClick={prevStep}
-            className="flex-1 font-bold py-4 px-6 rounded-full transition-colors text-lg border border-white"
-          >
-            <h2 className="text-white">Назад</h2>
-          </button>
           <button 
             type="submit"
             onClick={handleClick}
