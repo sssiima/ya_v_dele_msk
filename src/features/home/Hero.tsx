@@ -14,8 +14,8 @@ const Hero = () => {
           className="-rotate-[7deg] w-100"
         />
       </div>
-      <div className="px-4 pb-0">
-        <h2 className="text-center font-heading leading-tight" style={{ fontSize: '18px'  }}>
+      <div className="px-2 pb-0">
+        <h2 className="text-center font-heading leading-tight" style={{ fontSize: '16px'  }}>
           Всероссийская программа развития молодёжного предпринимательства
         </h2>
       </div>
