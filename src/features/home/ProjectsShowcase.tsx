@@ -1,7 +1,7 @@
 
 const Card = ({ title, subtitle, image }: { title?: string, subtitle?:string, image?: string }) => (
   <div className='flex flex-col'>
-  <div className="relative rounded-xl h-36 w-48 flex-shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url('${image}')` }}>
+  <div className="relative rounded-xl h-36 w-48 md:w-64 md:h-48 flex-shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url('${image}')` }}>
     {title && (
       <div className="absolute bottom-4 left-0 right-0">     
         <div className="absolute bottom-0  w-full px-2 py-0.5 flex items-center bg-gradient-to-r from-white via-white to-transparent ">

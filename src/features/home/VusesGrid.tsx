@@ -1,17 +1,19 @@
 // import { useNavigate } from 'react-router-dom'
 
 const Partner = ({ name, image }: { name?: string, image?: string }) => (
-  <div>
-    <img src={image} alt='vus' className="w-full rounded-xl" />
-    <div className="text-[8px] text-center text-gray-500 mt-1">
-          {name}
+  <div className="flex justify-center">
+    <div className="w-full max-w-[120px]">
+      <img src={image} alt='vus' className="w-full rounded-xl" />
+      <div className="text-[8px] text-center text-gray-500 mt-1">
+            {name}
+      </div>
     </div>
   </div>
 )
 
 const FooterNote = () => (
   <div className="text-center text-brand text-sm font-semibold italic">
-    © Я в деле — программа развития молодёжного предпринимательства, 2022-2025
+    © Я в деле — программа развития молодёжного предпринимательства, 2025
   </div>
 )
 
@@ -24,7 +26,7 @@ const VusesGrid = () => {
         className="h-px w-auto"
       />
       <h3 className="text-center text-brand font-extrabold  text-[18px]">Вузы</h3>
-      <div className="grid grid-cols-3 gap-3 ">
+      <div className="flex flex-wrap justify-center gap-3 px-4">
             <Partner image='images/reu.png' name='РЭУ им. Г.В. Плеханова' />   
             <Partner image='images/sech.png' name='Сеченовский университет' />   
             <Partner image='images/hse.png' name='НИУ ВШЭ' />  

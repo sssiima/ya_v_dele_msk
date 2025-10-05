@@ -681,8 +681,8 @@ const RegistrationPage = () => {
               {...register('team_code', { 
                 required: 'Код команды обязателен',
                 minLength: {
-                  value: 4,
-                  message: 'Код команды должен содержать минимум 4 символа'
+                  value: 8,
+                  message: 'Код команды должен содержать минимум 8 символов'
                 }
               })}
             />

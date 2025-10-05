@@ -1,6 +1,6 @@
 const FeatureItem = ({ icon, title, text }: { icon: string; title: string; text: React.ReactNode }) => (
   <div className="flex items-start space-x-6">
-    <div className="w-[4rem] h-[4rem] min-w-[3rem] min-h-[3rem] rounded-full bg-brand flex items-center justify-center text-4xl flex-shrink-0">
+    <div className="w-[4rem] md:w-[6rem] h-[4rem] md:h-[6rem] min-w-[3rem] min-h-[3rem] rounded-full bg-brand flex items-center justify-center text-4xl md:text-6xl flex-shrink-0">
       <span>{icon}</span>
     </div>
     <div>
@@ -22,9 +22,8 @@ const FeaturesList = () => {
         
         <h3 className="text-brand font-extrabold text-center pb-4 pt-3 text-[18px]">Как мы обучаем</h3>
         
-        <div className="space-y-5">
-          <FeatureItem icon="🎲" title="70% практики и инновационный подход" text={<>Обучаем сложным вещам легко и на <br />практике: через игры, <br />
-          тренинги и креативы</>} />
+        <div className="space-y-5 md:grid md:grid-cols-2">
+          <FeatureItem icon="🎲" title="70% практики и инновационный подход" text={<>Обучаем сложным вещам легко и на <br />практике: через игры,<br />тренинги и креативы</>} />
           <FeatureItem icon="👀" title="Личный ментор" text={<>Сопровождение <br />от наставника на протяжении<br />всего обучения </>}/>
           <FeatureItem icon="🛠️" title="Командная работа" text={<>Если у тебя нет команды<br />для создания проекта,<br />поможем ее сформировать</>} />
           <FeatureItem icon="🗺️" title="Выезды" text={<>Проводим масштабные<br />форумы для участников<br />со всей России</>} />
