@@ -24,7 +24,7 @@ const VusesGrid = () => {
         className="h-px w-auto"
       />
       <h3 className="text-center text-brand font-extrabold  text-[18px]">Вузы</h3>
-      <div className="grid grid-cols-3 gap-3 justify-center items-baseline">
+      <div className="grid grid-cols-3 gap-3 ">
             <Partner image='images/reu.png' name='РЭУ им. Г.В. Плеханова' />   
             <Partner image='images/sech.png' name='Сеченовский университет' />   
             <Partner image='images/hse.png' name='НИУ ВШЭ' />  
