@@ -57,6 +57,7 @@ const VusesGrid = () => {
             <Partner image='images/synergy.png' name='Университет «Синергия»' />  
             <Partner image='images/rnimu.png' name='РНИМУ им. Н.И. Пирогова Минздрава России' />  
       </div>
+      <p className="text-brand italic text-center">И другие</p>
       <div
         style={{ backgroundColor: '#08A6A5' }}
         className="h-px w-auto"

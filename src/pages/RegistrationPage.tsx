@@ -544,6 +544,7 @@ const onSubmit = async (data: FormValues) => {
           autoComplete="off"
           onFocus={() => mentorValue && mentorValue.length > 1 && setShowMentorSuggestions(true)}
           onBlur={() => setTimeout(() => setShowMentorSuggestions(false), 200)}
+          placeholder='Начни ввод и выбери из списка'
         />
         
         {showMentorSuggestions && filteredMentors.length > 0 && (

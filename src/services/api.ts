@@ -283,7 +283,18 @@ export const mentorsApi = {
     try {
       const params = search ? { search } : {}
       const response = await api.get('/mentors', { params })
-      return response.data
+      const raw: ApiResponse<Mentor[]> = response.data
+      if (!raw?.success || !Array.isArray(raw.data)) return raw
+
+      // Дедупликация по полю full_name на клиенте как дополнительная защита
+      const seen = new Set<string>()
+      const unique = raw.data.filter((m) => {
+        const key = (m.full_name || `${m.first_name} ${m.last_name}`).trim().toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      return { success: true, data: unique }
     } catch (error) {
       console.warn('Mentors API failed, using fallback data:', error)
       // Заглушка будет добавлена позже
