@@ -233,7 +233,7 @@ const RegistrationPage = () => {
       // очищаем поля доступа при переходе на шаг 2
       setValue('username', '')
       setValue('password', '')
-      setStep(2)
+      setStep(2) // переходим на инфо-этап "Важно"
     } else {
       const fieldsToValidate: (keyof FormValues)[] = [
         'last_name', 'first_name', 'patronymic', 'birth_date', 
@@ -246,6 +246,10 @@ const RegistrationPage = () => {
       
       await trigger(fieldsToValidate)
     }
+  }
+
+  const goToRoleStep = () => {
+    setStep(3)
   }
 
   // Проверяем валидность второго шага
@@ -736,13 +740,50 @@ const onSubmit = async (data: FormValues) => {
     )
   }
 
+  const renderInfoStep = () => (
+    <>
+      <div className="bg-brand rounded-2xl p-6 pl-2 pr-2 text-white space-y-6">
+        <h2 className="text-center text-2xl font-extrabold text-white">ВАЖНО</h2>
+        <p className="text-center text-sm leading-snug font-semibold">
+          В следующем блоке выберите<br/>ваш статус в команде
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="bg-white rounded-2xl p-4">
+            <div className="text-brand font-semibold mb-2">Я участник команды</div>
+            <div className="text-brand text-opacity-80 text-xs">
+              взять у капитана команды <span className="font-semibold">код команды</span>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-4">
+            <div className="text-brand font-semibold mb-2">Я капитан команды</div>
+            <div className="text-brand text-opacity-80 text-xs">
+              не забыть скопировать <span className="font-semibold">код команды</span>
+            </div>
+          </div>
+        </div>
+        <p className="text-center text-sm leading-snug font-semibold">Если остались вопросы,<br/>заглядывай в гайд</p>
+        <div className="pt-2">
+          <button 
+            type="button"
+            onClick={goToRoleStep}
+            className="w-full font-bold py-4 px-6 rounded-full transition-colors text-lg"
+          >
+            <h2 className="text-white">Продолжить</h2>
+          </button>
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-32">
       <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-white text-center mb-6 uppercase">РЕГИСТРАЦИЯ</h1>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {step === 1 ? renderStep1() : renderStep2()}
+          {step === 1 && renderStep1()}
+          {step === 2 && renderInfoStep()}
+          {step === 3 && renderStep2()}
         </form>
       </div>
     </div>
