@@ -9,7 +9,6 @@ import { useEffect } from 'react'
 import MentorsList from '@/features/home/MentorsList'
 import PartnersGrid1 from '@/features/home/PartnersGrid1'
 import PartnersGrid2 from '@/features/home/PartnersGrid2'
-import GeneralPartnersGrid from '@/features/home/GeneralPartnersGrid'
 
 const HomePage = () => {
   useEffect(() => {
@@ -26,7 +25,6 @@ const HomePage = () => {
       <MentorsList />
       <PartnersGrid1 />
       <PartnersGrid2 />
-      <GeneralPartnersGrid />
       <VusesGrid />
     </div>
   )
