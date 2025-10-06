@@ -76,9 +76,9 @@ async function main() {
     await createStructureTable()
     await createMembersTable()
     await alterMembersTableForPasswordHash()
-    console.log('Migration completed successfully')
+    // migration completed
   } catch (err) {
-    console.error('Migration failed:', err)
+    // migration failed
     process.exitCode = 1
   } finally {
     await pool.end()

@@ -4,12 +4,7 @@ import axios from 'axios'
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
   (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
 
-console.log('API Base URL:', API_BASE_URL)
-console.log('Environment check:', {
-  VITE_API_URL: (import.meta as any).env?.VITE_API_URL,
-  hostname: window.location.hostname,
-  isLocalhost: window.location.hostname === 'localhost'
-})
+// Logging removed in production to avoid leaking environment details
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
@@ -222,7 +217,7 @@ export const structureApi = {
       return response.data
     } catch (error: any) {
       // Fallback to fetch if axios fails
-      console.log('Axios failed, trying fetch...')
+      // Fallback to fetch if axios fails
       const response = await fetch(`${API_BASE_URL}/structure`, {
         method: 'POST',
         headers: {

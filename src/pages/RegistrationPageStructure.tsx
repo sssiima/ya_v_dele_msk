@@ -131,7 +131,7 @@ const RegistrationPageStructure = () => {
     })
     
     if (missingFields.length > 0) {
-      console.error('Missing required fields:', missingFields)
+      // missing fields
       alert(`Не заполнены обязательные поля: ${missingFields.join(', ')}`)
       return
     }
@@ -154,7 +154,7 @@ const RegistrationPageStructure = () => {
         
         const uploadData = await uploadResponse.json()
         photoUrl = uploadData.photoUrl
-        console.log('Photo uploaded:', photoUrl)
+        // uploaded
       }
       
       const payload = {
@@ -177,13 +177,12 @@ const RegistrationPageStructure = () => {
         privacy_policy: data.privacy_policy === true,
       }
       
-      console.log('Sending payload:', JSON.stringify(payload, null, 2))
+      // sending payload
       
       await structureApi.create(payload as any)
       navigate('/profile')
     } catch (e: any) {
-      console.error('structure registration failed', e)
-      console.error('Error details:', e.response?.data)
+      // error
       alert(`Ошибка сохранения: ${e.response?.data?.message || e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
     }
   }

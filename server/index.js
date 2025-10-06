@@ -13,8 +13,7 @@ const app = express()
 // Обработчик для всех OPTIONS запросов - должен быть первым
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
-    console.log(`OPTIONS request to: ${req.url}`)
-    console.log('Headers:', req.headers)
+    // CORS preflight handled
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
@@ -26,7 +25,7 @@ app.use((req, res, next) => {
 
 // Глобальный обработчик CORS для всех остальных запросов
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`)
+  // request received
   
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
@@ -58,7 +57,7 @@ app.post('/api/upload', (req, res) => {
     const photoUrl = '/placeholder-photo.jpg'
     res.json({ success: true, photoUrl })
   } catch (error) {
-    console.error('Upload error:', error)
+    // upload error
     res.status(500).json({ success: false, message: 'Ошибка загрузки файла' })
   }
 })
@@ -74,7 +73,7 @@ app.get('/api/health', async (_req, res) => {
 
 app.get('/api/vuses', async (req, res) => {
   try {
-    console.log('GET /api/vuses requested');
+    // vuses requested
     
     const client = await pool.connect();
     const result = await client.query('SELECT id, vus FROM vuses ORDER BY vus');
@@ -85,7 +84,7 @@ app.get('/api/vuses', async (req, res) => {
       data: result.rows
     });
   } catch (error) {
-    console.error('Database error:', error);
+    // db error
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -97,7 +96,7 @@ app.get('/api/vuses', async (req, res) => {
 app.get('/api/mentors', async (req, res) => {
   let client;
   try {
-    console.log('🔍 GET /api/mentors requested');
+    // mentors requested
     
     client = await pool.connect();
     
@@ -114,7 +113,7 @@ app.get('/api/mentors', async (req, res) => {
       ORDER BY first_name, last_name, id
     `);
     
-    console.log(`✅ Found ${result.rows.length} mentors`);
+    // mentors count
     
     res.json({
       success: true,
@@ -122,7 +121,7 @@ app.get('/api/mentors', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Database error:', error.message);
+    // db error
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -246,7 +245,7 @@ router.post('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error creating member:', error);
+    // error
     res.status(500).json({
       success: false,
       message: 'Ошибка сервера при создании участника'
@@ -262,7 +261,7 @@ app.use('/api/members', router)
 
 app.post('/api/structure', async (req, res) => {
   try {
-    console.log('Received structure registration request:', JSON.stringify(req.body, null, 2))
+    // structure registration request received
     
     const {
       last_name,
@@ -300,7 +299,7 @@ app.post('/api/structure', async (req, res) => {
     if (privacy_policy === undefined || privacy_policy === null) missingFields.push('privacy_policy')
 
     if (missingFields.length > 0) {
-      console.log('Missing required fields:', missingFields)
+      // missing fields
       return res.status(400).json({ 
         success: false, 
         message: 'Missing required fields', 
@@ -340,14 +339,14 @@ app.post('/api/structure', async (req, res) => {
     const result = await pool.query(insertQuery, values)
     return res.status(201).json({ success: true, data: { id: result.rows[0].id } })
   } catch (err) {
-    console.error('POST /api/structure error', err)
+    // server error
     return res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`)
+  // server started
 })
 
 

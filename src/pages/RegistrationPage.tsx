@@ -111,7 +111,7 @@ const RegistrationPage = () => {
     try {
       await navigator.clipboard.writeText(generatedTeamCode)
     } catch (err) {
-      console.error('Ошибка копирования: ', err)
+      // noop
       const textArea = document.createElement('textarea')
       textArea.value = generatedTeamCode
       document.body.appendChild(textArea)
@@ -131,7 +131,7 @@ const RegistrationPage = () => {
           setFilteredVuses(response.data)
         }
       } catch (error) {
-        console.error('Ошибка загрузки ВУЗов:', error)
+        // noop
       } finally {
         setLoading(false)
       }
@@ -150,7 +150,7 @@ const RegistrationPage = () => {
           setFilteredMentors(response.data)
         }
       } catch (error) {
-        console.error('Ошибка загрузки наставников:', error)
+        // noop
       } finally {
         setMentorLoading(false)
       }
@@ -300,7 +300,7 @@ const onSubmit = async (data: FormValues) => {
       privacy_policy: data.privacy_policy === true,
     }
     
-    console.log('Sending payload to members table:', JSON.stringify(payload, null, 2))
+    // request payload prepared
     
     // Используем membersApi вместо structureApi
     await membersApi.create(payload)
@@ -308,7 +308,7 @@ const onSubmit = async (data: FormValues) => {
     alert('Регистрация прошла успешно!')
     navigate('/profile')
   } catch (e: any) {
-    console.error('Member registration failed', e)
+    // error handled below
     alert(`Ошибка сохранения: ${e.message || 'Неизвестная ошибка'}. Попробуйте ещё раз.`)
   }
 }
