@@ -230,6 +230,9 @@ const RegistrationPage = () => {
   const nextStep = async () => {
     const isValid = await isStep1Valid()
     if (isValid) {
+      // очищаем поля доступа при переходе на шаг 2
+      setValue('username', '')
+      setValue('password', '')
       setStep(2)
     } else {
       const fieldsToValidate: (keyof FormValues)[] = [
@@ -627,7 +630,7 @@ const onSubmit = async (data: FormValues) => {
                 message: 'Введите корректный email'
               }
             })}
-            autoComplete="new-email"
+            autoComplete="off"
           />
           {errors.username && <p className="text-red-300 text-xs mt-1">{errors.username.message}</p>}
           <label className="text-xs text-white italic">
