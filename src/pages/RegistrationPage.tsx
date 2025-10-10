@@ -349,82 +349,48 @@ const onSubmit = async (data: FormValues) => {
           {...register('patronymic', { 
             required: 'Поле обязательно'
           })}
-          placeholder='Если нет отчества, поставь прочерк'
+          placeholder='Если нет отчества, поставь -'
         />
         {errors.patronymic && <p className="text-red-300 text-xs mt-1">{errors.patronymic.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4 items-start">
-      <div>
-        <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
+  <div>
+    <label className="block text-xs font-semibold text-white mb-2">Дата рождения</label>
+    <input 
+      type="date"
+      className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none min-h-[48px]"
+      {...register('birth_date', { 
+        required: 'Дата рождения обязательна'
+      })}
+    />
+    {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
+  </div>
+  <div>
+    <label className="block text-xs font-semibold text-white mb-2">Пол</label>
+    <div className="flex space-x-1 h-[48px] items-center">
+      <label className="flex items-center px-2 py-2 rounded-full">
         <input 
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none min-h-[48px]"
-          {...register('birth_date', { 
-            required: 'Дата рождения обязательна',
-            pattern: {
-              value: /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(19|20)\d{2}$/,
-              message: 'Введите дату в формате ДД.ММ.ГГГГ'
-            }
-          })}
-          placeholder="ДД.ММ.ГГГГ"
-          onFocus={(e) => {
-            // Показываем календарь на мобильных устройствах
-            if (window.innerWidth < 768) {
-              e.target.type = 'date';
-            }
-          }}
-          onBlur={(e) => {
-            // Возвращаем тип text чтобы можно было вводить вручную
-            if (window.innerWidth < 768) {
-              setTimeout(() => {
-                e.target.type = 'text';
-              }, 100);
-            }
-          }}
-          onInput={(e) => {
-            // Автоматическое добавление точек при вводе
-            const input = e.target as HTMLInputElement;
-            let value = input.value.replace(/\D/g, '');
-            
-            if (value.length > 2 && value.length <= 4) {
-              value = value.slice(0, 2) + '.' + value.slice(2);
-            } else if (value.length > 4) {
-              value = value.slice(0, 2) + '.' + value.slice(2, 4) + '.' + value.slice(4, 8);
-            }
-            
-            input.value = value;
-          }}
+          type="radio" 
+          value="M" 
+          {...register('gender', { required: 'Выберите пол' })}
+          className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
         />
-        {errors.birth_date && <p className="text-red-300 text-xs mt-1">{errors.birth_date.message}</p>}
-      </div>
-        <div>
-          <label className="block text-xs font-semibold text-white mb-2">Пол</label>
-          <div className="flex space-x-1 h-[48px] items-center">
-            <label className="flex items-center px-2 py-2 rounded-full">
-              <input 
-                type="radio" 
-                value="M" 
-                {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7 border-white checked:bg-#000 checked:border-4 checked:border-white cursor-pointer"
-              />
-              <span className="text-s font-semibold text-white">М</span>
-            </label>
-            <label className="flex items-center px-2 py-2 rounded-full">
-              <input 
-                type="radio" 
-                value="F" 
-                {...register('gender', { required: 'Выберите пол' })}
-                className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
-              />
-              <span className="text-s font-semibold text-white">Ж</span>
-            </label>
-          </div>
-          {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
-        </div>
-      </div>
+        <span className="text-s font-semibold text-white">М</span>
+      </label>
+      <label className="flex items-center px-2 py-2 rounded-full">
+        <input 
+          type="radio" 
+          value="F" 
+          {...register('gender', { required: 'Выберите пол' })}
+          className="mr-2 w-7 h-7 border-white checked:bg-#000000 checked:border-4 checked:border-white cursor-pointer"
+        />
+        <span className="text-s font-semibold text-white">Ж</span>
+      </label>
+    </div>
+    {errors.gender && <p className="text-red-300 text-xs mt-1">{errors.gender.message}</p>}
+  </div>
+</div>
 
       <div>
         <label className="block text-s font-semibold text-white mb-2">Ссылка на ВКонтакте</label>
