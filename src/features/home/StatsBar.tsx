@@ -7,7 +7,7 @@ const StatsBar = () => {
       />
       
       <div className="flex items-center justify-between py-4">
-        <h3 className="text-brand text-[9px] md:text-[20px] text-center  normal-case">2 800 охват студентов</h3>
+        <h3 className="text-brand text-[9px] md:text-[20px] text-center  normal-case">28 000 охват студентов</h3>
         {/* <img src="images/line1.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
         <h3 className="text-brand text-[9px] md:text-[20px] text-center  normal-case">74 ВУЗа</h3>
         {/* <img src="images/line2.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
@@ -17,7 +17,7 @@ const StatsBar = () => {
       <div className="flex items-center justify-between pt-4">
         <h3 className="text-brand text-[9px] md:text-[20px] text-center normal-case">12 600 выпускников</h3>
         {/* <img src="images/line1.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
-        <h3 className="text-brand text-[9px] md:text-[20px] text-center normal-case">460 экспертов</h3>
+        <h3 className="text-brand text-[9px] md:text-[20px] text-center normal-case">165 экспертов</h3>
         {/* <img src="images/line2.png" alt="divider" className="mx-2 w-10 h-6 object-contain" /> */}
         <h3 className="text-brand text-[9px] md:text-[20px] text-center normal-case">3 200 бизнес-идеи</h3>
       </div>
