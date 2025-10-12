@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 
-const ProfilePage = () => {
+const ProfilePageMember = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sect, setSect] = useState('profile')
   const [isEditing, setIsEditing] = useState(false)
-  const [teamVisible, setTeamVisible] = useState(false)
   const [isProfileExpanded, setIsProfileExpanded] = useState(false)
   const [lastname, setLastname] = useState('Фамилия')
   const [firstname, setFirstname] = useState('Имя')
@@ -127,25 +126,21 @@ const ProfilePage = () => {
               </button>
             </li>
             <li>
-              <button onClick={() => {pageSelected('calendar')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'calendar' ? 'font-bold' : 'hover:font-bold'}`}>
+              <button onClick={() => {pageSelected('myteam')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'materials' ? 'font-bold' : 'hover:font-bold'}`}>
+                <span>Моя команда</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => {pageSelected('calendar')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'reporting' ? 'font-bold' : 'hover:font-bold'}`}>
                 <span>Календарь программы</span>
               </button>
             </li>
             <li>
-              <button onClick={() => {pageSelected('materials')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'materials' ? 'font-bold' : 'hover:font-bold'}`}>
-                <span>Материалы курса</span>
+              <button onClick={() => {pageSelected('calendar')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'calendar' ? 'font-bold' : 'hover:font-bold'}`}>
+                <span>Команда программы</span>
               </button>
             </li>
-            <li>
-              <button onClick={() => {pageSelected('reporting')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'reporting' ? 'font-bold' : 'hover:font-bold'}`}>
-                <span>Отчетность</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => {pageSelected('handy')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'handy' ? 'font-bold' : 'hover:font-bold'}`}>
-                <span>Хэндик</span>
-              </button>
-            </li>
+            
           </ul>
         </nav>
         <div className='flex justify-center items-center'>
@@ -373,64 +368,40 @@ const ProfilePage = () => {
             </div>
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
             
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Координаторы:</strong></p>
-              <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-             </div>
-
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
             
             <div className='leaders mb-4 text-sm'>
-              <p><strong>Старшие наставники:</strong></p>
-              <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-            </div>
-
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Наставники:</strong></p>
+              <div className='mb-2'>
+                    <p><strong>Название команды</strong></p>
+                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  </div>
+                  <div className='flex flex-row gap-2 mb-2'>
+                    <div className='flex-1'>
+                      <p><strong>Трек</strong></p>
+                      <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    </div>
+                    <div className='flex-1'>
+                      <p><strong>Код команды</strong></p>
+                      <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    </div>
+                  </div>
+                  <div className='mb-2'>
+                    <p><strong>Наставник</strong></p>
+                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  </div>
+                  <div className='mb-2'>
+                    <p><strong>Координатор</strong></p>
+                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  </div>
+                  <div className='mb-2'>
+                    <p><strong>Руководитель округа</strong></p>
+                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  </div>
+                  <div className='mb-2'>
+                    <p><strong>Описание проекта</strong></p>
+                    <input  disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  </div>
+                  
+                  <p><strong>Участники команды:</strong></p>
               <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                   <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
                     <p className="text-brand text-xs">1</p>
@@ -455,80 +426,12 @@ const ProfilePage = () => {
                 </div>
             </div>
           
-            
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            
-            <div className='teams mb-4 text-sm'>
-              <p><strong>Команды:</strong></p>
-              <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                </div>
-              {!teamVisible && (
-                <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                </div>
-              )}
-              {teamVisible && (
-                <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-              )}
-              <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                </div>
-                <button className=' w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
-            </div>
 
 
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
             
             <div className='trophays mb-4 text-sm'>
-              <p><strong>Достижения:</strong></p>
+              <p><strong>Мои достижения:</strong></p>
               <div className='flex flex-row gap-2 w-full min-h-[140px] items-center mt-2'>
                 <div className='border border-brand bg-white min-h-[140px] w-[50%] px-4 py-3 rounded-2xl'></div>
                 <div className='border border-brand bg-white min-h-[140px] w-[50%] px-4 py-3 rounded-2xl flex items-center justify-center'>
@@ -536,37 +439,21 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-
-            <div>
-            <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
-            </div>
-            
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Координатор:</strong></p>
-              <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
-              <p className='mt-4'><strong>Руководитель округа:</strong></p>
-              <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
-            </div>
           </div>
+        )}
+        {sect==='myteam' && (
+          <div>Моя команда</div>
         )}
         {sect==='calendar' && (
           <div>Календарь программы</div>
         )}
-        {sect==='materials' && (
-          <div>Материалы курса</div>
+        {sect==='team' && (
+          <div>Команда программы</div>
         )}
-        {sect==='handy' && (
-          <div>Хэндик</div>
-        )}
-        {sect==='reporting' && (
-          <div>Отчетность</div>
-        )}
+        
       </div>
     </section>
   )
 }
 
-export default ProfilePage;
+export default ProfilePageMember;
