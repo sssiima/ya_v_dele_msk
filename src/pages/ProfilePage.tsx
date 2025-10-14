@@ -525,7 +525,7 @@ const ProfilePage = () => {
             </div>
 
 
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+            {/* <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
             
             <div className='trophays mb-4 text-sm'>
               <p><strong>Достижения:</strong></p>
@@ -536,7 +536,7 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" /> */}
 
             <div>
             <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
