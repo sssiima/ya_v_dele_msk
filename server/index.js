@@ -267,26 +267,13 @@ router.get('/', async (_req, res) => {
         last_name,
         first_name,
         patronymic,
-        birth_date,
-        gender,
-        vk_link,
-        phone,
-        education,
-        level,
-        grade,
-        format,
-        faculty,
-        specialty,
         username,
         mentor,
         team_code,
         team_name,
-        role,
-        privacy_policy,
-        created_at,
-        updated_at
+        role
       FROM members
-      ORDER BY created_at DESC
+      ORDER BY id DESC
     `)
     res.json({ success: true, data: result.rows })
   } catch (error) {
