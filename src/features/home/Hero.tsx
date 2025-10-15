@@ -42,7 +42,7 @@ const Hero = () => {
               Хочу участвовать!
             </button>
             <button 
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/authmute')}
               className="w-[350px] md:w-[300px] lg:w-[350px] max-w-[350px] h-[66px] rounded-3xl bg-transparent border-2 border-brand text-brand font-medium text-[22px]"
             >
               Войти в ЛК
