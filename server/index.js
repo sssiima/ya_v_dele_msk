@@ -258,6 +258,42 @@ module.exports = router;
 // Подключаем роутер участников
 app.use('/api/members', router)
 
+// GET /api/members - получить список участников
+router.get('/', async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        last_name,
+        first_name,
+        patronymic,
+        birth_date,
+        gender,
+        vk_link,
+        phone,
+        education,
+        level,
+        grade,
+        format,
+        faculty,
+        specialty,
+        username,
+        mentor,
+        team_code,
+        team_name,
+        role,
+        privacy_policy,
+        created_at,
+        updated_at
+      FROM members
+      ORDER BY created_at DESC
+    `)
+    res.json({ success: true, data: result.rows })
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 
 app.post('/api/structure', async (req, res) => {
   try {
