@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { membersApi } from '@/services/api'
 
 const ProfilePageMember = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -100,6 +101,30 @@ const ProfilePageMember = () => {
 
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
+
+  useEffect(() => {
+    const memberId = Number(localStorage.getItem('member_id'))
+    if (!memberId) return
+    membersApi.getById(memberId)
+      .then((resp: any) => {
+        const m = resp?.data
+        if (!m) return
+        setLastname(m.last_name || '')
+        setFirstname(m.first_name || '')
+        setPatronymic(m.patronymic || '')
+        setEmail(m.username || '')
+        setUniversity(m.education || '')
+        setEducationLevel(m.level || '')
+        setCourse(m.grade || '')
+        setFaculty(m.faculty || '')
+        setEducationForm(m.format || '')
+        setPhone(m.phone || '')
+        setVkLink(m.vk_link || '')
+        setBirthDate(m.birth_date ? m.birth_date.substring(0,10) : '')
+        setGender(m.gender || '')
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <section className="card p-0 overflow-hidden relative">

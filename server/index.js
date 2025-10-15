@@ -289,6 +289,37 @@ router.get('/', async (_req, res) => {
   }
 })
 
+// GET /api/members/:id - получить участника по id
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query(
+      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at FROM members WHERE id = $1`,
+      [id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    res.json({ success: true, data: result.rows[0] })
+  } catch (_e) {
+    res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
+// Простая авторизация участников: POST /api/auth/member-login
+app.post('/api/auth/member-login', async (req, res) => {
+  try {
+    const { username, password } = req.body || {}
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
+    const result = await pool.query('SELECT id, password_hash FROM members WHERE username = $1', [username])
+    if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    const ok = await bcrypt.compare(password, result.rows[0].password_hash || '')
+    if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    // Возвращаем id участника; храните его в localStorage на фронте
+    return res.json({ success: true, data: { id: result.rows[0].id } })
+  } catch (_e) {
+    return res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 
 app.post('/api/structure', async (req, res) => {
   try {

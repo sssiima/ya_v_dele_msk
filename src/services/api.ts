@@ -360,4 +360,25 @@ export const membersApi = {
       throw error;
     }
   }
+  ,
+  async getById(id: number) {
+    const resp = await fetch(`${API_BASE_URL}/members/${id}`)
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+    return await resp.json()
+  }
 };
+
+export const memberAuthApi = {
+  async login(username: string, password: string) {
+    const resp = await fetch(`${API_BASE_URL}/auth/member-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}))
+      throw new Error(data.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
+  }
+}
