@@ -282,8 +282,7 @@ router.get('/', async (_req, res) => {
         team_code,
         team_name,
         role,
-        created_at,
-        updated_at
+        created_at
       FROM members
       ORDER BY created_at DESC
     `)
