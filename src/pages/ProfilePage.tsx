@@ -67,7 +67,7 @@ const ProfilePage = () => {
     setTempBirthDate(birthDate)
     setTempGender(gender)
     setIsEditing(true)
-    setIsProfileExpanded(true) // Автоматически разворачиваем при редактировании
+    setIsProfileExpanded(true)
   }
 
   const handleSaveProfile = () => {
@@ -187,368 +187,631 @@ const ProfilePage = () => {
 
       <div className="px-4 pb-0">
         {sect==='profile' && (
-          <div>
-            <div className='baseinfo flex flex-col justify-center items-start mt-4'>
-              <div className='flex flex-row py-4 relative'>
-                <div className='bg-[#D9D9D9] rounded-lg w-44 aspect-square'></div>
-                <img src='images/logowhite.png' alt='logo' className='absolute -right-36 top-6 w-44 h-auto z-10'/>
+          <div className="lg:flex lg:gap-6">
+            {/* Левая колонка - профиль и команды */}
+            <div className="lg:flex-1">
+              <div className='baseinfo flex flex-col justify-center items-start mt-4'>
+                <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
+                  {/* Аватар */}
+                  <div className='flex flex-row py-4 relative lg:flex-col lg:items-start'>
+                    <div className='bg-[#D9D9D9] rounded-lg w-44 aspect-square'></div>
+                    <img src='images/heading-icon.png' alt='logo' className='absolute w-48 right-5 lg:-right-0 lg:top-40'/>
+                  </div>
+                  
+                  {/* Основные поля (ФИО и остальная информация) */}
+                  <div className='lg:flex-1 lg:w-full'>
+                    {/* Для мобильных устройств - обычное поведение */}
+                    <div className='lg:hidden'>
+                      {/* Режим 1: Только фамилия и имя + стрелка + кнопка редактировать */}
+                      {!isProfileExpanded && !isEditing && (
+                        <div className='w-full text-xs'>
+                          <div className='mb-2 text-left'>
+                            <p><strong>Фамилия</strong></p>
+                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-4 text-left'>
+                            <p><strong>Имя</strong></p>
+                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          
+                          <div className='w-full flex flex-col items-center'>
+                            <button onClick={() => setIsProfileExpanded(true)}>
+                              <img 
+                                src='images/arrow.png' 
+                                alt='arrow' 
+                                className='w-6 mt-2'
+                              />
+                            </button>
+                            <button className='text-brand mt-2 hover:underline' onClick={handleEditProfile}>
+                              Редактировать профиль
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Режим 2: Все поля (просмотр) + стрелка назад + кнопка редактировать */}
+                      {isProfileExpanded && !isEditing && (
+                        <div className='w-full text-xs'>
+                          <div className='mb-2'>
+                            <p><strong>Фамилия</strong></p>
+                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Имя</strong></p>
+                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Отчество</strong></p>
+                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Электронная почта</strong></p>
+                            <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>ВУЗ</strong></p>
+                            <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex flex-row gap-2 mb-2'>
+                            <div className='flex-1'>
+                              <p><strong>Уровень подготовки</strong></p>
+                              <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Курс обучения</strong></p>
+                              <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div className='flex flex-row gap-2 mb-2'>
+                            <div className='flex-1'>
+                              <p><strong>Факультет</strong></p>
+                              <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Форма обучения</strong></p>
+                              <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Номер телефона</strong></p>
+                            <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Ссылка на ВКонтакте</strong></p>
+                            <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex flex-row gap-2 mb-2'>
+                            <div className='flex-1'>
+                              <p><strong>Дата рождения</strong></p>
+                              <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Пол</strong></p>
+                              <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          
+                          <div className='w-full flex flex-col items-center'>
+                            <button onClick={() => setIsProfileExpanded(false)}>
+                              <img 
+                                src='images/arrow.png' 
+                                alt='arrow' 
+                                className='w-6 mt-2 rotate-180'
+                              />
+                            </button>
+                            <button className='text-brand mt-2 hover:underline' onClick={handleEditProfile}>
+                              Редактировать профиль
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Десктоп версия - все поля под аватаром */}
+                    {!isEditing && (
+                      <div className='hidden lg:block w-full text-xs'>
+                        {/* ФИО в одну строку */}
+                        <div className='flex flex-col gap-2 mb-2'>
+                          <div className='flex-1'>
+                            <p><strong>Фамилия</strong></p>
+                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex-1'>
+                            <p><strong>Имя</strong></p>
+                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex-1'>
+                            <p><strong>Отчество</strong></p>
+                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                        </div>
+                        
+                        {/* Остальные поля на всю ширину */}
+                        <div className='space-y-3'>
+                          <div>
+                            <p><strong>Электронная почта</strong></p>
+                            <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div>
+                            <p><strong>ВУЗ</strong></p>
+                            <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex flex-row gap-2'>
+                            <div className='flex-1'>
+                              <p><strong>Уровень подготовки</strong></p>
+                              <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Курс обучения</strong></p>
+                              <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div className='flex flex-row gap-2'>
+                            <div className='flex-1'>
+                              <p><strong>Факультет</strong></p>
+                              <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Форма обучения</strong></p>
+                              <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div>
+                            <p><strong>Номер телефона</strong></p>
+                            <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div>
+                            <p><strong>Ссылка на ВКонтакте</strong></p>
+                            <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1" />
+                          </div>
+                          <div className='flex flex-row gap-2'>
+                            <div className='flex-1'>
+                              <p><strong>Дата рождения</strong></p>
+                              <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Пол</strong></p>
+                              <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className='w-full flex flex-col items-center mt-4'>
+                          <button className='text-brand mt-2 hover:underline' onClick={handleEditProfile}>
+                            Редактировать профиль
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Режим 3: Редактирование (все поля активны) + кнопки сохранить/отменить */}
+                    {isEditing && (
+                      <div className='w-full text-xs'>
+                        {/* ФИО в одну строку */}
+                        <div className='flex flex-col gap-2 mb-2'>
+                          <div className='flex-1'>
+                            <p><strong>Фамилия</strong></p>
+                            <input value={tempLastname} onChange={(e) => setTempLastname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex-1'>
+                            <p><strong>Имя</strong></p>
+                            <input value={tempFirstname} onChange={(e) => setTempFirstname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex-1'>
+                            <p><strong>Отчество</strong></p>
+                            <input value={tempPatronymic} onChange={(e) => setTempPatronymic(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                        </div>
+                        
+                        {/* Остальные поля на всю ширину */}
+                        <div className='space-y-3'>
+                          <div>
+                            <p><strong>Электронная почта</strong></p>
+                            <input value={tempEmail} onChange={(e) => setTempEmail(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div>
+                            <p><strong>ВУЗ</strong></p>
+                            <input value={tempUniversity} onChange={(e) => setTempUniversity(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex flex-row gap-2'>
+                            <div className='flex-1'>
+                              <p><strong>Уровень подготовки</strong></p>
+                              <input value={tempEducationLevel} onChange={(e) => setTempEducationLevel(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Курс обучения</strong></p>
+                              <input value={tempCourse} onChange={(e) => setTempCourse(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div className='flex flex-row gap-2'>
+                            <div className='flex-1'>
+                              <p><strong>Факультет</strong></p>
+                              <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Форма обучения</strong></p>
+                              <input value={tempEducationForm} onChange={(e) => setTempEducationForm(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                          <div>
+                            <p><strong>Номер телефона</strong></p>
+                            <input value={tempPhone} onChange={(e) => setTempPhone(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div>
+                            <p><strong>Ссылка на ВКонтакте</strong></p>
+                            <input value={tempVkLink} onChange={(e) => setTempVkLink(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex flex-row gap-4'>
+                            <div className='flex-1'>
+                              <p><strong>Дата рождения</strong></p>
+                              <input value={tempBirthDate} onChange={(e) => setTempBirthDate(e.target.value)} type='date' className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                            <div className='flex-1'>
+                              <p><strong>Пол</strong></p>
+                              <input value={tempGender} onChange={(e) => setTempGender(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className='flex gap-4 mt-6'>
+                          <button className='flex-1 bg-brand text-white rounded-full p-2 text-sm' onClick={handleSaveProfile}>
+                            Сохранить
+                          </button>
+                          <button className='flex-1 border border-brand text-brand rounded-full p-2 text-sm' onClick={handleCancelEdit}>
+                            Отмена
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
+
+            </div>
+
+            {/* Вертикальная разделительная линия */}
+            <div className="hidden lg:block w-px bg-brand mx-4 mt-8"></div>
+
+            {/* Правая колонка - списки координаторов, наставников и т.д. */}
+            <div className="lg:flex-1">
+              <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
               
-              {/* Режим 1: Только фамилия и имя + стрелка + кнопка редактировать */}
-              {!isProfileExpanded && !isEditing && (
-                <div className='w-full text-xs'>
-                  <div className='mb-2 text-left'>
-                    <p><strong>Фамилия</strong></p>
-                    <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-4 text-left'>
-                    <p><strong>Имя</strong></p>
-                    <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  
-                  <div className='w-full flex flex-col items-center'>
-                    <button onClick={() => setIsProfileExpanded(true)}>
-                      <img 
-                        src='images/arrow.png' 
-                        alt='arrow' 
-                        className='w-6 mt-2'
-                      />
+              {/* Для мобильных - списки идут после профиля */}
+              <div className="lg:hidden">
+                <div className='leaders mb-4 text-sm'>
+                  <p><strong>Координаторы:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
-                    <button className='text-brand mt-2 hover:underline' onClick={handleEditProfile}>
-                      Редактировать профиль
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Режим 2: Все поля (просмотр) + стрелка назад + кнопка редактировать */}
-              {isProfileExpanded && !isEditing && (
-                <div className='w-full text-xs'>
-                  <div className='mb-2'>
-                    <p><strong>Фамилия</strong></p>
-                    <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Имя</strong></p>
-                    <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Отчество</strong></p>
-                    <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Электронная почта</strong></p>
-                    <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>ВУЗ</strong></p>
-                    <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Уровень подготовки</strong></p>
-                      <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Курс обучения</strong></p>
-                      <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Факультет</strong></p>
-                      <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Форма обучения</strong></p>
-                      <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Номер телефона</strong></p>
-                    <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Ссылка на ВКонтакте</strong></p>
-                    <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Дата рождения</strong></p>
-                      <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Пол</strong></p>
-                      <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  
-                  <div className='w-full flex flex-col items-center'>
-                    <button onClick={() => setIsProfileExpanded(false)}>
-                      <img 
-                        src='images/arrow.png' 
-                        alt='arrow' 
-                        className='w-6 mt-2 rotate-180'
-                      />
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
-                    <button className='text-brand mt-2 hover:underline' onClick={handleEditProfile}>
-                      Редактировать профиль
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
                   </div>
                 </div>
-              )}
 
-              {/* Режим 3: Редактирование (все поля активны) + кнопки сохранить/отменить */}
-              {isEditing && (
-                <div className='w-full text-xs'>
-                  <div className='mb-2'>
-                    <p><strong>Фамилия</strong></p>
-                    <input value={tempLastname} onChange={(e) => setTempLastname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Имя</strong></p>
-                    <input value={tempFirstname} onChange={(e) => setTempFirstname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Отчество</strong></p>
-                    <input value={tempPatronymic} onChange={(e) => setTempPatronymic(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Электронная почта</strong></p>
-                    <input value={tempEmail} onChange={(e) => setTempEmail(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>ВУЗ</strong></p>
-                    <input value={tempUniversity} onChange={(e) => setTempUniversity(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Уровень подготовки</strong></p>
-                      <input value={tempEducationLevel} onChange={(e) => setTempEducationLevel(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Курс обучения</strong></p>
-                      <input value={tempCourse} onChange={(e) => setTempCourse(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Факультет</strong></p>
-                      <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Форма обучения</strong></p>
-                      <input value={tempEducationForm} onChange={(e) => setTempEducationForm(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Номер телефона</strong></p>
-                    <input value={tempPhone} onChange={(e) => setTempPhone(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='mb-2'>
-                    <p><strong>Ссылка на ВКонтакте</strong></p>
-                    <input value={tempVkLink} onChange={(e) => setTempVkLink(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                  </div>
-                  <div className='flex flex-row gap-2 mb-2'>
-                    <div className='flex-1'>
-                      <p><strong>Дата рождения</strong></p>
-                      <input value={tempBirthDate} onChange={(e) => setTempBirthDate(e.target.value)} type='date' className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                    <div className='flex-1'>
-                      <p><strong>Пол</strong></p>
-                      <input value={tempGender} onChange={(e) => setTempGender(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                    </div>
-                  </div>
-                  
-                  <div className='flex gap-2 mt-4'>
-                    <button className='flex-1 bg-brand text-white rounded-full p-2 text-sm' onClick={handleSaveProfile}>
-                      Сохранить
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                
+                <div className='leaders mb-4 text-sm'>
+                  <p><strong>Старшие наставники:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
-                    <button className='flex-1 border border-brand text-brand rounded-full p-2 text-sm' onClick={handleCancelEdit}>
-                      Отмена
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Координаторы:</strong></p>
-              <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-             </div>
 
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Старшие наставники:</strong></p>
-              <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                
+                <div className='leaders mb-4 text-sm'>
+                  <p><strong>Наставники:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                  </div>
                 </div>
-            </div>
 
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Наставники:</strong></p>
-              <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-            </div>
-          
-            
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            
-            <div className='teams mb-4 text-sm'>
-              <p><strong>Команды:</strong></p>
-              <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                
+                <div className='teams mb-4 text-sm'>
+                  <p><strong>Команды:</strong></p>
+                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                    <button className='w-full flex flex-row justify-between items-center'>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                        <p className="italic text-xs">Название команды</p>
+                      </div>
+                      <p className="text-xs text-brand">1/100</p>
+                    </button>
+                  </div>
+                  {!teamVisible && (
+                    <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                      <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                          <p className="italic text-xs">Название команды</p>
+                        </div>
+                        <p className="text-xs text-brand">1/100</p>
+                      </button>
                     </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                </div>
-              {!teamVisible && (
-                <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
+                  )}
+                  {teamVisible && (
+                    <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
+                      <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                          <p className="italic text-xs">Название команды</p>
+                        </div>
+                        <p className="text-xs text-brand">1/100</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">1</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">2</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">3</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">4</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">5</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
                     </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
+                  )}
+                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                    <button className='w-full flex flex-row justify-between items-center'>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                        <p className="italic text-xs">Название команды</p>
+                      </div>
+                      <p className="text-xs text-brand">1/100</p>
+                    </button>
+                  </div>
+                  <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
                 </div>
-              )}
-              {teamVisible && (
-                <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                </div>
-              )}
-              <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                  <button className='w-full flex flex-row justify-between items-center'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                      <p className="italic text-xs">Название команды</p>
-                    </div>
-                    <p className="text-xs text-brand">1/100</p>
-                  </button>
-                </div>
-                <button className=' w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
-            </div>
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mb-2" />
 
-
-            {/* <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='trophays mb-4 text-sm'>
-              <p><strong>Достижения:</strong></p>
-              <div className='flex flex-row gap-2 w-full min-h-[140px] items-center mt-2'>
-                <div className='border border-brand bg-white min-h-[140px] w-[50%] px-4 py-3 rounded-2xl'></div>
-                <div className='border border-brand bg-white min-h-[140px] w-[50%] px-4 py-3 rounded-2xl flex items-center justify-center'>
-                  <span className="text-4xl text-brand">+</span>
+                <div>
+                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
+                </div>
+                
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-2 mb-2" />
+                
+                <div className='leaders text-sm'>
+                  <p><strong>Координатор:</strong></p>
+                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+                  <p className='mt-4'><strong>Руководитель округа:</strong></p>
+                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
                 </div>
               </div>
-            </div>
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" /> */}
 
-            <div>
-            <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
-            </div>
-            
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-            
-            <div className='leaders mb-4 text-sm'>
-              <p><strong>Координатор:</strong></p>
-              <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
-              <p className='mt-4'><strong>Руководитель округа:</strong></p>
-              <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+              {/* Для десктоп версии - списки в правой колонке */}
+              <div className="hidden lg:block space-y-6">
+                <div className='leaders text-sm mt-4'>
+                  <p><strong>Координаторы:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                  </div>
+                </div>
+
+                <div className='leaders text-sm'>
+                  <p><strong>Старшие наставники:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                  </div>
+                </div>
+
+                <div className='leaders text-sm'>
+                  <p><strong>Наставники:</strong></p>
+                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      <p className="text-brand text-xs">1</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">2</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">3</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">4</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                      <p className="text-brand text-xs">5</p>
+                      <p className="italic text-xs">Фамилия Имя Отчество</p>
+                    </button>
+                  </div>
+
+                  <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-4 mb-2" />
+
+
+                  <div className="hidden lg:block">
+                
+                <div className='teams mb-6 text-sm'>
+                  <p><strong>Команды:</strong></p>
+                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                    <button className='w-full flex flex-row justify-between items-center'>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                        <p className="italic text-xs">Название команды</p>
+                      </div>
+                      <p className="text-xs text-brand">1/100</p>
+                    </button>
+                  </div>
+                  {!teamVisible && (
+                    <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                      <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                          <p className="italic text-xs">Название команды</p>
+                        </div>
+                        <p className="text-xs text-brand">1/100</p>
+                      </button>
+                    </div>
+                  )}
+                  {teamVisible && (
+                    <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
+                      <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                          <p className="italic text-xs">Название команды</p>
+                        </div>
+                        <p className="text-xs text-brand">1/100</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">1</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">2</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">3</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">4</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
+                        <p className="text-brand text-xs">5</p>
+                        <p className="italic text-xs">Фамилия Имя Отчество</p>
+                      </button>
+                    </div>
+                  )}
+                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                    <button className='w-full flex flex-row justify-between items-center'>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                        <p className="italic text-xs">Название команды</p>
+                      </div>
+                      <p className="text-xs text-brand">1/100</p>
+                    </button>
+                  </div>
+                  <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
+                </div>
+              </div>
+
+                  
+                </div>
+
+                
+
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
+
+                <div>
+                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
+                </div>
+                
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
+                
+                <div className='leaders text-sm'>
+                  <p><strong>Координатор:</strong></p>
+                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+                  <p className='mt-2'><strong>Руководитель округа:</strong></p>
+                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
