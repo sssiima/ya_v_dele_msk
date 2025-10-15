@@ -1,48 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Client } from 'pg';
 
-// GET /api/members - получить всех участников
-// POST /api/members - создать нового участника
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('🎯 /api/members endpoint called');
+  
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL
-  });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
-    await client.connect();
+    // Просто возвращаем тестовые данные для проверки
+    const testData = [
+      { id: 1, first_name: 'Тест', last_name: 'Тестовый' },
+      { id: 2, first_name: 'Пример', last_name: 'Примеров' }
+    ];
 
-    if (req.method === 'GET') {
-      // Получить всех участников
-      const result = await client.query(`
-        SELECT * 
-        FROM members 
-        ORDER BY id DESC
-      `);
-      
-      res.status(200).json({
-        success: true,
-        data: result.rows,
-        count: result.rowCount,
-        timestamp: new Date().toISOString()
-      });
+    res.status(200).json({
+      success: true,
+      data: testData,
+      count: testData.length,
+      message: 'Тестовые данные - API работает!'
+    });
 
-    } else {
-      res.status(405).json({
-        success: false,
-        error: 'Method not allowed'
-      });
-    }
-
-  } finally {
-    await client.end();
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
   }
 }
