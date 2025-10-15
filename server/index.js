@@ -97,12 +97,10 @@ app.get('/api/mentors', async (req, res) => {
   let client;
   try {
     // mentors requested
-    
     client = await pool.connect();
-    
-    // Запрос для получения наставников без дублей по ФИ (distinct по имени/фамилии)
+    // Запрос для получения всех наставников и старших наставников без сортировки/дедупликации
     const result = await client.query(`
-      SELECT DISTINCT ON (first_name, last_name)
+      SELECT 
         id,
         first_name,
         last_name,
@@ -110,7 +108,6 @@ app.get('/api/mentors', async (req, res) => {
         pos
       FROM structure
       WHERE pos IN ('наставник', 'старший наставник')
-      ORDER BY first_name, last_name, id
     `);
     
     // mentors count
