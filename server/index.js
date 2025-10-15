@@ -378,6 +378,36 @@ app.post('/api/structure', async (req, res) => {
   }
 })
 
+// GET /api/structure - получить список зарегистрированных в структуре
+app.get('/api/structure', async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        last_name,
+        first_name,
+        patronymic,
+        birth_date,
+        gender,
+        vk_link,
+        phone,
+        education,
+        grade,
+        pos,
+        username,
+        high_mentor,
+        coord,
+        ro,
+        created_at
+      FROM structure
+      ORDER BY created_at DESC
+    `)
+    res.json({ success: true, data: result.rows })
+  } catch (_error) {
+    res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   // server started
