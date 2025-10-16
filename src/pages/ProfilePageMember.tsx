@@ -695,36 +695,14 @@ const loadTeamData = async (teamCode: string) => {
   <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
   
   <div className='leaders mb-4 text-sm'>
-    {/* Название команды с редактированием */}
+    {/* Название команды (только просмотр) */}
     <div className='mb-2'>
       <p><strong>Название команды</strong></p>
-      <div className="relative">
-        <input 
-          value={teamData.teamName} 
-          disabled={!teamData.isEditingTeamName}
-          onChange={(e) => setTeamData(prev => ({...prev, teamName: e.target.value}))}
-          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 pr-10"
-        />
-        <button 
-          onClick={() => {
-            if (teamData.isEditingTeamName) {
-              // Сохраняем изменения
-              setTeamData(prev => ({...prev, isEditingTeamName: false}));
-              // Здесь можно добавить вызов API для сохранения
-            } else {
-              // Включаем режим редактирования
-              setTeamData(prev => ({...prev, isEditingTeamName: true}));
-            }
-          }}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-        >
-          {teamData.isEditingTeamName ? (
-            <img src="images/check.png" alt="save" className="w-4 h-4" />
-          ) : (
-            <img src="images/edit.png" alt="edit" className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+      <input 
+        value={teamData.teamName}
+        disabled
+        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+      />
     </div>
 
     <div className='flex flex-row gap-2 mb-2'>
@@ -753,36 +731,14 @@ const loadTeamData = async (teamCode: string) => {
       <input value={teamData.districtManager} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
     </div>
 
-    {/* Описание проекта с редактированием */}
+    {/* Описание проекта (только просмотр) */}
     <div className='mb-2'>
       <p><strong>Описание проекта</strong></p>
-      <div className="relative">
-        <input 
-          value={teamData.projectDescription} 
-          disabled={!teamData.isEditingProjectDescription}
-          onChange={(e) => setTeamData(prev => ({...prev, projectDescription: e.target.value}))}
-          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 pr-10"
-        />
-        <button 
-          onClick={() => {
-            if (teamData.isEditingProjectDescription) {
-              // Сохраняем изменения
-              setTeamData(prev => ({...prev, isEditingProjectDescription: false}));
-              // Здесь можно добавить вызов API для сохранения
-            } else {
-              // Включаем режим редактирования
-              setTeamData(prev => ({...prev, isEditingProjectDescription: true}));
-            }
-          }}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-        >
-          {teamData.isEditingProjectDescription ? (
-            <img src="/images/check.png" alt="save" className="w-4 h-4" />
-          ) : (
-            <img src="/images/edit.png" alt="edit" className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+      <input 
+        value={teamData.projectDescription}
+        disabled
+        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+      />
     </div>
     
     <p><strong>Участники команды:</strong></p>
