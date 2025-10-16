@@ -695,9 +695,9 @@ const loadTeamData = async (teamCode: string) => {
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
         >
           {teamData.isEditingTeamName ? (
-            <img src="/images/check.png" alt="save" className="w-4 h-4" />
+            <img src="images/check.png" alt="save" className="w-4 h-4" />
           ) : (
-            <img src="/images/edit.png" alt="edit" className="w-4 h-4" />
+            <img src="images/edit.png" alt="edit" className="w-5 h-5" />
           )}
         </button>
       </div>
@@ -755,7 +755,7 @@ const loadTeamData = async (teamCode: string) => {
           {teamData.isEditingProjectDescription ? (
             <img src="/images/check.png" alt="save" className="w-4 h-4" />
           ) : (
-            <img src="/images/edit.png" alt="edit" className="w-4 h-4" />
+            <img src="/images/edit.png" alt="edit" className="w-5 h-5" />
           )}
         </button>
       </div>
