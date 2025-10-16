@@ -216,7 +216,7 @@ const ProfilePageMember = () => {
 
       setTeamData({
         teamName: captain?.team_name || 'Название команды не указано',
-        track: 'Выбор трека будет доступен после 1 Воркшопа',
+        track: 'Будет доступен после 1 Воркшопа',
         teamCode: teamCode,
         mentor: 'Наставник не назначен',
         coordinator: 'Координатор не назначен',
