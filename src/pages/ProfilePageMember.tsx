@@ -1,25 +1,76 @@
 import { useState, useEffect } from 'react';
 import { membersApi } from '@/services/api'
 
+// Типы для данных
+interface TeamMember {
+  id: number;
+  number: number;
+  fullName: string;
+  isCaptain: boolean;
+}
+
+interface TeamData {
+  teamName: string;
+  track: string;
+  teamCode: string;
+  mentor: string;
+  coordinator: string;
+  districtManager: string;
+  projectDescription: string;
+  teamMembers: TeamMember[];
+}
+
+interface MemberData {
+  id: number;
+  last_name: string;
+  first_name: string;
+  patronymic: string;
+  username: string;
+  education: string;
+  level: string;
+  grade: string;
+  faculty: string;
+  format: string;
+  phone: string;
+  vk_link: string;
+  birth_date: string;
+  gender: string;
+  team_code: string;
+  role: string;
+  team_name: string;
+}
+
 const ProfilePageMember = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sect, setSect] = useState('profile')
   const [isEditing, setIsEditing] = useState(false)
   const [isProfileExpanded, setIsProfileExpanded] = useState(false)
-  const [lastname, setLastname] = useState('Фамилия')
-  const [firstname, setFirstname] = useState('Имя')
-  const [patronymic, setPatronymic] = useState('Отчество')
-  const [email, setEmail] = useState('email@example.com')
-  const [university, setUniversity] = useState('Название ВУЗа')
-  const [educationLevel, setEducationLevel] = useState('Бакалавриат')
-  const [course, setCourse] = useState('3')
-  const [faculty, setFaculty] = useState('Факультет')
-  const [educationForm, setEducationForm] = useState('Очная')
-  const [phone, setPhone] = useState('+7 (999) 999-99-99')
-  const [vkLink, setVkLink] = useState('https://vk.com/username')
-  const [birthDate, setBirthDate] = useState('2000-01-01')
-  const [gender, setGender] = useState('Мужской')
+  const [lastname, setLastname] = useState('')
+  const [firstname, setFirstname] = useState('')
+  const [patronymic, setPatronymic] = useState('')
+  const [email, setEmail] = useState('')
+  const [university, setUniversity] = useState('')
+  const [educationLevel, setEducationLevel] = useState('')
+  const [course, setCourse] = useState('')
+  const [faculty, setFaculty] = useState('')
+  const [educationForm, setEducationForm] = useState('')
+  const [phone, setPhone] = useState('')
+  const [vkLink, setVkLink] = useState('')
+  const [birthDate, setBirthDate] = useState('')
+  const [gender, setGender] = useState('')
+
+  // Данные команды
+  const [teamData, setTeamData] = useState<TeamData>({
+    teamName: '',
+    track: '',
+    teamCode: '',
+    mentor: '',
+    coordinator: '',
+    districtManager: '',
+    projectDescription: '',
+    teamMembers: []
+  })
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -67,7 +118,7 @@ const ProfilePageMember = () => {
     setTempBirthDate(birthDate)
     setTempGender(gender)
     setIsEditing(true)
-    setIsProfileExpanded(true) // Автоматически разворачиваем при редактировании
+    setIsProfileExpanded(true)
   }
 
   const handleSaveProfile = () => {
@@ -102,13 +153,18 @@ const ProfilePageMember = () => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
+  // Загрузка данных пользователя и команды
   useEffect(() => {
     const memberId = Number(localStorage.getItem('member_id'))
     if (!memberId) return
-    membersApi.getById(memberId)
-      .then((resp: any) => {
-        const m = resp?.data
+    
+    const loadUserData = async () => {
+      try {
+        // Загрузка данных пользователя
+        const resp = await membersApi.getById(memberId)
+        const m: MemberData = resp?.data
         if (!m) return
+        
         setLastname(m.last_name || '')
         setFirstname(m.first_name || '')
         setPatronymic(m.patronymic || '')
@@ -122,9 +178,56 @@ const ProfilePageMember = () => {
         setVkLink(m.vk_link || '')
         setBirthDate(m.birth_date ? m.birth_date.substring(0,10) : '')
         setGender(m.gender || '')
-      })
-      .catch(() => {})
+
+        // Если у пользователя есть код команды, загружаем данные команды
+        if (m.team_code) {
+          await loadTeamData(m.team_code)
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error)
+      }
+    }
+
+    loadUserData()
   }, [])
+
+  // Функция загрузки данных команды
+  const loadTeamData = async (teamCode: string) => {
+    try {
+      // Загрузка всех участников команды
+      const membersResp = await membersApi.getAll()
+      const allMembers: MemberData[] = membersResp?.data || []
+      
+      // Фильтруем участников по коду команды
+      const teamMembers = allMembers.filter((member: MemberData) => member.team_code === teamCode)
+      
+      // Находим капитана
+      const captain = teamMembers.find((member: MemberData) => member.role === 'captain')
+      // const mentor = teamMembers.find((member: MemberData) => member.mentor === captain?.id)
+      
+      // Форматируем участников для отображения
+      const formattedMembers: TeamMember[] = teamMembers.map((member: MemberData, index: number) => ({
+        id: member.id,
+        number: index + 1,
+        fullName: `${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim(),
+        // mentorData: member.mentor,
+        isCaptain: member.role === 'captain'
+      }))
+
+      setTeamData({
+        teamName: captain?.team_name || 'Название команды не указано',
+        track: 'Выбор трека будет доступен после 1 Воркшопа',
+        teamCode: teamCode,
+        mentor: 'Наставник не назначен',
+        coordinator: 'Координатор не назначен',
+        districtManager: 'Руководитель округа не назначен',
+        projectDescription: 'Описание проекта пока не добавлено',
+        teamMembers: formattedMembers
+      })
+    } catch (error) {
+      console.error('Error loading team data:', error)
+    }
+  }
 
   return (
     <section className="card p-0 overflow-hidden relative">
@@ -165,7 +268,6 @@ const ProfilePageMember = () => {
                 <span>Команда программы</span>
               </button>
             </li>
-            
           </ul>
         </nav>
         <div className='flex justify-center items-center'>
@@ -226,11 +328,11 @@ const ProfilePageMember = () => {
                       <div className='w-full text-xs'>
                         <div className='mb-2 text-left'>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-4 text-left'>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         
                         <div className='w-full flex flex-col items-center'>
@@ -253,15 +355,15 @@ const ProfilePageMember = () => {
                       <div className='w-full text-xs'>
                         <div className='mb-2'>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Отчество</strong></p>
-                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Электронная почта</strong></p>
@@ -306,7 +408,8 @@ const ProfilePageMember = () => {
                           </div>
                           <div className='flex-1'>
                             <p><strong>Пол</strong></p>
-                            <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
+                             disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                         </div>
                         
@@ -332,15 +435,15 @@ const ProfilePageMember = () => {
                       <div className='flex flex-col gap-2 mb-4'>
                         <div>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Отчество</strong></p>
-                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                       </div>
                       
@@ -387,7 +490,8 @@ const ProfilePageMember = () => {
                         </div>
                         <div className='flex-1'>
                           <p><strong>Пол</strong></p>
-                          <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
+                           disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                       </div>
                       
@@ -405,15 +509,15 @@ const ProfilePageMember = () => {
                       <div className='flex flex-col gap-2 mb-4'>
                         <div>
                           <p><strong>Фамилия</strong></p>
-                          <input value={tempLastname} onChange={(e) => setTempLastname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={tempLastname} onChange={(e) => setTempLastname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Имя</strong></p>
-                          <input value={tempFirstname} onChange={(e) => setTempFirstname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={tempFirstname} onChange={(e) => setTempFirstname(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Отчество</strong></p>
-                          <input value={tempPatronymic} onChange={(e) => setTempPatronymic(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={tempPatronymic} onChange={(e) => setTempPatronymic(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                       </div>
                       
@@ -460,7 +564,14 @@ const ProfilePageMember = () => {
                         </div>
                         <div className='flex-1'>
                           <p><strong>Пол</strong></p>
-                          <input value={tempGender} onChange={(e) => setTempGender(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <select 
+                            value={tempGender} 
+                            onChange={(e) => setTempGender(e.target.value)}
+                            className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                          >
+                            <option value="M">Мужской</option>
+                            <option value="F">Женский</option>
+                          </select>
                         </div>
                       </div>
                       
@@ -488,57 +599,49 @@ const ProfilePageMember = () => {
               <div className='leaders mb-4 text-sm'>
                 <div className='mb-2'>
                   <p><strong>Название команды</strong></p>
-                  <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.teamName} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                 </div>
                 <div className='flex flex-row gap-2 mb-2'>
                   <div className='flex-1'>
                     <p><strong>Трек</strong></p>
-                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    <input value={teamData.track} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                   </div>
                   <div className='flex-1'>
                     <p><strong>Код команды</strong></p>
-                    <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    <input value={teamData.teamCode} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                   </div>
                 </div>
                 <div className='mb-2'>
                   <p><strong>Наставник</strong></p>
-                  <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                 </div>
                 <div className='mb-2'>
                   <p><strong>Координатор</strong></p>
-                  <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.coordinator} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                 </div>
                 <div className='mb-2'>
                   <p><strong>Руководитель округа</strong></p>
-                  <input disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.districtManager} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                 </div>
                 <div className='mb-2'>
                   <p><strong>Описание проекта</strong></p>
-                  <input  disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.projectDescription} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                 </div>
                 
                 <p><strong>Участники команды:</strong></p>
                 <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                    <p className="text-brand text-xs">1</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">2</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">3</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">4</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
-                  <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                    <p className="text-brand text-xs">5</p>
-                    <p className="italic text-xs">Фамилия Имя Отчество</p>
-                  </button>
+                  {teamData.teamMembers.map((member: TeamMember) => (
+                    <div key={member.id} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1 items-center'>
+                      <p className="text-brand text-xs">{member.number}</p>
+                      <p className="italic text-xs flex-1">{member.fullName}</p>
+                      {member.isCaptain && (
+                        <div className="w-3 h-3 bg-brand rounded-full" title="Капитан команды"></div>
+                      )}
+                    </div>
+                  ))}
+                  {teamData.teamMembers.length === 0 && (
+                    <p className="italic text-xs text-center py-2">Участники не найдены</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -553,7 +656,6 @@ const ProfilePageMember = () => {
         {sect==='team' && (
           <div>Команда программы</div>
         )}
-        
       </div>
     </section>
   )
