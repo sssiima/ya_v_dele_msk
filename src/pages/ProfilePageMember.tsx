@@ -38,6 +38,7 @@ interface MemberData {
   team_code: string;
   role: string;
   team_name: string;
+  mentor: number; // ID наставника
 }
 
 const ProfilePageMember = () => {
@@ -203,14 +204,21 @@ const ProfilePageMember = () => {
       
       // Находим капитана
       const captain = teamMembers.find((member: MemberData) => member.role === 'captain')
-      // const mentor = teamMembers.find((member: MemberData) => member.mentor === captain?.id)
+      
+      // Находим наставника (первого участника с mentor ID)
+      let mentorName = 'Наставник не назначен'
+      if (captain?.mentor) {
+        const mentor = allMembers.find((member: MemberData) => member.id === captain.mentor)
+        if (mentor) {
+          mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''} ${mentor.patronymic || ''}`.trim()
+        }
+      }
       
       // Форматируем участников для отображения
       const formattedMembers: TeamMember[] = teamMembers.map((member: MemberData, index: number) => ({
         id: member.id,
         number: index + 1,
         fullName: `${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim(),
-        // mentorData: member.mentor,
         isCaptain: member.role === 'captain'
       }))
 
@@ -218,7 +226,7 @@ const ProfilePageMember = () => {
         teamName: captain?.team_name || 'Название команды не указано',
         track: 'Будет доступен после 1 Воркшопа',
         teamCode: teamCode,
-        mentor: 'Наставник не назначен',
+        mentor: mentorName,
         coordinator: 'Координатор не назначен',
         districtManager: 'Руководитель округа не назначен',
         projectDescription: 'Описание проекта пока не добавлено',
@@ -565,7 +573,8 @@ const ProfilePageMember = () => {
                         <div className='flex-1'>
                           <p><strong>Пол</strong></p>
                           <select 
-                            value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender} 
+                            value={tempGender} 
+                            onChange={(e) => setTempGender(e.target.value)}
                             className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
                           >
                             <option value="M">Мужской</option>
@@ -612,7 +621,7 @@ const ProfilePageMember = () => {
                 </div>
                 <div className='mb-2'>
                   <p><strong>Наставник</strong></p>
-                  <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                  <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                 </div>
                 <div className='mb-2'>
                   <p><strong>Координатор</strong></p>
@@ -630,11 +639,13 @@ const ProfilePageMember = () => {
                 <p><strong>Участники команды:</strong></p>
                 <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                   {teamData.teamMembers.map((member: TeamMember) => (
-                    <div key={member.id} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1 items-center'>
-                      <p className="text-brand text-xs">{member.number}</p>
-                      <p className="italic text-xs flex-1">{member.fullName}</p>
+                    <div key={member.id} className='w-full flex flex-row items-center justify-between px-4 py-2'>
+                      <div className='flex flex-row items-center gap-4 flex-1'>
+                        <p className="text-brand text-xs min-w-[20px]">{member.number}</p>
+                        <p className="italic text-xs flex-1 capitalize">{member.fullName}</p>
+                      </div>
                       {member.isCaptain && (
-                        <div className="w-3 h-3 bg-brand rounded-full" title="Капитан команды"></div>
+                        <div className="w-3 h-3 bg-brand rounded-full ml-2" title="Капитан команды"></div>
                       )}
                     </div>
                   ))}
