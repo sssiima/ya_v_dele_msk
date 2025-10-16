@@ -344,14 +344,11 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ success: false, message: 'No updatable fields provided' })
     }
 
-    // Добавляем updated_at
-    setClauses.push(`updated_at = NOW()`)
-
     const updateQuery = `
       UPDATE members
       SET ${setClauses.join(', ')}
       WHERE id = $${idx}
-      RETURNING id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at, updated_at
+      RETURNING id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at
     `
     values.push(id)
 

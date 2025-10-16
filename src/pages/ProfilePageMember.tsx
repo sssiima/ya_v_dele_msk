@@ -663,8 +663,8 @@ const loadTeamData = async (teamCode: string) => {
                         <div className='flex-1'>
                           <p><strong>Пол</strong></p>
                           <select 
-                            value={tempGender} 
-                            onChange={(e) => setTempGender(e.target.value)}
+                            value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender} 
+                            disabled
                             className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
                           >
                             <option value="M">Мужской</option>
