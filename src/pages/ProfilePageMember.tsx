@@ -38,7 +38,7 @@ interface MemberData {
   team_code: string;
   role: string;
   team_name: string;
-  mentor: number; // ID наставника
+  mentor: string; 
 }
 
 const ProfilePageMember = () => {
@@ -204,15 +204,7 @@ const ProfilePageMember = () => {
       
       // Находим капитана
       const captain = teamMembers.find((member: MemberData) => member.role === 'captain')
-      
-      // Находим наставника (первого участника с mentor ID)
-      let mentorName = 'Наставник не назначен'
-      if (captain?.mentor) {
-        const mentor = allMembers.find((member: MemberData) => member.id === captain.mentor)
-        if (mentor) {
-          mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''} ${mentor.patronymic || ''}`.trim()
-        }
-      }
+
       
       // Форматируем участников для отображения
       const formattedMembers: TeamMember[] = teamMembers.map((member: MemberData, index: number) => ({
@@ -226,7 +218,7 @@ const ProfilePageMember = () => {
         teamName: captain?.team_name || 'Название команды не указано',
         track: 'Будет доступен после 1 Воркшопа',
         teamCode: teamCode,
-        mentor: mentorName,
+        mentor: 'Наставник не назначен',
         coordinator: 'Координатор не назначен',
         districtManager: 'Руководитель округа не назначен',
         projectDescription: 'Описание проекта пока не добавлено',
