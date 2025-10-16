@@ -302,6 +302,7 @@ const onSubmit = async (data: FormValues) => {
       team_name: data.team_name,
       role: data.role,
       privacy_policy: data.privacy_policy === true,
+      created_at: new Date().toISOString(),
     }
     
     // request payload prepared

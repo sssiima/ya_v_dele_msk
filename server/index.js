@@ -222,15 +222,15 @@ router.post('/', async (req, res) => {
       INSERT INTO members (
         last_name, first_name, patronymic, birth_date, gender, vk_link, phone,
         education, level, grade, format, faculty, specialty, username, password_hash,
-        mentor, team_code, team_name, role, privacy_policy
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+        mentor, team_code, team_name, role, privacy_policy, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, COALESCE($21::timestamptz, NOW()))
       RETURNING *
     `;
 
     const values = [
       last_name, first_name, patronymic, birth_date, gender, vk_link, phone,
       education, level, grade, format, faculty, specialty, username, password_hash,
-      mentor, team_code, team_name, role, privacy_policy
+      mentor, team_code, team_name, role, privacy_policy, req.body?.created_at || null
     ];
 
     const result = await pool.query(query, values);
