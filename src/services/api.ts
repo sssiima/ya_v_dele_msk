@@ -233,6 +233,11 @@ export const structureApi = {
       return await response.json()
     }
   },
+  getAll: async (search?: string): Promise<ApiResponse<StructurePayload[]>> => {
+    const params = search ? { search } : {}
+    const response = await api.get('/structure', { params })
+    return response.data
+  },
 }
 // Добавьте этот интерфейс после существующих интерфейсов
 export interface Vus {

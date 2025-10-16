@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { membersApi } from '@/services/api'
+import { membersApi, structureApi } from '@/services/api'
 
 // Типы для данных
 interface TeamMember {
@@ -192,42 +192,110 @@ const ProfilePageMember = () => {
     loadUserData()
   }, [])
 
-  // Функция загрузки данных команды
-  const loadTeamData = async (teamCode: string) => {
-    try {
-      // Загрузка всех участников команды
-      const membersResp = await membersApi.getAll()
-      const allMembers: MemberData[] = membersResp?.data || []
-      
-      // Фильтруем участников по коду команды
-      const teamMembers = allMembers.filter((member: MemberData) => member.team_code === teamCode)
-      
-      // Находим капитана
-      const captain = teamMembers.find((member: MemberData) => member.role === 'captain')
-
-      
-      // Форматируем участников для отображения
-      const formattedMembers: TeamMember[] = teamMembers.map((member: MemberData, index: number) => ({
-        id: member.id,
-        number: index + 1,
-        fullName: `${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim(),
-        isCaptain: member.role === 'captain'
-      }))
-
-      setTeamData({
-        teamName: captain?.team_name || 'Название команды не указано',
-        track: 'Будет доступен после 1 Воркшопа',
-        teamCode: teamCode,
-        mentor: 'Наставник не назначен',
+// Функция для загрузки координатора и руководителя округа
+const loadCoordRo = async (mentorFullName: string): Promise<{ coordinator: string; districtManager: string }> => {
+  try {
+    if (!mentorFullName || mentorFullName === 'Наставник не назначен') {
+      return {
         coordinator: 'Координатор не назначен',
-        districtManager: 'Руководитель округа не назначен',
-        projectDescription: 'Описание проекта пока не добавлено',
-        teamMembers: formattedMembers
-      })
-    } catch (error) {
-      console.error('Error loading team data:', error)
+        districtManager: 'Руководитель округа не назначен'
+      };
     }
+
+    // Получаем все данные из structureApi
+    const structureResp = await structureApi.getAll();
+    const structureData = structureResp?.data || [];
+
+    if (!structureData || structureData.length === 0) {
+      return {
+        coordinator: 'Координатор не назначен',
+        districtManager: 'Руководитель округа не назначен'
+      };
+    }
+
+    // Разделяем ФИО наставника на части
+    const nameParts = mentorFullName.trim().split(/\s+/).filter(part => part.length > 0);
+    
+    if (nameParts.length < 2) {
+      return {
+        coordinator: 'Координатор не назначен',
+        districtManager: 'Руководитель округа не назначен'
+      };
+    }
+
+    let coordinator = 'Координатор не назначен';
+    let districtManager = 'Руководитель округа не назначен';
+
+    // Ищем в структуре по имени и фамилии
+    for (const item of structureData) {
+      // Проверяем разные комбинации имени и фамилии
+      const matches = (
+        (item.last_name === nameParts[0] && item.first_name === nameParts[1]) ||
+        (item.last_name === nameParts[1] && item.first_name === nameParts[0])
+      );
+
+      if (matches) {
+        coordinator = item.coord || coordinator;
+        districtManager = item.ro || districtManager;
+        break; // Нашли совпадение, выходим из цикла
+      }
+    }
+
+    return {
+      coordinator,
+      districtManager
+    };
+
+  } catch (error) {
+    console.error('Error loading coordinator and district manager:', error);
+    return {
+      coordinator: 'Координатор не назначен',
+      districtManager: 'Руководитель округа не назначен'
+    };
   }
+};
+// Функция загрузки данных команды
+const loadTeamData = async (teamCode: string) => {
+  try {
+    // Загрузка всех участников команды
+    const membersResp = await membersApi.getAll()
+    const allMembers: MemberData[] = membersResp?.data || []
+    
+    // Фильтруем участников по коду команды
+    const teamMembers = allMembers.filter((member: MemberData) => member.team_code === teamCode)
+    
+    // Находим капитана
+    const captain = teamMembers.find((member: MemberData) => member.role === 'captain')
+
+    // Получаем имя наставника из поля mentor любого участника команды
+    const mentorName = teamMembers.length > 0 
+      ? (teamMembers[0].mentor || 'Наставник не назначен')
+      : 'Наставник не назначен'
+
+    const { coordinator, districtManager } = await loadCoordRo(mentorName);
+    
+    // Форматируем участников для отображения
+    const formattedMembers: TeamMember[] = teamMembers.map((member: MemberData, index: number) => ({
+      id: member.id,
+      number: index + 1,
+      fullName: `${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim(),
+      isCaptain: member.role === 'captain'
+    }))
+
+    setTeamData({
+      teamName: captain?.team_name || 'Название команды не указано',
+      track: 'Будет доступен после 1 Воркшопа',
+      teamCode: teamCode,
+      mentor: mentorName,
+      coordinator: coordinator,
+      districtManager: districtManager,
+      projectDescription: 'Описание проекта пока не добавлено',
+      teamMembers: formattedMembers
+    })
+  } catch (error) {
+    console.error('Error loading team data:', error)
+  }
+}
 
   return (
     <section className="card p-0 overflow-hidden relative">
