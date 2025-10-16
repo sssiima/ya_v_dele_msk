@@ -304,6 +304,65 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// PUT /api/members/:id - обновить данные участника
+router.put('/:id', async (req, res) => {
+  const allowedFields = [
+    'last_name',
+    'first_name',
+    'patronymic',
+    'birth_date',
+    'gender',
+    'vk_link',
+    'phone',
+    'education',
+    'level',
+    'grade',
+    'format',
+    'faculty',
+    'specialty',
+    'username',
+    'team_name'
+  ]
+
+  try {
+    const { id } = req.params
+    const incoming = req.body || {}
+
+    // Собираем динамический UPDATE только по разрешённым полям
+    const setClauses = []
+    const values = []
+    let idx = 1
+    for (const key of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(incoming, key)) {
+        setClauses.push(`${key} = $${idx}`)
+        values.push(incoming[key])
+        idx += 1
+      }
+    }
+
+    if (setClauses.length === 0) {
+      return res.status(400).json({ success: false, message: 'No updatable fields provided' })
+    }
+
+    // Добавляем updated_at
+    setClauses.push(`updated_at = NOW()`)
+
+    const updateQuery = `
+      UPDATE members
+      SET ${setClauses.join(', ')}
+      WHERE id = $${idx}
+      RETURNING id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at, updated_at
+    `
+    values.push(id)
+
+    const result = await pool.query(updateQuery, values)
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    return res.json({ success: true, data: result.rows[0] })
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 // Простая авторизация участников: POST /api/auth/member-login
 app.post('/api/auth/member-login', async (req, res) => {
   try {

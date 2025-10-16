@@ -126,7 +126,8 @@ const ProfilePageMember = () => {
     setIsProfileExpanded(true)
   }
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
+    // Оптимистично обновляем UI
     setLastname(tempLastname)
     setFirstname(tempFirstname)
     setPatronymic(tempPatronymic)
@@ -141,6 +142,29 @@ const ProfilePageMember = () => {
     setBirthDate(tempBirthDate)
     setGender(tempGender)
     setIsEditing(false)
+
+    try {
+      const memberId = Number(localStorage.getItem('member_id'))
+      if (!memberId) return
+      await membersApi.update(memberId, {
+        last_name: tempLastname,
+        first_name: tempFirstname,
+        patronymic: tempPatronymic,
+        username: tempEmail,
+        education: tempUniversity,
+        level: tempEducationLevel,
+        grade: tempCourse,
+        faculty: tempFaculty,
+        format: tempEducationForm,
+        phone: tempPhone,
+        vk_link: tempVkLink,
+        birth_date: tempBirthDate,
+        gender: tempGender,
+      })
+    } catch (e) {
+      console.error('Failed to save profile:', e)
+      // опционально: показать уведомление об ошибке/вернуть старые значения
+    }
   }
 
   const handleCancelEdit = () => {
