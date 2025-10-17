@@ -17,6 +17,7 @@ interface TeamData {
   coordinator: string;
   districtManager: string;
   projectDescription: string;
+  projectSite: string;
   teamMembers: TeamMember[];
   isEditingTeamName: boolean;
   isEditingProjectDescription: boolean;
@@ -72,6 +73,7 @@ const ProfilePageMember = () => {
     coordinator: '',
     districtManager: '',
     projectDescription: '',
+    projectSite: '',
     teamMembers: [],
     isEditingTeamName: false,
     isEditingProjectDescription: false
@@ -318,6 +320,7 @@ const loadTeamData = async (teamCode: string) => {
       coordinator: coordinator,
       districtManager: districtManager,
       projectDescription: 'Описание проекта пока не добавлено',
+      projectSite: 'Сайт проекта пока не добавлен',
       teamMembers: formattedMembers,
       isEditingTeamName: false,
       isEditingProjectDescription: false,
@@ -741,7 +744,7 @@ const loadTeamData = async (teamCode: string) => {
       />
     </div>
     
-    <p><strong>Участники команды:</strong></p>
+    <p><strong>Команда проекта:</strong></p>
     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
       {teamData.teamMembers.map((member: TeamMember) => (
         <div key={member.id} className='w-full flex flex-row items-center justify-between px-4 py-2'>
@@ -750,7 +753,7 @@ const loadTeamData = async (teamCode: string) => {
             <p className="italic text-xs flex-1 capitalize">{member.fullName}</p>
           </div>
           {member.isCaptain && (
-            <div className="w-3 h-3 bg-brand rounded-full ml-2" title="Капитан команды"></div>
+            <div className="w-3 h-3 lg:mr-10" title="Капитан команды"><img src='images/star.png' alt='star'></img></div>
           )}
         </div>
       ))}
@@ -763,7 +766,228 @@ const loadTeamData = async (teamCode: string) => {
           </div>
         )}
         {sect==='myteam' && (
-          <div>Моя команда</div>
+          // <Navigate to="/my-team" />
+          <div className="lg:flex lg:gap-6">
+            {/* Левая колонка - информация о команде */}
+            <div className='baseinfo flex flex-col justify-center items-start mt-4 lg:flex-1'>
+              <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
+                {/* Аватар */}
+                <div className='flex flex-row py-4 relative lg:flex-col lg:items-start'>
+                  <div className='bg-[#D9D9D9] rounded-lg w-44 aspect-square'></div>
+                  <img src='images/heading-icon.png' alt='logo' className='absolute w-48 right-5 lg:-right-0 lg:top-40'/>
+                </div>
+                
+                {/* Информация о команде */}
+                <div className='lg:flex-1 lg:w-full'>
+                  <div className='w-full text-xs'>
+                    <div className='mb-2'>
+                      <p><strong>Название команды</strong></p>
+                      <input 
+                        value={teamData.teamName}
+                        disabled
+                        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                      />
+                    </div>
+
+                    <div className='flex flex-row gap-2 mb-2'>
+                      <div className='flex-1'>
+                        <p><strong>Трек</strong></p>
+                        <input value={teamData.track} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                      </div>
+                      <div className='flex-1'>
+                        <p><strong>Код команды</strong></p>
+                        <input value={teamData.teamCode} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                      </div>
+                    </div>
+                    
+                    <div className='mb-2'>
+                      <p><strong>Наставник</strong></p>
+                      <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                    </div>
+                    
+                    <div className='mb-2'>
+                      <p><strong>Координатор</strong></p>
+                      <input value={teamData.coordinator} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    </div>
+                    
+                    <div className='mb-2'>
+                      <p><strong>Руководитель округа</strong></p>
+                      <input value={teamData.districtManager} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                    </div>
+
+                    {/* Описание проекта */}
+                    <div className='mb-2'>
+                      <p><strong>Описание проекта</strong></p>
+                      <input 
+                        value={teamData.projectDescription}
+                        disabled
+                        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                      />
+                    </div>
+
+                    <div className='mb-2'>
+                      <p><strong>Сайт проекта</strong></p>
+                      <input 
+                        value={teamData.projectSite}
+                        disabled
+                        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                      />
+                    </div>
+                    
+                    <p><strong>Команда проекта:</strong></p>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                      {teamData.teamMembers.map((member: TeamMember) => (
+                        <div key={member.id} className='w-full flex flex-row items-center justify-between px-4 py-2'>
+                          <div className='flex flex-row items-center gap-4 flex-1'>
+                            <p className="text-brand text-xs min-w-[20px]">{member.number}</p>
+                            <p className="italic text-xs flex-1 capitalize">{member.fullName}</p>
+                          </div>
+                          {member.isCaptain && (
+                            <div className="w-3 h-3 lg:mr-10" title="Капитан команды"><img src='images/star.png' alt='star'></img></div>
+                          )}
+                        </div>
+                      ))}
+                      {teamData.teamMembers.length === 0 && (
+                        <p className="italic text-xs text-center py-2">Участники не найдены</p>
+                      )}
+                    </div>
+                    
+                    <div className='w-full flex flex-col items-center mt-4'>
+                      <button className='text-brand mt-2 hover:underline italic'>
+                        Редактировать данные
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Вертикальная разделительная линия */}
+            <div className="hidden lg:block w-px bg-brand mx-4 mt-8"></div>
+            <div className="lg:flex-1 mt-4">
+  
+  <div className='leaders mb-4 text-sm'>
+  <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto lg:hidden" />
+                <div className='mb-4'>
+                  <div className='flex justify-between items-center my-3 lg:flex-col lg:items-start'>
+                    <span className="text-sm font-bold lg:mb-2">Место в общем рейтинге:</span>
+                    <span className="text-2xl font-bold text-brand lg:text-4xl">1/100</span>
+                  </div>
+                  <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-3" />
+                  <div className='flex justify-between items-center lg:flex-col lg:items-start'>
+                    <span className="text-sm font-bold lg:mb-2">Место в рейтинге трека:</span>
+                    <span className="text-2xl font-bold text-brand lg:text-4xl">1/100</span>
+                  </div>
+                </div>
+  <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
+  <div>
+                  <p className="text-sm font-semibold my-4">Получено баллов:</p>
+                  
+                  <div className='space-y-3'>
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Первое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Второе д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Третье д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Четвертое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Промежуточный ВШ</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Пятое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Шестое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Седьмое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Восьмое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center'>
+                      <span className="text-sm text-brand">Финальный ВШ</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                        </button>
+                        <span className="text-sm font-semibold"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
         {sect==='calendar' && (
           <div>Календарь программы</div>
