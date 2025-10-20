@@ -426,3 +426,18 @@ export const structureAuthApi = {
     return await resp.json()
   }
 }
+
+export const authUtilsApi = {
+  async checkUsername(username: string) {
+    const resp = await fetch(`${API_BASE_URL}/auth/check-username`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    })
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}))
+      throw new Error(data.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
+  }
+}

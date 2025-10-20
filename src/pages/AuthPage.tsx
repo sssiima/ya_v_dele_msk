@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { memberAuthApi, structureAuthApi } from '@/services/api'
+import { memberAuthApi, structureAuthApi, authUtilsApi } from '@/services/api'
 
 const AuthPage = () => {
   const [username, setUsername] = useState('')
@@ -23,24 +23,43 @@ const AuthPage = () => {
     setError(null)
     setLoading(true)
     try {
-      // Пытаемся авторизовать участника
-      const resMember = await memberAuthApi.login(username, password).catch(() => null)
-      if (resMember?.success) {
-        const memberId = resMember?.data?.id
-        if (!memberId) throw new Error('Некорректный ответ сервера (member)')
-        localStorage.removeItem('structure_id')
-        localStorage.setItem('member_id', String(memberId))
-        navigate('/profile-member')
+      // Сначала проверим наличие username
+      const exists = await authUtilsApi.checkUsername(username)
+      const foundIn = exists?.data?.foundIn as 'member' | 'structure' | 'both' | null
+      if (!foundIn) {
+        setError('Пользователь не существует')
         return
       }
 
-      // Если не участник — пробуем структуру
-      const resStruct = await structureAuthApi.login(username, password)
-      const structureId = resStruct?.data?.id
-      if (!structureId) throw new Error('Некорректный ответ сервера (structure)')
-      localStorage.removeItem('member_id')
-      localStorage.setItem('structure_id', String(structureId))
-      navigate('/profile-structure')
+      // Если есть, пробуем логины по очереди
+      let authed = false
+      if (foundIn === 'member' || foundIn === 'both') {
+        const resMember = await memberAuthApi.login(username, password).catch(() => null)
+        if (resMember?.success) {
+          const memberId = resMember?.data?.id
+          if (!memberId) throw new Error('Некорректный ответ сервера (member)')
+          localStorage.removeItem('structure_id')
+          localStorage.setItem('member_id', String(memberId))
+          navigate('/profile-member')
+          authed = true
+        }
+      }
+
+      if (!authed && (foundIn === 'structure' || foundIn === 'both')) {
+        const resStruct = await structureAuthApi.login(username, password).catch(() => null)
+        if (resStruct?.success) {
+          const structureId = resStruct?.data?.id
+          if (!structureId) throw new Error('Некорректный ответ сервера (structure)')
+          localStorage.removeItem('member_id')
+          localStorage.setItem('structure_id', String(structureId))
+          navigate('/profile-structure')
+          authed = true
+        }
+      }
+
+      if (!authed) {
+        setError('Неверный пароль')
+      }
     } catch (err: any) {
       setError(err.message || 'Ошибка авторизации')
     } finally {

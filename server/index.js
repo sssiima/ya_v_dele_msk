@@ -391,6 +391,27 @@ app.post('/api/auth/structure-login', async (req, res) => {
   }
 })
 
+// POST /api/auth/check-username - проверка наличия username в members или structure
+app.post('/api/auth/check-username', async (req, res) => {
+  try {
+    const { username } = req.body || {}
+    if (!username) return res.status(400).json({ success: false, message: 'Missing username' })
+
+    const [mem, str] = await Promise.all([
+      pool.query('SELECT 1 FROM members WHERE username = $1 LIMIT 1', [username]),
+      pool.query('SELECT 1 FROM structure WHERE username = $1 LIMIT 1', [username])
+    ])
+
+    let foundIn = null
+    if (mem.rows.length > 0) foundIn = 'member'
+    if (str.rows.length > 0) foundIn = foundIn ? 'both' : 'structure'
+
+    return res.json({ success: true, data: { foundIn } })
+  } catch (_e) {
+    return res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 
 app.post('/api/structure', async (req, res) => {
   try {
