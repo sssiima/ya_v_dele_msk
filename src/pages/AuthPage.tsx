@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { memberAuthApi } from '@/services/api'
+import { memberAuthApi, structureAuthApi } from '@/services/api'
 
 const AuthPage = () => {
   const [username, setUsername] = useState('')
@@ -23,11 +23,24 @@ const AuthPage = () => {
     setError(null)
     setLoading(true)
     try {
-      const res = await memberAuthApi.login(username, password)
-      const memberId = res?.data?.id
-      if (!memberId) throw new Error('Некорректный ответ сервера')
-      localStorage.setItem('member_id', String(memberId))
-      navigate('/profile-member')
+      // Пытаемся авторизовать участника
+      const resMember = await memberAuthApi.login(username, password).catch(() => null)
+      if (resMember?.success) {
+        const memberId = resMember?.data?.id
+        if (!memberId) throw new Error('Некорректный ответ сервера (member)')
+        localStorage.removeItem('structure_id')
+        localStorage.setItem('member_id', String(memberId))
+        navigate('/profile-member')
+        return
+      }
+
+      // Если не участник — пробуем структуру
+      const resStruct = await structureAuthApi.login(username, password)
+      const structureId = resStruct?.data?.id
+      if (!structureId) throw new Error('Некорректный ответ сервера (structure)')
+      localStorage.removeItem('member_id')
+      localStorage.setItem('structure_id', String(structureId))
+      navigate('/profile-structure')
     } catch (err: any) {
       setError(err.message || 'Ошибка авторизации')
     } finally {

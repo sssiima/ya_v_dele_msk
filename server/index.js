@@ -376,6 +376,21 @@ app.post('/api/auth/member-login', async (req, res) => {
   }
 })
 
+// Простая авторизация структуры: POST /api/auth/structure-login
+app.post('/api/auth/structure-login', async (req, res) => {
+  try {
+    const { username, password } = req.body || {}
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
+    const result = await pool.query('SELECT id, password_hash FROM structure WHERE username = $1', [username])
+    if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    const ok = await bcrypt.compare(password, result.rows[0].password_hash || '')
+    if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    return res.json({ success: true, data: { id: result.rows[0].id } })
+  } catch (_e) {
+    return res.status(500).json({ success: false, message: 'Internal server error' })
+  }
+})
+
 
 app.post('/api/structure', async (req, res) => {
   try {

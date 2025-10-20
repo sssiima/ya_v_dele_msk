@@ -411,3 +411,18 @@ export const memberAuthApi = {
     return await resp.json()
   }
 }
+
+export const structureAuthApi = {
+  async login(username: string, password: string) {
+    const resp = await fetch(`${API_BASE_URL}/auth/structure-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}))
+      throw new Error(data.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
+  }
+}
