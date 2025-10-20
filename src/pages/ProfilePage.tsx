@@ -633,7 +633,10 @@ const ProfilePage = () => {
 
             {/* Правая колонка - списки координаторов, наставников и т.д. */}
             <div className="lg:flex-1">
-              <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
+            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+               <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
+            )}
+             
               
               {/* Для мобильных - списки идут после профиля */}
               <div className="lg:hidden">
@@ -785,6 +788,9 @@ const ProfilePage = () => {
               {/* Для десктоп версии - списки в правой колонке */}
               <div className="hidden lg:block space-y-6">
                 {/* Координаторы - только для РО */}
+                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+               <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
+            )}
                 {userRole === 'руководитель округа' && coordinators.length > 0 && (
                   <div className='leaders text-sm mt-4'>
                     <p><strong>Координаторы:</strong></p>
@@ -829,7 +835,6 @@ const ProfilePage = () => {
                   </div>
                 )}
 
-                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-4 mb-2" />
 
                 <div className="hidden lg:block">
                 
