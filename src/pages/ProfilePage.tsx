@@ -838,7 +838,7 @@ const ProfilePage = () => {
 
                 <div className="hidden lg:block">
                 
-                <div className='teams mb-6 text-sm'>
+                <div className='teams mb-6 text-sm mt-4'>
                   <p><strong>Команды:</strong></p>
                   <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
                     <button className='w-full flex flex-row justify-between items-center'>
