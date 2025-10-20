@@ -44,11 +44,11 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadStructureProfile = async () => {
       try {
-        // Если есть сохраненный id в localStorage – используем его, иначе берем первую запись
-        const savedId = Number(localStorage.getItem('structure_id'))
+        // Проверяем ctid в localStorage
+        const savedCtid = localStorage.getItem('structure_ctid')
         let item: any | undefined
-        if (savedId) {
-          const r = await structureApi.getById(savedId)
+        if (savedCtid) {
+          const r = await structureApi.getByCtid(savedCtid)
           item = r?.data
         } else {
           const resp = await structureApi.getAll()
@@ -127,9 +127,9 @@ const ProfilePage = () => {
     // Сохраняем в БД (structure)
     const save = async () => {
       try {
-        const savedId = Number(localStorage.getItem('structure_id'))
-        if (!savedId) return
-        await structureApi.update(savedId, {
+        const savedCtid = localStorage.getItem('structure_ctid')
+        if (!savedCtid) return
+        await structureApi.updateByCtid(savedCtid, {
           last_name: tempLastname,
           first_name: tempFirstname,
           patronymic: tempPatronymic,

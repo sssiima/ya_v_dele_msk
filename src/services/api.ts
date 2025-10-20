@@ -246,8 +246,16 @@ export const structureApi = {
     const response = await api.get(`/structure/${id}`)
     return response.data
   },
+  getByCtid: async (ctid: string): Promise<ApiResponse<StructurePayload>> => {
+    const response = await api.get(`/structure/by-ctid/${ctid}`)
+    return response.data
+  },
   update: async (id: number, payload: Partial<StructurePayload>): Promise<ApiResponse<any>> => {
     const response = await api.put(`/structure/${id}`, payload)
+    return response.data
+  },
+  updateByCtid: async (ctid: string, payload: Partial<StructurePayload>): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/structure/by-ctid/${ctid}`, payload)
     return response.data
   }
 }

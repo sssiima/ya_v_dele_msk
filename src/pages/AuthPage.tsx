@@ -48,17 +48,11 @@ const AuthPage = () => {
       if (!authed && (foundIn === 'structure' || foundIn === 'both')) {
         const resStruct = await structureAuthApi.login(username, password).catch(() => null)
         if (resStruct?.success) {
-          const structureId = resStruct?.data?.id
           const structureCtid = resStruct?.data?.ctid
-          if (!structureId && !structureCtid) throw new Error('Некорректный ответ сервера (structure)')
+          if (!structureCtid) throw new Error('Некорректный ответ сервера (structure)')
           localStorage.removeItem('member_id')
-          if (structureId) {
-            localStorage.setItem('structure_id', String(structureId))
-            localStorage.removeItem('structure_ctid')
-          } else if (structureCtid) {
-            localStorage.setItem('structure_ctid', String(structureCtid))
-            localStorage.removeItem('structure_id')
-          }
+          localStorage.removeItem('structure_id')
+          localStorage.setItem('structure_ctid', String(structureCtid))
           navigate('/profile-structure')
           authed = true
         }

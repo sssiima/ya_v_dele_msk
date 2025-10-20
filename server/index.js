@@ -385,7 +385,7 @@ app.post('/api/auth/structure-login', async (req, res) => {
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
 
     const result = await pool.query(
-      'SELECT id, password_hash, ctid::text as ctid FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
+      'SELECT ctid::text as ctid, password_hash FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
       [username]
     )
     if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
@@ -394,7 +394,7 @@ app.post('/api/auth/structure-login', async (req, res) => {
     const ok = await bcrypt.compare(password, row.password_hash || '')
 
     if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
-    return res.json({ success: true, data: { id: row.id || null, ctid: row.ctid || null } })
+    return res.json({ success: true, data: { ctid: row.ctid } })
   } catch (_e) {
     return res.status(500).json({ success: false, message: 'Internal server error' })
   }
