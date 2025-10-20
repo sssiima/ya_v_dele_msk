@@ -385,21 +385,16 @@ app.post('/api/auth/structure-login', async (req, res) => {
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
 
     const result = await pool.query(
-      'SELECT id, password_hash, password FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
+      'SELECT id, password_hash, ctid::text as ctid FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
       [username]
     )
     if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
 
     const row = result.rows[0]
-    let ok = false
-    if (row.password_hash) {
-      ok = await bcrypt.compare(password, row.password_hash || '')
-    } else if (row.password) {
-      ok = password === row.password
-    }
+    const ok = await bcrypt.compare(password, row.password_hash || '')
 
     if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
-    return res.json({ success: true, data: { id: row.id } })
+    return res.json({ success: true, data: { id: row.id || null, ctid: row.ctid || null } })
   } catch (_e) {
     return res.status(500).json({ success: false, message: 'Internal server error' })
   }
@@ -542,6 +537,42 @@ app.get('/api/structure', async (_req, res) => {
   }
 })
 
+// GET /api/structure/by-ctid/:ctid - получить запись структуры по ctid
+app.get('/api/structure/by-ctid/:ctid', async (req, res) => {
+  try {
+    const { ctid } = req.params
+    const result = await pool.query(
+      `SELECT 
+        id,
+        last_name,
+        first_name,
+        patronymic,
+        birth_date,
+        gender,
+        vk_link,
+        phone,
+        education,
+        grade,
+        level,
+        faculty,
+        format,
+        specialty,
+        pos,
+        username,
+        high_mentor,
+        coord,
+        ro,
+        created_at
+      FROM structure WHERE ctid::text = $1`,
+      [ctid]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    return res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
 // GET /api/structure/:id - получить запись структуры по id
 app.get('/api/structure/:id', async (req, res) => {
   try {
@@ -595,6 +626,33 @@ app.put('/api/structure/:id', async (req, res) => {
     if (set.length === 0) return res.status(400).json({ success: false, message: 'No updatable fields provided' })
     const q = `UPDATE structure SET ${set.join(', ')} WHERE id = $${i} RETURNING id`
     values.push(id)
+    const result = await pool.query(q, values)
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    return res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// PUT /api/structure/by-ctid/:ctid - обновить запись структуры по ctid
+app.put('/api/structure/by-ctid/:ctid', async (req, res) => {
+  try {
+    const { ctid } = req.params
+    const allowed = ['last_name','first_name','patronymic','birth_date','gender','vk_link','phone','education','grade','level','faculty','format','specialty','photo_url','pos','username','high_mentor','coord','ro']
+    const incoming = req.body || {}
+    const set = []
+    const values = []
+    let i = 1
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(incoming, key)) {
+        set.push(`${key} = $${i}`)
+        values.push(incoming[key])
+        i++
+      }
+    }
+    if (set.length === 0) return res.status(400).json({ success: false, message: 'No updatable fields provided' })
+    const q = `UPDATE structure SET ${set.join(', ')} WHERE ctid::text = $${i} RETURNING ctid::text as ctid`
+    values.push(ctid)
     const result = await pool.query(q, values)
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
     return res.json({ success: true, data: result.rows[0] })
