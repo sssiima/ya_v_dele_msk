@@ -23,6 +23,9 @@ const ProfilePage = () => {
   const [vkLink, setVkLink] = useState('https://vk.com/username')
   const [birthDate, setBirthDate] = useState('2000-01-01')
   const [gender, setGender] = useState('Мужской')
+  const [userRole, setUserRole] = useState('')
+  const [coordinator, setCoordinator] = useState('')
+  const [districtManager, setDistrictManager] = useState('')
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -78,6 +81,9 @@ const ProfilePage = () => {
         setVkLink(item.vk_link || 'не указан');
         setBirthDate(item.birth_date ? item.birth_date.substring(0,10) : '');
         setGender(item.gender === 'F' ? 'Женский' : item.gender === 'M' ? 'Мужской' : (item.gender || 'не указан'));
+        setUserRole(item.pos || '');
+        setCoordinator(item.coord || 'не указан');
+        setDistrictManager(item.ro || 'не указан');
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
@@ -717,10 +723,22 @@ const ProfilePage = () => {
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-2 mb-2" />
                 
                 <div className='leaders text-sm'>
-                  <p><strong>Координатор:</strong></p>
-                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
-                  <p className='mt-4'><strong>Руководитель округа:</strong></p>
-                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+                  {/* Показываем поля в зависимости от роли */}
+                  {(userRole === 'наставник' || userRole === 'старший наставник') && (
+                    <>
+                      <p><strong>Координатор:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{coordinator}</p>
+                      <p className='mt-4'><strong>Руководитель округа:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{districtManager}</p>
+                    </>
+                  )}
+                  {userRole === 'координатор' && (
+                    <>
+                      <p><strong>Руководитель округа:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{districtManager}</p>
+                    </>
+                  )}
+                  {/* Для РО и других ролей поля не показываем */}
                 </div>
               </div>
 
@@ -888,10 +906,22 @@ const ProfilePage = () => {
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
                 
                 <div className='leaders text-sm'>
-                  <p><strong>Координатор:</strong></p>
-                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
-                  <p className='mt-2'><strong>Руководитель округа:</strong></p>
-                  <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">Фамилия Имя</p>
+                  {/* Показываем поля в зависимости от роли */}
+                  {(userRole === 'наставник' || userRole === 'старший наставник') && (
+                    <>
+                      <p><strong>Координатор:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{coordinator}</p>
+                      <p className='mt-2'><strong>Руководитель округа:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{districtManager}</p>
+                    </>
+                  )}
+                  {userRole === 'координатор' && (
+                    <>
+                      <p><strong>Руководитель округа:</strong></p>
+                      <p className="w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] flex items-center italic text-xs mt-1">{districtManager}</p>
+                    </>
+                  )}
+                  {/* Для РО и других ролей поля не показываем */}
                 </div>
               </div>
             </div>
