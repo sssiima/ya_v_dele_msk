@@ -492,6 +492,67 @@ app.get('/api/structure', async (_req, res) => {
   }
 })
 
+// GET /api/structure/:id - получить запись структуры по id
+app.get('/api/structure/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query(
+      `SELECT 
+        id,
+        last_name,
+        first_name,
+        patronymic,
+        birth_date,
+        gender,
+        vk_link,
+        phone,
+        education,
+        grade,
+        level,
+        faculty,
+        format,
+        specialty,
+        pos,
+        username,
+        high_mentor,
+        coord,
+        ro,
+        created_at
+      FROM structure WHERE id = $1`, [id])
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    return res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// PUT /api/structure/:id - обновить запись структуры
+app.put('/api/structure/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const allowed = ['last_name','first_name','patronymic','birth_date','gender','vk_link','phone','education','grade','level','faculty','format','specialty','photo_url','pos','username','high_mentor','coord','ro']
+    const incoming = req.body || {}
+    const set = []
+    const values = []
+    let i = 1
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(incoming, key)) {
+        set.push(`${key} = $${i}`)
+        values.push(incoming[key])
+        i++
+      }
+    }
+    if (set.length === 0) return res.status(400).json({ success: false, message: 'No updatable fields provided' })
+    const q = `UPDATE structure SET ${set.join(', ')} WHERE id = $${i} RETURNING id`
+    values.push(id)
+    const result = await pool.query(q, values)
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
+    return res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   // server started

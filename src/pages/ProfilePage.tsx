@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { structureApi } from '@/services/api'
 
 const ProfilePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,10 +13,10 @@ const ProfilePage = () => {
   const [patronymic, setPatronymic] = useState('Отчество')
   const [email, setEmail] = useState('email@example.com')
   const [university, setUniversity] = useState('Название ВУЗа')
-  const [educationLevel, setEducationLevel] = useState('Бакалавриат')
-  const [course, setCourse] = useState('3')
-  const [faculty, setFaculty] = useState('Факультет')
-  const [educationForm, setEducationForm] = useState('Очная')
+  const [educationLevel, setEducationLevel] = useState('не указан')
+  const [course, setCourse] = useState('не указан')
+  const [faculty, setFaculty] = useState('не указан')
+  const [educationForm, setEducationForm] = useState('не указан')
   const [phone, setPhone] = useState('+7 (999) 999-99-99')
   const [vkLink, setVkLink] = useState('https://vk.com/username')
   const [birthDate, setBirthDate] = useState('2000-01-01')
@@ -37,6 +38,43 @@ const ProfilePage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Загрузка данных только из таблицы structure
+  useEffect(() => {
+    const loadStructureProfile = async () => {
+      try {
+        // Если есть сохраненный id в localStorage – используем его, иначе берем первую запись
+        const savedId = Number(localStorage.getItem('structure_id'))
+        let item: any | undefined
+        if (savedId) {
+          const r = await structureApi.getById(savedId)
+          item = r?.data
+        } else {
+          const resp = await structureApi.getAll()
+          item = Array.isArray(resp?.data) ? resp.data[0] : undefined
+        }
+        if (!item) return
+
+        setLastname(item.last_name || 'не указан');
+        setFirstname(item.first_name || 'не указан');
+        setPatronymic(item.patronymic || 'не указан');
+        setEmail(item.username || 'не указан');
+        setUniversity(item.education || 'не указан');
+        setEducationLevel(item.level || 'не указан')
+        setCourse(item.grade || 'не указан');
+        setFaculty(item.faculty || 'не указан')
+        setEducationForm(item.format || 'не указан')
+        setPhone(item.phone || 'не указан');
+        setVkLink(item.vk_link || 'не указан');
+        setBirthDate(item.birth_date ? item.birth_date.substring(0,10) : '');
+        setGender(item.gender === 'F' ? 'Женский' : item.gender === 'M' ? 'Мужской' : (item.gender || 'не указан'));
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load structure profile', e)
+      }
+    };
+    loadStructureProfile();
   }, []);
 
   const toggleMenu = () => {
@@ -85,6 +123,33 @@ const ProfilePage = () => {
     setBirthDate(tempBirthDate)
     setGender(tempGender)
     setIsEditing(false)
+
+    // Сохраняем в БД (structure)
+    const save = async () => {
+      try {
+        const savedId = Number(localStorage.getItem('structure_id'))
+        if (!savedId) return
+        await structureApi.update(savedId, {
+          last_name: tempLastname,
+          first_name: tempFirstname,
+          patronymic: tempPatronymic,
+          username: tempEmail,
+          education: tempUniversity,
+          level: tempEducationLevel,
+          grade: tempCourse,
+          faculty: tempFaculty,
+          format: tempEducationForm,
+          phone: tempPhone,
+          vk_link: tempVkLink,
+          birth_date: tempBirthDate,
+          gender: tempGender,
+        })
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to save structure profile', e)
+      }
+    }
+    void save()
   }
 
   const handleCancelEdit = () => {

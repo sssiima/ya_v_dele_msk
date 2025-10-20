@@ -200,6 +200,10 @@ export interface StructurePayload {
   phone: string
   grade: string
   education: string
+  level?: string
+  faculty?: string
+  format?: string
+  specialty?: string
   photo_url?: string
   pos: string
   username: string
@@ -238,6 +242,14 @@ export const structureApi = {
     const response = await api.get('/structure', { params })
     return response.data
   },
+  getById: async (id: number): Promise<ApiResponse<StructurePayload>> => {
+    const response = await api.get(`/structure/${id}`)
+    return response.data
+  },
+  update: async (id: number, payload: Partial<StructurePayload>): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/structure/${id}`, payload)
+    return response.data
+  }
 }
 // Добавьте этот интерфейс после существующих интерфейсов
 export interface Vus {
