@@ -142,7 +142,7 @@ const ProfilePage = () => {
           phone: tempPhone,
           vk_link: tempVkLink,
           birth_date: tempBirthDate,
-          gender: tempGender,
+          gender: tempGender === 'Женский' ? 'F' : tempGender === 'Мужской' ? 'M' : tempGender,
         })
       } catch (e) {
         // eslint-disable-next-line no-console
