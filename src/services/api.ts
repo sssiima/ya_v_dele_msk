@@ -449,3 +449,29 @@ export const authUtilsApi = {
     return await resp.json()
   }
 }
+
+// API для работы с командами
+export const teamsApi = {
+  async getAll(): Promise<ApiResponse<any[]>> {
+    const response = await api.get('/teams')
+    return response.data
+  },
+  
+  async getById(id: number): Promise<ApiResponse<any>> {
+    const response = await api.get(`/teams/${id}`)
+    return response.data
+  },
+  
+  async getByMentor(mentorName: string): Promise<ApiResponse<any[]>> {
+    const response = await api.get(`/teams/by-mentor/${encodeURIComponent(mentorName)}`)
+    return response.data
+  }
+}
+
+// API для получения участников команды
+export const teamMembersApi = {
+  async getByTeamCode(teamCode: string): Promise<ApiResponse<any[]>> {
+    const response = await api.get(`/members/by-team-code/${encodeURIComponent(teamCode)}`)
+    return response.data
+  }
+}

@@ -665,6 +665,73 @@ app.put('/api/structure/by-ctid/:ctid', async (req, res) => {
   }
 })
 
+// API для команд
+// GET /api/teams - получить все команды
+app.get('/api/teams', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM teams ORDER BY name')
+    res.json({ success: true, data: result.rows })
+  } catch (err) {
+    console.error('Error fetching teams:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// GET /api/teams/:id - получить команду по ID
+app.get('/api/teams/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query('SELECT * FROM teams WHERE id = $1', [id])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Team not found' })
+    }
+    res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    console.error('Error fetching team:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// GET /api/teams/by-mentor/:mentorName - получить команды по имени наставника
+app.get('/api/teams/by-mentor/:mentorName', async (req, res) => {
+  try {
+    const { mentorName } = req.params
+    const decodedMentorName = decodeURIComponent(mentorName)
+    
+    // Ищем команды где mentor совпадает с именем (с учетом возможных вариантов ФИО)
+    const result = await pool.query(`
+      SELECT * FROM teams 
+      WHERE mentor ILIKE $1 OR mentor ILIKE $2
+      ORDER BY name
+    `, [`%${decodedMentorName}%`, `%${decodedMentorName.split(' ').reverse().join(' ')}%`])
+    
+    res.json({ success: true, data: result.rows })
+  } catch (err) {
+    console.error('Error fetching teams by mentor:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
+app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
+  try {
+    const { teamCode } = req.params
+    const decodedTeamCode = decodeURIComponent(teamCode)
+    
+    const result = await pool.query(`
+      SELECT id, last_name, first_name, patronymic, team_code
+      FROM members 
+      WHERE team_code = $1
+      ORDER BY last_name, first_name
+    `, [decodedTeamCode])
+    
+    res.json({ success: true, data: result.rows })
+  } catch (err) {
+    console.error('Error fetching team members:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   // server started

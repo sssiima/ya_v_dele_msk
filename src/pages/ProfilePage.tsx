@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { structureApi } from '@/services/api'
+import { structureApi, teamsApi, teamMembersApi } from '@/services/api'
 import { useNavigate } from 'react-router-dom'
 
 const ProfilePage = () => {
@@ -8,7 +8,6 @@ const ProfilePage = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sect, setSect] = useState('profile')
   const [isEditing, setIsEditing] = useState(false)
-  const [teamVisible, setTeamVisible] = useState(false)
   const [isProfileExpanded, setIsProfileExpanded] = useState(false)
   const [lastname, setLastname] = useState('Фамилия')
   const [firstname, setFirstname] = useState('Имя')
@@ -29,6 +28,9 @@ const ProfilePage = () => {
   const [coordinators, setCoordinators] = useState<any[]>([])
   const [seniorMentors, setSeniorMentors] = useState<any[]>([])
   const [mentors, setMentors] = useState<any[]>([])
+  const [teams, setTeams] = useState<any[]>([])
+  const [teamMembers, setTeamMembers] = useState<{[key: string]: any[]}>({})
+  const [expandedTeams, setExpandedTeams] = useState<{[key: string]: boolean}>({})
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -90,6 +92,9 @@ const ProfilePage = () => {
         
         // Загружаем списки после получения роли
         await loadRoleLists(item.pos || '');
+        
+        // Загружаем команды пользователя
+        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim());
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
@@ -166,6 +171,35 @@ const ProfilePage = () => {
     }
   }
 
+  // Функция для загрузки команд пользователя
+  const loadUserTeams = async (userFullName: string) => {
+    try {
+      if (!userFullName || userFullName === 'не указан') return
+      
+      // Получаем команды где пользователь является наставником
+      const teamsResult = await teamsApi.getByMentor(userFullName)
+      const userTeams = teamsResult?.data || []
+      setTeams(userTeams)
+      
+      // Загружаем участников для каждой команды
+      const membersData: {[key: string]: any[]} = {}
+      for (const team of userTeams) {
+        if (team.code) {
+          try {
+            const membersResult = await teamMembersApi.getByTeamCode(team.code)
+            membersData[team.code] = membersResult?.data || []
+          } catch (e) {
+            console.error(`Failed to load members for team ${team.code}:`, e)
+            membersData[team.code] = []
+          }
+        }
+      }
+      setTeamMembers(membersData)
+    } catch (e) {
+      console.error('Failed to load user teams:', e)
+    }
+  }
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -177,6 +211,14 @@ const ProfilePage = () => {
   const pageSelected = (page: string) => {
     setSect(page)
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  // Функция для переключения раскрытия команды
+  const toggleTeamExpansion = (teamCode: string) => {
+    setExpandedTeams(prev => ({
+      ...prev,
+      [teamCode]: !prev[teamCode]
+    }))
   }
 
   const handleEditProfile = () => {
@@ -695,66 +737,57 @@ const ProfilePage = () => {
                 
                 <div className='teams mb-4 text-sm'>
                   <p><strong>Команды:</strong></p>
-                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                    <button className='w-full flex flex-row justify-between items-center'>
-                      <div className='flex flex-row gap-2 items-center'>
-                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                        <p className="italic text-xs">Название команды</p>
-                      </div>
-                      <p className="text-xs text-brand">1/100</p>
-                    </button>
-                  </div>
-                  {!teamVisible && (
+                  {teams.length > 0 ? (
+                    teams.map((team, index) => {
+                      const isExpanded = expandedTeams[team.code] || false
+                      const members = teamMembers[team.code] || []
+                      
+                      return (
+                        <div key={team.id || index}>
+                          {!isExpanded ? (
+                            <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                              <button 
+                                className='w-full flex flex-row justify-between items-center' 
+                                onClick={() => toggleTeamExpansion(team.code)}
+                              >
+                                <div className='flex flex-row gap-2 items-center'>
+                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
+                                </div>
+                                <p className="text-xs text-brand">{members.length}/100</p>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
+                              <button 
+                                className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' 
+                                onClick={() => toggleTeamExpansion(team.code)}
+                              >
+                                <div className='flex flex-row gap-2 items-center'>
+                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
+                                </div>
+                                <p className="text-xs text-brand">{members.length}/100</p>
+                              </button>
+                              {members.map((member, memberIndex) => (
+                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
+                                  <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                  <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })
+                  ) : (
                     <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                      <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
-                        <div className='flex flex-row gap-2 items-center'>
-                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                          <p className="italic text-xs">Название команды</p>
-                        </div>
-                        <p className="text-xs text-brand">1/100</p>
-                      </button>
-                    </div>
-                  )}
-                  {teamVisible && (
-                    <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                      <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
-                        <div className='flex flex-row gap-2 items-center'>
-                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                          <p className="italic text-xs">Название команды</p>
-                        </div>
-                        <p className="text-xs text-brand">1/100</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">1</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">2</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">3</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">4</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">5</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                    </div>
-                  )}
-                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                    <button className='w-full flex flex-row justify-between items-center'>
                       <div className='flex flex-row gap-2 items-center'>
                         <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                        <p className="italic text-xs">Название команды</p>
+                        <p className="italic text-xs">Команды не найдены</p>
                       </div>
-                      <p className="text-xs text-brand">1/100</p>
-                    </button>
-                  </div>
+                    </div>
+                  )}
                   <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
                 </div>
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mb-2" />
@@ -840,66 +873,57 @@ const ProfilePage = () => {
                 
                 <div className='teams mb-6 text-sm mt-4'>
                   <p><strong>Команды:</strong></p>
-                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                    <button className='w-full flex flex-row justify-between items-center'>
-                      <div className='flex flex-row gap-2 items-center'>
-                        <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                        <p className="italic text-xs">Название команды</p>
-                      </div>
-                      <p className="text-xs text-brand">1/100</p>
-                    </button>
-                  </div>
-                  {!teamVisible && (
+                  {teams.length > 0 ? (
+                    teams.map((team, index) => {
+                      const isExpanded = expandedTeams[team.code] || false
+                      const members = teamMembers[team.code] || []
+                      
+                      return (
+                        <div key={team.id || index}>
+                          {!isExpanded ? (
+                            <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
+                              <button 
+                                className='w-full flex flex-row justify-between items-center' 
+                                onClick={() => toggleTeamExpansion(team.code)}
+                              >
+                                <div className='flex flex-row gap-2 items-center'>
+                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
+                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
+                                </div>
+                                <p className="text-xs text-brand">{members.length}/100</p>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
+                              <button 
+                                className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' 
+                                onClick={() => toggleTeamExpansion(team.code)}
+                              >
+                                <div className='flex flex-row gap-2 items-center'>
+                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
+                                </div>
+                                <p className="text-xs text-brand">{members.length}/100</p>
+                              </button>
+                              {members.map((member, memberIndex) => (
+                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
+                                  <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                  <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })
+                  ) : (
                     <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                      <button className='w-full flex flex-row justify-between items-center' onClick={() => setTeamVisible(!teamVisible)}>
-                        <div className='flex flex-row gap-2 items-center'>
-                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                          <p className="italic text-xs">Название команды</p>
-                        </div>
-                        <p className="text-xs text-brand">1/100</p>
-                      </button>
-                    </div>
-                  )}
-                  {teamVisible && (
-                    <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                      <button className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' onClick={() => setTeamVisible(!teamVisible)}>
-                        <div className='flex flex-row gap-2 items-center'>
-                          <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                          <p className="italic text-xs">Название команды</p>
-                        </div>
-                        <p className="text-xs text-brand">1/100</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">1</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">2</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">3</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">4</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                      <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                        <p className="text-brand text-xs">5</p>
-                        <p className="italic text-xs">Фамилия Имя Отчество</p>
-                      </button>
-                    </div>
-                  )}
-                  <div className='flex flex-row gap-2 w-full px-4 py-3 border border-brand rounded-full bg-white min-h-[40px] items-center justify-center mt-2'>
-                    <button className='w-full flex flex-row justify-between items-center'>
                       <div className='flex flex-row gap-2 items-center'>
                         <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
-                        <p className="italic text-xs">Название команды</p>
+                        <p className="italic text-xs">Команды не найдены</p>
                       </div>
-                      <p className="text-xs text-brand">1/100</p>
-                    </button>
-                  </div>
+                    </div>
+                  )}
                   <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
                 </div>
               </div>
