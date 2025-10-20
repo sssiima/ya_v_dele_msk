@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { structureApi } from '@/services/api'
+import { useNavigate } from 'react-router-dom'
 
 const ProfilePage = () => {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sect, setSect] = useState('profile')
@@ -46,15 +48,22 @@ const ProfilePage = () => {
       try {
         // Проверяем ctid в localStorage
         const savedCtid = localStorage.getItem('structure_ctid')
-        let item: any | undefined
-        if (savedCtid) {
-          const r = await structureApi.getByCtid(savedCtid)
-          item = r?.data
-        } else {
-          const resp = await structureApi.getAll()
-          item = Array.isArray(resp?.data) ? resp.data[0] : undefined
+        if (!savedCtid) {
+          // Если нет ctid, перенаправляем на авторизацию
+          navigate('/auth')
+          return
         }
-        if (!item) return
+        
+        let item: any | undefined
+        const r = await structureApi.getByCtid(savedCtid)
+        item = r?.data
+        
+        if (!item) {
+          // Если запись не найдена, очищаем localStorage и перенаправляем
+          localStorage.removeItem('structure_ctid')
+          navigate('/auth')
+          return
+        }
 
         setLastname(item.last_name || 'не указан');
         setFirstname(item.first_name || 'не указан');
@@ -72,10 +81,13 @@ const ProfilePage = () => {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
+        // При ошибке загрузки перенаправляем на авторизацию
+        localStorage.removeItem('structure_ctid')
+        navigate('/auth')
       }
     };
     loadStructureProfile();
-  }, []);
+  }, [navigate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -129,7 +141,7 @@ const ProfilePage = () => {
       try {
         const savedCtid = localStorage.getItem('structure_ctid')
         if (!savedCtid) return
-        await structureApi.updateByCtid(savedCtid, {
+        const result = await structureApi.updateByCtid(savedCtid, {
           last_name: tempLastname,
           first_name: tempFirstname,
           patronymic: tempPatronymic,
@@ -144,6 +156,11 @@ const ProfilePage = () => {
           birth_date: tempBirthDate,
           gender: tempGender === 'Женский' ? 'F' : tempGender === 'Мужской' ? 'M' : tempGender,
         })
+        
+        // Обновляем ctid в localStorage если он изменился
+        if (result?.data?.ctid && result.data.ctid !== savedCtid) {
+          localStorage.setItem('structure_ctid', result.data.ctid)
+        }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to save structure profile', e)
