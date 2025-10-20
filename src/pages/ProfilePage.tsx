@@ -26,6 +26,9 @@ const ProfilePage = () => {
   const [userRole, setUserRole] = useState('')
   const [coordinator, setCoordinator] = useState('')
   const [districtManager, setDistrictManager] = useState('')
+  const [coordinators, setCoordinators] = useState<any[]>([])
+  const [seniorMentors, setSeniorMentors] = useState<any[]>([])
+  const [mentors, setMentors] = useState<any[]>([])
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -84,6 +87,9 @@ const ProfilePage = () => {
         setUserRole(item.pos || '');
         setCoordinator(item.coord || 'не указан');
         setDistrictManager(item.ro || 'не указан');
+        
+        // Загружаем списки после получения роли
+        await loadRoleLists(item.pos || '');
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
@@ -94,6 +100,71 @@ const ProfilePage = () => {
     };
     loadStructureProfile();
   }, [navigate]);
+
+  // Функция для загрузки списков в зависимости от роли
+  const loadRoleLists = async (role: string) => {
+    try {
+      const allStructure = await structureApi.getAll()
+      const allPeople = allStructure?.data || []
+      
+      // Функция для поиска людей по ФИО
+      const findPeopleByFullName = (targetFullName: string) => {
+        if (!targetFullName || targetFullName === 'не указан') return []
+        
+        const nameParts = targetFullName.trim().split(/\s+/).filter(part => part.length > 0)
+        if (nameParts.length < 2) return []
+        
+        return allPeople.filter(person => {
+          const personFullName = `${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()
+          const personParts = personFullName.split(/\s+/).filter(part => part.length > 0)
+          
+          // Проверяем совпадение имени и фамилии (в любом порядке)
+          return (
+            (personParts[0] === nameParts[0] && personParts[1] === nameParts[1]) ||
+            (personParts[0] === nameParts[1] && personParts[1] === nameParts[0])
+          )
+        })
+      }
+      
+      // Загружаем списки в зависимости от роли
+      if (role === 'руководитель округа') {
+        // РО видит всех координаторов
+        const coordPeople = findPeopleByFullName(coordinator)
+        setCoordinators(coordPeople)
+        
+        // РО видит всех старших наставников
+        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник')
+        setSeniorMentors(seniorMentorPeople)
+        
+        // РО видит всех наставников
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        setMentors(mentorPeople)
+      } else if (role === 'координатор') {
+        // Координатор видит старших наставников и наставников
+        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник')
+        setSeniorMentors(seniorMentorPeople)
+        
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        setMentors(mentorPeople)
+        
+        setCoordinators([]) // Координаторы не видят других координаторов
+      } else if (role === 'старший наставник') {
+        // Старший наставник видит только наставников
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        setMentors(mentorPeople)
+        
+        setCoordinators([])
+        setSeniorMentors([])
+      } else {
+        // Наставник и другие роли не видят списков
+        setCoordinators([])
+        setSeniorMentors([])
+        setMentors([])
+      }
+    } catch (e) {
+      console.error('Failed to load role lists:', e)
+    }
+  }
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -566,87 +637,56 @@ const ProfilePage = () => {
               
               {/* Для мобильных - списки идут после профиля */}
               <div className="lg:hidden">
-                <div className='leaders mb-4 text-sm'>
-                  <p><strong>Координаторы:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
+                {/* Координаторы - только для РО */}
+                {userRole === 'руководитель округа' && coordinators.length > 0 && (
+                  <div className='leaders mb-4 text-sm'>
+                    <p><strong>Координаторы:</strong></p>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                      {coordinators.map((person, index) => (
+                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                          <p className="text-brand text-xs">{index + 1}</p>
+                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                
-                <div className='leaders mb-4 text-sm'>
-                  <p><strong>Старшие наставники:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                  </div>
-                </div>
+                {/* Старшие наставники - для РО и координаторов */}
+                {(userRole === 'руководитель округа' || userRole === 'координатор') && seniorMentors.length > 0 && (
+                  <>
+                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                    <div className='leaders mb-4 text-sm'>
+                      <p><strong>Старшие наставники:</strong></p>
+                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                        {seniorMentors.map((person, index) => (
+                          <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
-                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                
-                <div className='leaders mb-4 text-sm'>
-                  <p><strong>Наставники:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                  </div>
-                </div>
+                {/* Наставники - для РО, координаторов и старших наставников */}
+                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
+                  <>
+                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                    <div className='leaders mb-4 text-sm'>
+                      <p><strong>Наставники:</strong></p>
+                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                        {mentors.map((person, index) => (
+                          <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                 
@@ -744,87 +784,54 @@ const ProfilePage = () => {
 
               {/* Для десктоп версии - списки в правой колонке */}
               <div className="hidden lg:block space-y-6">
-                <div className='leaders text-sm mt-4'>
-                  <p><strong>Координаторы:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
+                {/* Координаторы - только для РО */}
+                {userRole === 'руководитель округа' && coordinators.length > 0 && (
+                  <div className='leaders text-sm mt-4'>
+                    <p><strong>Координаторы:</strong></p>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                      {coordinators.map((person, index) => (
+                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                          <p className="text-brand text-xs">{index + 1}</p>
+                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className='leaders text-sm'>
-                  <p><strong>Старшие наставники:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
+                {/* Старшие наставники - для РО и координаторов */}
+                {(userRole === 'руководитель округа' || userRole === 'координатор') && seniorMentors.length > 0 && (
+                  <div className='leaders text-sm'>
+                    <p><strong>Старшие наставники:</strong></p>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                      {seniorMentors.map((person, index) => (
+                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                          <p className="text-brand text-xs">{index + 1}</p>
+                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className='leaders text-sm'>
-                  <p><strong>Наставники:</strong></p>
-                  <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                      <p className="text-brand text-xs">1</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">2</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">3</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">4</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
-                    <button className='w-full flex flex-row gap-4 m-3 mb-1'>
-                      <p className="text-brand text-xs">5</p>
-                      <p className="italic text-xs">Фамилия Имя Отчество</p>
-                    </button>
+                {/* Наставники - для РО, координаторов и старших наставников */}
+                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
+                  <div className='leaders text-sm'>
+                    <p><strong>Наставники:</strong></p>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
+                      {mentors.map((person, index) => (
+                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                          <p className="text-brand text-xs">{index + 1}</p>
+                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+                )}
 
-                  <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-4 mb-2" />
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-4 mb-2" />
 
-
-                  <div className="hidden lg:block">
+                <div className="hidden lg:block">
                 
                 <div className='teams mb-6 text-sm'>
                   <p><strong>Команды:</strong></p>
@@ -891,11 +898,6 @@ const ProfilePage = () => {
                   <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
                 </div>
               </div>
-
-                  
-                </div>
-
-                
 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
 
