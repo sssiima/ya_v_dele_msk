@@ -804,7 +804,7 @@ const ProfilePage = () => {
                               <p className="text-brand text-xs">{index + 1}</p>
                               <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                             </div>
-                            {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
                               <button title='Архивировать' onClick={async () => {
                                 try {
                                   if (!person.id) return
@@ -874,7 +874,7 @@ const ProfilePage = () => {
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
-                                        {member.role === 'captain' && (
+                                        {member.role === 'капитан' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
                                         {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
@@ -1010,10 +1010,29 @@ const ProfilePage = () => {
                     <p><strong>Наставники:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {mentors.map((person, index) => (
-                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                          <p className="text-brand text-xs">{index + 1}</p>
-                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
-                        </button>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1'>
+                          <div className='flex flex-row gap-4 items-center'>
+                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                          </div>
+                          {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                            <button title='Архивировать' onClick={async () => {
+                              try {
+                                if (!person.id) return
+                                const fullName = `${person.last_name || ''} ${person.first_name || ''}`.trim()
+                                const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                if (!ok) return
+                                await structureApi.archiveById(person.id)
+                                // Обновляем списки после архивации
+                                await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
+                              } catch (e) {
+                                console.error('Archive structure user failed', e)
+                              }
+                            }}>
+                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                            </button>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -1066,7 +1085,7 @@ const ProfilePage = () => {
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
-                                        {member.role === 'captain' && (
+                                        {member.role === 'капитан' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
                                         {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
