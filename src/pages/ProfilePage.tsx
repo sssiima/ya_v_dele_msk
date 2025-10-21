@@ -815,28 +815,32 @@ const ProfilePage = () => {
                               </button>
                             </div>
                           ) : (
-                            <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                              <button 
-                                className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' 
-                                onClick={() => toggleTeamExpansion(team.code)}
-                              >
-                                <div className='flex flex-row gap-2 items-center'>
-                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
-                                </div>
-                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
-                              </button>
-                              {members.map((member, memberIndex) => (
-                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1 items-center justify-between'>
-                                  <div className='flex flex-row items-center gap-4'>
-                                    <p className="text-brand text-xs">{memberIndex + 1}</p>
-                                    <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                            <div className='w-full px-0 mt-2'>
+                              <div className='w-full border border-brand rounded-3xl bg-white'>
+                                <button 
+                                  className='w-full flex flex-row justify-between items-center px-4 py-3 min-h-[40px] rounded-t-3xl' 
+                                  onClick={() => toggleTeamExpansion(team.code)}
+                                >
+                                  <div className='flex flex-row gap-2 items-center'>
+                                    <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                                    <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                   </div>
-                                  {member.role === 'captain' && (
-                                    <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
-                                  )}
+                                  {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                                 </button>
-                              ))}
+                                <div className='w-full pb-2'>
+                                  {members.map((member, memberIndex) => (
+                                    <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
+                                      <div className='flex flex-row items-center gap-4'>
+                                        <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                        <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                      </div>
+                                      {member.role === 'captain' && (
+                                        <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                      )}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -956,28 +960,32 @@ const ProfilePage = () => {
                               </button>
                             </div>
                           ) : (
-                            <div className='w-full px-0 py-3 pt-0 border border-t-0 border-brand rounded-b-3xl rounded-t-none bg-white min-h-[40px] items-center mt-2'>
-                              <button 
-                                className='w-full flex flex-row justify-between items-center px-4 py-3 border border-brand rounded-full bg-white min-h-[40px]' 
-                                onClick={() => toggleTeamExpansion(team.code)}
-                              >
-                                <div className='flex flex-row gap-2 items-center'>
-                                  <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
-                                  <p className="italic text-xs">{team.name || 'Название команды'}</p>
-                                </div>
-                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
-                              </button>
-                              {members.map((member, memberIndex) => (
-                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1 items-center justify-between'>
-                                  <div className='flex flex-row items-center gap-4'>
-                                    <p className="text-brand text-xs">{memberIndex + 1}</p>
-                                    <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                            <div className='w-full px-0 mt-2'>
+                              <div className='w-full border border-brand rounded-3xl bg-white'>
+                                <button 
+                                  className='w-full flex flex-row justify-between items-center px-4 py-3 min-h-[40px] rounded-t-3xl' 
+                                  onClick={() => toggleTeamExpansion(team.code)}
+                                >
+                                  <div className='flex flex-row gap-2 items-center'>
+                                    <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
+                                    <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                   </div>
-                                  {member.role === 'captain' && (
-                                    <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
-                                  )}
+                                  {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                                 </button>
-                              ))}
+                                <div className='w-full pb-2'>
+                                  {members.map((member, memberIndex) => (
+                                    <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
+                                      <div className='flex flex-row items-center gap-4'>
+                                        <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                        <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                      </div>
+                                      {member.role === 'captain' && (
+                                        <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                      )}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>

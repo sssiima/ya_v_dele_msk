@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { membersApi, structureApi } from '@/services/api'
+import { membersApi, structureApi, teamsApi } from '@/services/api'
 
 // Типы для данных
 interface TeamMember {
@@ -78,6 +78,8 @@ const ProfilePageMember = () => {
     isEditingTeamName: false,
     isEditingProjectDescription: false
   })
+  const [isEditingTeamNameOnly, setIsEditingTeamNameOnly] = useState(false)
+  const [tempTeamName, setTempTeamName] = useState('')
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -698,14 +700,41 @@ const loadTeamData = async (teamCode: string) => {
   <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
   
   <div className='leaders mb-4 text-sm'>
-    {/* Название команды (только просмотр) */}
+    {/* Название команды с редактированием */}
     <div className='mb-2'>
       <p><strong>Название команды</strong></p>
-      <input 
-        value={teamData.teamName}
-        disabled
-        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
-      />
+      {!isEditingTeamNameOnly ? (
+        <div className='flex gap-2 items-center'>
+          <input 
+            value={teamData.teamName}
+            disabled
+            className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+          />
+          <button className='text-brand text-xs whitespace-nowrap hover:underline' onClick={() => { setIsEditingTeamNameOnly(true); setTempTeamName(teamData.teamName) }}>Редактировать</button>
+        </div>
+      ) : (
+        <div className='flex gap-2 items-center'>
+          <input 
+            value={tempTeamName}
+            onChange={(e) => setTempTeamName(e.target.value)}
+            className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+          />
+          <button className='text-brand text-xs whitespace-nowrap hover:underline' onClick={async () => {
+            try {
+              if (!teamData.teamCode) return
+              const newName = (tempTeamName || '').trim()
+              if (newName.length === 0) return
+              await teamsApi.rename(teamData.teamCode, newName)
+              // Обновляем локально
+              setTeamData({ ...teamData, teamName: newName })
+              setIsEditingTeamNameOnly(false)
+            } catch (e) {
+              console.error('Failed to rename team:', e)
+            }
+          }}>Сохранить</button>
+          <button className='text-xs hover:underline' onClick={() => setIsEditingTeamNameOnly(false)}>Отмена</button>
+        </div>
+      )}
     </div>
 
     <div className='flex flex-row gap-2 mb-2'>

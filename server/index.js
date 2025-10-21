@@ -809,6 +809,28 @@ app.get('/api/teams/by-code/:teamCode', async (req, res) => {
   }
 })
 
+// PUT /api/teams/rename - сменить название команды и обновить у участников
+app.put('/api/teams/rename', async (req, res) => {
+  const { code, newName } = req.body || {}
+  if (!code || !newName) return res.status(400).json({ success: false, message: 'Missing code or newName' })
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    // Обновляем название команды в teams
+    await client.query('UPDATE teams SET name = $1, updated_at = NOW() WHERE code = $2', [newName, code])
+    // Обновляем у всех участников с этим кодом
+    await client.query("UPDATE members SET team_name = $1 WHERE team_code = $2", [newName, code])
+    await client.query('COMMIT')
+    return res.json({ success: true })
+  } catch (err) {
+    await client.query('ROLLBACK')
+    console.error('Error renaming team:', err)
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  } finally {
+    client.release()
+  }
+})
+
 // GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
 app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   try {

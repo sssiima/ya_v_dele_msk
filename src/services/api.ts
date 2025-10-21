@@ -465,6 +465,14 @@ export const teamsApi = {
   async getByMentor(mentorName: string): Promise<ApiResponse<any[]>> {
     const response = await api.get(`/teams/by-mentor/${encodeURIComponent(mentorName)}`)
     return response.data
+  },
+  async getByCode(code: string): Promise<ApiResponse<any>> {
+    const response = await api.get(`/teams/by-code/${encodeURIComponent(code)}`)
+    return response.data
+  },
+  async rename(code: string, newName: string): Promise<ApiResponse<void>> {
+    const response = await api.put('/teams/rename', { code, newName })
+    return response.data
   }
 }
 
