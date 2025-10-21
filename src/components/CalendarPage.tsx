@@ -1,5 +1,4 @@
 // components/CalendarPage.tsx
-import { useState } from 'react';
 
 const CalendarPage = () => {
   // Моковые данные для событий
