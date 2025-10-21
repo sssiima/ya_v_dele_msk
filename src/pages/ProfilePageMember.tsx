@@ -319,7 +319,7 @@ const loadTeamData = async (teamCode: string) => {
       mentor: mentorName,
       coordinator: coordinator,
       districtManager: districtManager,
-      projectDescription: 'Описание проекта пока не добавлено',
+      projectDescription: 'Будет доступно на 2 неделе курса',
       projectSite: 'Сайт проекта пока не добавлен',
       teamMembers: formattedMembers,
       isEditingTeamName: false,

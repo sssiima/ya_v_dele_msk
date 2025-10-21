@@ -12,7 +12,9 @@
     "type-check": "tsc --noEmit",
     "start": "node server/index.js",
     "server": "node server/index.js",
-    "migrate": "node scripts/migrate.js"
+    "migrate": "node scripts/migrate.js",
+    "migrate:teams": "node scripts/teams-migration.js",
+    "migrate:teams:ts": "ts-node scripts/teams-migration.ts"
   },
   "dependencies": {
     "@twa-dev/sdk": "^7.0.0",
