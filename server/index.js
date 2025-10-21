@@ -21,6 +21,26 @@ async function ensureTeamsTable() {
     CREATE INDEX IF NOT EXISTS idx_teams_mentor ON teams (mentor);
   `
   await pool.query(createQuery)
+
+  // Defensive: ensure legacy tables have necessary columns and uniqueness
+  await pool.query(`
+    ALTER TABLE teams
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+  `)
+  await pool.query(`
+    ALTER TABLE teams
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+  `)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE schemaname = ANY(current_schemas(false)) AND indexname = 'teams_code_unique'
+      ) THEN
+        CREATE UNIQUE INDEX teams_code_unique ON teams(code);
+      END IF;
+    END$$;
+  `)
 }
 
 dotenv.config()
