@@ -5,6 +5,24 @@ const cors = require('cors')
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
+async function ensureTeamsTable() {
+  const createQuery = `
+    CREATE TABLE IF NOT EXISTS teams (
+      id SERIAL PRIMARY KEY,
+      code VARCHAR(64) NOT NULL UNIQUE,
+      name VARCHAR(255),
+      mentor VARCHAR(255),
+      coord VARCHAR(255),
+      ro VARCHAR(255),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_teams_code ON teams (code);
+    CREATE INDEX IF NOT EXISTS idx_teams_mentor ON teams (mentor);
+  `
+  await pool.query(createQuery)
+}
+
 dotenv.config()
 
 const app = express()
@@ -65,6 +83,7 @@ app.post('/api/upload', (req, res) => {
 app.get('/api/health', async (_req, res) => {
   try {
     await verifyConnection()
+    await ensureTeamsTable()
     res.json({ ok: true })
   } catch (e) {
     res.status(500).json({ ok: false })
@@ -234,11 +253,45 @@ router.post('/', async (req, res) => {
     ];
 
     const result = await pool.query(query, values);
+    const created = result.rows[0]
+
+    // Если зарегистрирован капитан, создаем/обновляем запись в teams
+    if (role === 'captain') {
+      try {
+        await ensureTeamsTable()
+        // Upsert команды по коду
+        await pool.query(
+          `INSERT INTO teams (code, name, mentor)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (code) DO UPDATE SET
+             name = EXCLUDED.name,
+             mentor = EXCLUDED.mentor,
+             updated_at = NOW()`,
+          [team_code, team_name, mentor]
+        )
+
+        // Обновляем coord и ro из таблицы structure на основании ФИО наставника
+        await pool.query(
+          `UPDATE teams
+             SET coord = s.coord,
+                 ro = s.ro
+           FROM structure s
+           WHERE teams.code = $1
+             AND teams.mentor IS NOT NULL
+             AND (s.last_name || ' ' || s.first_name = teams.mentor
+               OR s.first_name || ' ' || s.last_name = teams.mentor)`,
+          [team_code]
+        )
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to upsert team for captain:', e)
+      }
+    }
 
     res.status(201).json({
       success: true,
       message: 'Участник успешно зарегистрирован',
-      data: result.rows[0]
+      data: created
     });
 
   } catch (error) {
