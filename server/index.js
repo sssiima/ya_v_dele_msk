@@ -208,7 +208,7 @@ router.post('/', async (req, res) => {
 
     // Проверка уникальности email (username)
     const existingMember = await pool.query(
-      'SELECT id FROM members WHERE username = $1',
+      'SELECT id FROM members WHERE username = $1 AND COALESCE(archived,false) = false',
       [username]
     );
 
@@ -223,7 +223,7 @@ router.post('/', async (req, res) => {
     if (role === 'captain') {
       // Для капитана: код команды должен быть уникальным
       const existingCode = await pool.query(
-        'SELECT id FROM members WHERE team_code = $1',
+      'SELECT id FROM members WHERE team_code = $1 AND COALESCE(archived,false) = false',
         [team_code]
       );
       if (existingCode.rows.length > 0) {
@@ -242,7 +242,7 @@ router.post('/', async (req, res) => {
     } else if (role === 'member') {
       // Для участника: код команды должен существовать у капитана
       const captainWithCode = await pool.query(
-        "SELECT id FROM members WHERE team_code = $1 AND role = 'captain'",
+        "SELECT id FROM members WHERE team_code = $1 AND role = 'captain' AND COALESCE(archived,false) = false",
         [team_code]
       );
       if (captainWithCode.rows.length === 0) {
@@ -362,6 +362,7 @@ router.get('/', async (_req, res) => {
         role,
         created_at
       FROM members
+      WHERE COALESCE(archived,false) = false
       ORDER BY created_at DESC
     `)
     res.json({ success: true, data: result.rows })
@@ -375,7 +376,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const result = await pool.query(
-      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at FROM members WHERE id = $1`,
+      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at FROM members WHERE id = $1 AND COALESCE(archived,false) = false`,
       [id]
     )
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
@@ -446,8 +447,9 @@ app.post('/api/auth/member-login', async (req, res) => {
   try {
     const { username, password } = req.body || {}
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
-    const result = await pool.query('SELECT id, password_hash FROM members WHERE username = $1', [username])
+    const result = await pool.query('SELECT id, password_hash, COALESCE(archived,false) as archived FROM members WHERE username = $1', [username])
     if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    if (result.rows[0].archived) return res.status(403).json({ success: false, message: 'Account archived' })
     const ok = await bcrypt.compare(password, result.rows[0].password_hash || '')
     if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
     // Возвращаем id участника; храните его в localStorage на фронте
@@ -466,12 +468,13 @@ app.post('/api/auth/structure-login', async (req, res) => {
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing credentials' })
 
     const result = await pool.query(
-      'SELECT ctid::text as ctid, password_hash FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
+      'SELECT ctid::text as ctid, password_hash, COALESCE(archived,false) as archived FROM structure WHERE LOWER(username) = LOWER($1) LIMIT 1',
       [username]
     )
     if (result.rows.length === 0) return res.status(401).json({ success: false, message: 'Invalid credentials' })
 
     const row = result.rows[0]
+    if (row.archived) return res.status(403).json({ success: false, message: 'Account archived' })
     const ok = await bcrypt.compare(password, row.password_hash || '')
 
     if (!ok) return res.status(401).json({ success: false, message: 'Invalid credentials' })
@@ -610,6 +613,7 @@ app.get('/api/structure', async (_req, res) => {
         ro,
         created_at
       FROM structure
+      WHERE COALESCE(archived,false) = false
       ORDER BY created_at DESC
     `)
     res.json({ success: true, data: result.rows })
@@ -644,7 +648,7 @@ app.get('/api/structure/by-ctid/:ctid', async (req, res) => {
         coord,
         ro,
         created_at
-      FROM structure WHERE ctid::text = $1`,
+      FROM structure WHERE ctid::text = $1 AND COALESCE(archived,false) = false`,
       [ctid]
     )
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
@@ -680,7 +684,7 @@ app.get('/api/structure/:id', async (req, res) => {
         coord,
         ro,
         created_at
-      FROM structure WHERE id = $1`, [id])
+      FROM structure WHERE id = $1 AND COALESCE(archived,false) = false`, [id])
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
     return res.json({ success: true, data: result.rows[0] })
   } catch (err) {
