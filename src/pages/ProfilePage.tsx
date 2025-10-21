@@ -31,6 +31,7 @@ const ProfilePage = () => {
   const [teams, setTeams] = useState<any[]>([])
   const [teamMembers, setTeamMembers] = useState<{[key: string]: any[]}>({})
   const [expandedTeams, setExpandedTeams] = useState<{[key: string]: boolean}>({})
+  const [isTeamsEditMode, setIsTeamsEditMode] = useState(false)
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -913,13 +914,14 @@ const ProfilePage = () => {
                     </div>
                   )}
                   <button className='w-full mt-4 text-xs text-brand hover:underline' onClick={() => {
-                    // Включаем режим редактирования команд: раскрыть все команды
+                    const next = !isTeamsEditMode
+                    setIsTeamsEditMode(next)
                     const expanded: {[key:string]: boolean} = {}
                     for (const t of teams) {
-                      if (t.code) expanded[t.code] = true
+                      if (t.code) expanded[t.code] = next
                     }
                     setExpandedTeams(expanded)
-                  }}>Редактировать команды</button>
+                  }}>{isTeamsEditMode ? 'Закончить редактирование' : 'Редактировать команды'}</button>
                 </div>
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mb-2" />
 
