@@ -597,6 +597,7 @@ app.get('/api/structure', async (_req, res) => {
     const result = await pool.query(`
       SELECT 
         id,
+        ctid::text as ctid,
         last_name,
         first_name,
         patronymic,
@@ -843,6 +844,18 @@ app.put('/api/structure/:id/archive', async (req, res) => {
     return res.json({ success: true })
   } catch (err) {
     console.error('Error archiving structure user:', err)
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// PUT /api/structure/by-ctid/:ctid/archive - пометить запись структуры как archived=true по ctid
+app.put('/api/structure/by-ctid/:ctid/archive', async (req, res) => {
+  try {
+    const { ctid } = req.params
+    await pool.query('UPDATE structure SET archived = true, updated_at = NOW() WHERE ctid::text = $1', [ctid])
+    return res.json({ success: true })
+  } catch (err) {
+    console.error('Error archiving structure user by ctid:', err)
     return res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })

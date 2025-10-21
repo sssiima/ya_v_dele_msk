@@ -191,6 +191,8 @@ export default api
 
 // API для регистрации структуры
 export interface StructurePayload {
+  id?: number
+  ctid?: string
   last_name: string
   first_name: string
   patronymic?: string
@@ -260,6 +262,10 @@ export const structureApi = {
   },
   archiveById: async (id: number): Promise<ApiResponse<void>> => {
     const response = await api.put(`/structure/${id}/archive`)
+    return response.data
+  },
+  archiveByCtid: async (ctid: string): Promise<ApiResponse<void>> => {
+    const response = await api.put(`/structure/by-ctid/${ctid}/archive`)
     return response.data
   }
 }
