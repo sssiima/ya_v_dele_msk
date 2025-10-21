@@ -92,10 +92,10 @@ const ProfilePage = () => {
         
         // Загружаем списки после получения роли
         const currentUserFullName = `${item.last_name || ''} ${item.first_name || ''}`.trim()
-        await loadRoleLists(item.pos || '', currentUserFullName);
+        const subordinates = await loadRoleLists(item.pos || '', currentUserFullName);
         
-        // Загружаем команды пользователя и подчиненных
-        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim(), item.pos || '');
+        // Загружаем команды пользователя и подчиненных после загрузки списков
+        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim(), item.pos || '', subordinates);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
@@ -132,32 +132,36 @@ const ProfilePage = () => {
         return isSameFirstLast(fieldValue, currentUserFullName)
       }
       
+      let coordPeople: any[] = []
+      let seniorMentorPeople: any[] = []
+      let mentorPeople: any[] = []
+      
       // Загружаем списки в зависимости от роли
       if (role === 'руководитель округа') {
         // РО видит координаторов, у которых поле ro соответствует ФИО текущего пользователя
-        const coordPeople = allPeople.filter(person => person.pos === 'координатор' && fieldMatchesUser(person.ro))
+        coordPeople = allPeople.filter(person => person.pos === 'координатор' && fieldMatchesUser(person.ro))
         setCoordinators(coordPeople)
         
         // РО видит старших наставников своего округа (по полю ro)
-        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.ro))
+        seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.ro))
         setSeniorMentors(seniorMentorPeople)
         
         // РО видит наставников своего округа (по полю ro)
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.ro))
+        mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.ro))
         setMentors(mentorPeople)
       } else if (role === 'координатор') {
         // Координатор видит старших наставников своего кураторства (по полю coord)
-        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.coord))
+        seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.coord))
         setSeniorMentors(seniorMentorPeople)
         
         // Координатор видит наставников, которые прикреплены к нему (по полю coord)
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.coord))
+        mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.coord))
         setMentors(mentorPeople)
         
         setCoordinators([]) // Координаторы не видят других координаторов
       } else if (role === 'старший наставник') {
         // Старший наставник видит наставников своей группы (по полю high_mentor)
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.high_mentor))
+        mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.high_mentor))
         setMentors(mentorPeople)
         
         setCoordinators([])
@@ -168,13 +172,24 @@ const ProfilePage = () => {
         setSeniorMentors([])
         setMentors([])
       }
+      
+      return {
+        coordinators: coordPeople,
+        seniorMentors: seniorMentorPeople,
+        mentors: mentorPeople
+      }
     } catch (e) {
       console.error('Failed to load role lists:', e)
+      return {
+        coordinators: [],
+        seniorMentors: [],
+        mentors: []
+      }
     }
   }
 
   // Функция для загрузки команд пользователя и подчиненных
-  const loadUserTeams = async (userFullName: string, userRole: string) => {
+  const loadUserTeams = async (userFullName: string, userRole: string, subordinates?: {seniorMentors: any[], mentors: any[]}) => {
     try {
       if (!userFullName || userFullName === 'не указан') return
       
@@ -186,9 +201,9 @@ const ProfilePage = () => {
       allTeams = [...userTeams]
       
       // Для РО и координаторов - получаем команды от подчиненных
-      if (userRole === 'руководитель округа' || userRole === 'координатор') {
+      if ((userRole === 'руководитель округа' || userRole === 'координатор') && subordinates) {
         // Получаем команды от старших наставников
-        for (const seniorMentor of seniorMentors) {
+        for (const seniorMentor of subordinates.seniorMentors) {
           const seniorMentorName = `${seniorMentor.last_name || ''} ${seniorMentor.first_name || ''}`.trim()
           if (seniorMentorName && seniorMentorName !== 'не указан') {
             try {
@@ -202,7 +217,7 @@ const ProfilePage = () => {
         }
         
         // Получаем команды от наставников
-        for (const mentor of mentors) {
+        for (const mentor of subordinates.mentors) {
           const mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''}`.trim()
           if (mentorName && mentorName !== 'не указан') {
             try {
