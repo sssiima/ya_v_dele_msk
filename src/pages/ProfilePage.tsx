@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { structureApi, teamsApi, teamMembersApi } from '@/services/api'
+import { structureApi, teamsApi, teamMembersApi, membersApi } from '@/services/api'
 import { useNavigate } from 'react-router-dom'
 
 const ProfilePage = () => {
@@ -745,10 +745,28 @@ const ProfilePage = () => {
                     <p><strong>Координаторы:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {coordinators.map((person, index) => (
-                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                          <p className="text-brand text-xs">{index + 1}</p>
-                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
-                        </button>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1'>
+                          <div className='flex flex-row gap-4 items-center'>
+                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                          </div>
+                          {userRole === 'руководитель округа' && (
+                            <button title='Архивировать' onClick={async () => {
+                              try {
+                                if (!person.id) return
+                                const fullName = `${person.last_name || ''} ${person.first_name || ''}`.trim()
+                                const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                if (!ok) return
+                                await structureApi.archiveById(person.id)
+                                await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
+                              } catch (e) {
+                                console.error('Archive structure user failed', e)
+                              }
+                            }}>
+                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                            </button>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -780,10 +798,29 @@ const ProfilePage = () => {
                       <p><strong>Наставники:</strong></p>
                       <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                         {mentors.map((person, index) => (
-                          <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                            <p className="text-brand text-xs">{index + 1}</p>
-                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
-                          </button>
+                          <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1'>
+                            <div className='flex flex-row gap-4 items-center'>
+                              <p className="text-brand text-xs">{index + 1}</p>
+                              <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                            </div>
+                            {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                              <button title='Архивировать' onClick={async () => {
+                                try {
+                                  if (!person.id) return
+                                  const fullName = `${person.last_name || ''} ${person.first_name || ''}`.trim()
+                                  const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                  if (!ok) return
+                                  await structureApi.archiveById(person.id)
+                                  // Обновляем списки после архивации
+                                  await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
+                                } catch (e) {
+                                  console.error('Archive structure user failed', e)
+                                }
+                              }}>
+                                <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                              </button>
+                            )}
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -830,15 +867,35 @@ const ProfilePage = () => {
                                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4 mb-2" />
                                 <div className='w-full pb-2'>
                                   {members.map((member, memberIndex) => (
-                                    <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
+                                    <div key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
                                       <div className='flex flex-row items-center gap-4'>
                                         <p className="text-brand text-xs">{memberIndex + 1}</p>
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
-                                      {member.role === 'captain' && (
-                                        <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
-                                      )}
-                                    </button>
+                                      <div className='flex items-center gap-3'>
+                                        {member.role === 'captain' && (
+                                          <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                        )}
+                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                                          <button title='Архивировать' onClick={async () => {
+                                            try {
+                                              if (!member.id) return
+                                              const fullName = `${member.last_name || ''} ${member.first_name || ''}`.trim()
+                                              const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                              if (!ok) return
+                                              await membersApi.archiveById(member.id)
+                                              // Обновляем состав конкретной команды
+                                              const updated = await teamMembersApi.getByTeamCode(team.code)
+                                              setTeamMembers(prev => ({ ...prev, [team.code]: updated?.data || [] }))
+                                            } catch (e) {
+                                              console.error('Archive member failed', e)
+                                            }
+                                          }}>
+                                            <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
                                   ))}
                                 </div>
                               </div>
@@ -855,7 +912,14 @@ const ProfilePage = () => {
                       </div>
                     </div>
                   )}
-                  <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
+                  <button className='w-full mt-4 text-xs text-brand hover:underline' onClick={() => {
+                    // Включаем режим редактирования команд: раскрыть все команды
+                    const expanded: {[key:string]: boolean} = {}
+                    for (const t of teams) {
+                      if (t.code) expanded[t.code] = true
+                    }
+                    setExpandedTeams(expanded)
+                  }}>Редактировать команды</button>
                 </div>
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mb-2" />
 
@@ -911,10 +975,28 @@ const ProfilePage = () => {
                     <p><strong>Старшие наставники:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {seniorMentors.map((person, index) => (
-                        <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                          <p className="text-brand text-xs">{index + 1}</p>
-                          <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
-                        </button>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1'>
+                          <div className='flex flex-row gap-4 items-center'>
+                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
+                          </div>
+                          {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                            <button title='Архивировать' onClick={async () => {
+                              try {
+                                if (!person.id) return
+                                const fullName = `${person.last_name || ''} ${person.first_name || ''}`.trim()
+                                const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                if (!ok) return
+                                await structureApi.archiveById(person.id)
+                                await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
+                              } catch (e) {
+                                console.error('Archive structure user failed', e)
+                              }
+                            }}>
+                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                            </button>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -976,15 +1058,34 @@ const ProfilePage = () => {
                                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4 mb-2" />
                                 <div className='w-full pb-2'>
                                   {members.map((member, memberIndex) => (
-                                    <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
+                                    <div key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
                                       <div className='flex flex-row items-center gap-4'>
                                         <p className="text-brand text-xs">{memberIndex + 1}</p>
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
-                                      {member.role === 'captain' && (
-                                        <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
-                                      )}
-                                    </button>
+                                      <div className='flex items-center gap-3'>
+                                        {member.role === 'captain' && (
+                                          <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                        )}
+                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                                          <button title='Архивировать' onClick={async () => {
+                                            try {
+                                              if (!member.id) return
+                                              const fullName = `${member.last_name || ''} ${member.first_name || ''}`.trim()
+                                              const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                              if (!ok) return
+                                              await membersApi.archiveById(member.id)
+                                              const updated = await teamMembersApi.getByTeamCode(team.code)
+                                              setTeamMembers(prev => ({ ...prev, [team.code]: updated?.data || [] }))
+                                            } catch (e) {
+                                              console.error('Archive member failed', e)
+                                            }
+                                          }}>
+                                            <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
                                   ))}
                                 </div>
                               </div>

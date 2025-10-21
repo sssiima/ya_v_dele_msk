@@ -835,6 +835,30 @@ app.put('/api/teams/rename', async (req, res) => {
   }
 })
 
+// PUT /api/structure/:id/archive - пометить запись структуры как archived=true
+app.put('/api/structure/:id/archive', async (req, res) => {
+  try {
+    const { id } = req.params
+    await pool.query('UPDATE structure SET archived = true, updated_at = NOW() WHERE id = $1', [id])
+    return res.json({ success: true })
+  } catch (err) {
+    console.error('Error archiving structure user:', err)
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// PUT /api/members/:id/archive - пометить участника как archived=true
+app.put('/api/members/:id/archive', async (req, res) => {
+  try {
+    const { id } = req.params
+    await pool.query('UPDATE members SET archived = true, updated_at = NOW() WHERE id = $1', [id])
+    return res.json({ success: true })
+  } catch (err) {
+    console.error('Error archiving member:', err)
+    return res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
 // GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
 app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   try {

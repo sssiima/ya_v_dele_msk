@@ -257,6 +257,10 @@ export const structureApi = {
   updateByCtid: async (ctid: string, payload: Partial<StructurePayload>): Promise<ApiResponse<any>> => {
     const response = await api.put(`/structure/by-ctid/${ctid}`, payload)
     return response.data
+  },
+  archiveById: async (id: number): Promise<ApiResponse<void>> => {
+    const response = await api.put(`/structure/${id}/archive`)
+    return response.data
   }
 }
 // Добавьте этот интерфейс после существующих интерфейсов
@@ -397,6 +401,14 @@ export const membersApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
+    if (!resp.ok) {
+      const details = await resp.json().catch(() => ({}))
+      throw new Error(details.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
+  },
+  async archiveById(id: number) {
+    const resp = await fetch(`${API_BASE_URL}/members/${id}/archive`, { method: 'PUT' })
     if (!resp.ok) {
       const details = await resp.json().catch(() => ({}))
       throw new Error(details.message || `HTTP ${resp.status}`)
