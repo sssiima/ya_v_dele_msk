@@ -827,7 +827,7 @@ const ProfilePage = () => {
                                   </div>
                                   {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                                 </button>
-                                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4" />
+                                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4 mb-2" />
                                 <div className='w-full pb-2'>
                                   {members.map((member, memberIndex) => (
                                     <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
@@ -973,7 +973,7 @@ const ProfilePage = () => {
                                   </div>
                                   {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                                 </button>
-                                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4" />
+                                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mx-4 mb-2" />
                                 <div className='w-full pb-2'>
                                   {members.map((member, memberIndex) => (
                                     <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
