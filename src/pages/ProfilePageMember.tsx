@@ -871,12 +871,12 @@ const loadTeamData = async (teamCode: string) => {
                 <div className='mb-4'>
                   <div className='flex justify-between items-center my-3 lg:flex-col lg:items-start'>
                     <span className="text-sm font-bold lg:mb-2">Место в общем рейтинге:</span>
-                    <span className="text-2xl font-bold text-brand lg:text-4xl">1/100</span>
+                    <span className="text-2xl font-bold text-brand lg:text-4xl">-</span>
                   </div>
                   <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-3" />
                   <div className='flex justify-between items-center lg:flex-col lg:items-start'>
                     <span className="text-sm font-bold lg:mb-2">Место в рейтинге трека:</span>
-                    <span className="text-2xl font-bold text-brand lg:text-4xl">1/100</span>
+                    <span className="text-2xl font-bold text-brand lg:text-4xl">-</span>
                   </div>
                 </div>
   <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />

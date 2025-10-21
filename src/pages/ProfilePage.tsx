@@ -756,7 +756,7 @@ const ProfilePage = () => {
                                   <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
                                   <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                 </div>
-                                <p className="text-xs text-brand">{members.length}/100</p>
+                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                             </div>
                           ) : (
@@ -769,7 +769,7 @@ const ProfilePage = () => {
                                   <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
                                   <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                 </div>
-                                <p className="text-xs text-brand">{members.length}/100</p>
+                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                               {members.map((member, memberIndex) => (
                                 <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
@@ -892,7 +892,7 @@ const ProfilePage = () => {
                                   <img src='/images/teamlist.png' alt='.' className="w-2 h-3"/>
                                   <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                 </div>
-                                <p className="text-xs text-brand">{members.length}/100</p>
+                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                             </div>
                           ) : (
@@ -905,7 +905,7 @@ const ProfilePage = () => {
                                   <img src='/images/teamlist.png' alt='.' className="w-2 h-3 rotate-90"/>
                                   <p className="italic text-xs">{team.name || 'Название команды'}</p>
                                 </div>
-                                <p className="text-xs text-brand">{members.length}/100</p>
+                                {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                               {members.map((member, memberIndex) => (
                                 <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
