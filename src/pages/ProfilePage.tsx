@@ -827,9 +827,14 @@ const ProfilePage = () => {
                                 {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                               {members.map((member, memberIndex) => (
-                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
-                                  <p className="text-brand text-xs">{memberIndex + 1}</p>
-                                  <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1 items-center justify-between'>
+                                  <div className='flex flex-row items-center gap-4'>
+                                    <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                    <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                  </div>
+                                  {member.role === 'captain' && (
+                                    <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                  )}
                                 </button>
                               ))}
                             </div>
@@ -963,9 +968,14 @@ const ProfilePage = () => {
                                 {/* <p className="text-xs text-brand">{members.length}/100</p> */}
                               </button>
                               {members.map((member, memberIndex) => (
-                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1'>
-                                  <p className="text-brand text-xs">{memberIndex + 1}</p>
-                                  <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                <button key={member.id || memberIndex} className='w-full flex flex-row gap-4 m-3 mb-1 items-center justify-between'>
+                                  <div className='flex flex-row items-center gap-4'>
+                                    <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                    <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
+                                  </div>
+                                  {member.role === 'captain' && (
+                                    <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
+                                  )}
                                 </button>
                               ))}
                             </div>
