@@ -94,8 +94,8 @@ const ProfilePage = () => {
         const currentUserFullName = `${item.last_name || ''} ${item.first_name || ''}`.trim()
         await loadRoleLists(item.pos || '', currentUserFullName);
         
-        // Загружаем команды пользователя
-        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim());
+        // Загружаем команды пользователя и подчиненных
+        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim(), item.pos || '');
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to load structure profile', e)
@@ -173,19 +173,59 @@ const ProfilePage = () => {
     }
   }
 
-  // Функция для загрузки команд пользователя
-  const loadUserTeams = async (userFullName: string) => {
+  // Функция для загрузки команд пользователя и подчиненных
+  const loadUserTeams = async (userFullName: string, userRole: string) => {
     try {
       if (!userFullName || userFullName === 'не указан') return
       
+      let allTeams: any[] = []
+      
       // Получаем команды где пользователь является наставником
-      const teamsResult = await teamsApi.getByMentor(userFullName)
-      const userTeams = teamsResult?.data || []
-      setTeams(userTeams)
+      const userTeamsResult = await teamsApi.getByMentor(userFullName)
+      const userTeams = userTeamsResult?.data || []
+      allTeams = [...userTeams]
+      
+      // Для РО и координаторов - получаем команды от подчиненных
+      if (userRole === 'руководитель округа' || userRole === 'координатор') {
+        // Получаем команды от старших наставников
+        for (const seniorMentor of seniorMentors) {
+          const seniorMentorName = `${seniorMentor.last_name || ''} ${seniorMentor.first_name || ''}`.trim()
+          if (seniorMentorName && seniorMentorName !== 'не указан') {
+            try {
+              const seniorTeamsResult = await teamsApi.getByMentor(seniorMentorName)
+              const seniorTeams = seniorTeamsResult?.data || []
+              allTeams = [...allTeams, ...seniorTeams]
+            } catch (e) {
+              console.error(`Failed to load teams for senior mentor ${seniorMentorName}:`, e)
+            }
+          }
+        }
+        
+        // Получаем команды от наставников
+        for (const mentor of mentors) {
+          const mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''}`.trim()
+          if (mentorName && mentorName !== 'не указан') {
+            try {
+              const mentorTeamsResult = await teamsApi.getByMentor(mentorName)
+              const mentorTeams = mentorTeamsResult?.data || []
+              allTeams = [...allTeams, ...mentorTeams]
+            } catch (e) {
+              console.error(`Failed to load teams for mentor ${mentorName}:`, e)
+            }
+          }
+        }
+      }
+      
+      // Удаляем дубликаты команд по коду
+      const uniqueTeams = allTeams.filter((team, index, self) => 
+        index === self.findIndex(t => t.code === team.code)
+      )
+      
+      setTeams(uniqueTeams)
       
       // Загружаем участников для каждой команды
       const membersData: {[key: string]: any[]} = {}
-      for (const team of userTeams) {
+      for (const team of uniqueTeams) {
         if (team.code) {
           try {
             const membersResult = await teamMembersApi.getByTeamCode(team.code)
