@@ -282,6 +282,14 @@ router.post('/', async (req, res) => {
                OR s.first_name || ' ' || s.last_name = teams.mentor)`,
           [team_code]
         )
+
+        // Верификация вставки (логирование)
+        const verify = await pool.query('SELECT id, code, name, mentor FROM teams WHERE code = $1 LIMIT 1', [team_code])
+        if (verify.rows.length === 0) {
+          console.warn('Team upsert verification failed for code:', team_code)
+        } else {
+          console.log('Team upserted:', verify.rows[0])
+        }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to upsert team for captain:', e)
@@ -761,6 +769,22 @@ app.get('/api/teams/by-mentor/:mentorName', async (req, res) => {
     res.json({ success: true, data: result.rows })
   } catch (err) {
     console.error('Error fetching teams by mentor:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
+// GET /api/teams/by-code/:teamCode - получить команду по коду команды
+app.get('/api/teams/by-code/:teamCode', async (req, res) => {
+  try {
+    const { teamCode } = req.params
+    const decoded = decodeURIComponent(teamCode)
+    const result = await pool.query('SELECT * FROM teams WHERE code = $1 LIMIT 1', [decoded])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Team not found' })
+    }
+    res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    console.error('Error fetching team by code:', err)
     res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })
