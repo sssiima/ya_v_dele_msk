@@ -91,7 +91,8 @@ const ProfilePage = () => {
         setDistrictManager(item.ro || 'не указан');
         
         // Загружаем списки после получения роли
-        await loadRoleLists(item.pos || '');
+        const currentUserFullName = `${item.last_name || ''} ${item.first_name || ''}`.trim()
+        await loadRoleLists(item.pos || '', currentUserFullName);
         
         // Загружаем команды пользователя
         await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim());
@@ -106,56 +107,57 @@ const ProfilePage = () => {
     loadStructureProfile();
   }, [navigate]);
 
-  // Функция для загрузки списков в зависимости от роли
-  const loadRoleLists = async (role: string) => {
+  // Функция для загрузки списков в зависимости от роли и привязки по ФИО
+  const loadRoleLists = async (role: string, currentUserFullName: string) => {
     try {
       const allStructure = await structureApi.getAll()
       const allPeople = allStructure?.data || []
       
-      // Функция для поиска людей по ФИО
-      const findPeopleByFullName = (targetFullName: string) => {
-        if (!targetFullName || targetFullName === 'не указан') return []
-        
-        const nameParts = targetFullName.trim().split(/\s+/).filter(part => part.length > 0)
-        if (nameParts.length < 2) return []
-        
-        return allPeople.filter(person => {
-          const personFullName = `${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()
-          const personParts = personFullName.split(/\s+/).filter(part => part.length > 0)
-          
-          // Проверяем совпадение имени и фамилии (в любом порядке)
-          return (
-            (personParts[0] === nameParts[0] && personParts[1] === nameParts[1]) ||
-            (personParts[0] === nameParts[1] && personParts[1] === nameParts[0])
-          )
-        })
+      // Нормализация ФИО к нижнему регистру без лишних пробелов
+      const normalizeName = (fullName: string) => fullName.trim().toLowerCase().replace(/\s+/g, ' ')
+
+      // Проверка совпадения по имени и фамилии в любом порядке ("Фамилия Имя" или "Имя Фамилия")
+      const isSameFirstLast = (a: string, b: string) => {
+        const aParts = normalizeName(a).split(' ')
+        const bParts = normalizeName(b).split(' ')
+        if (aParts.length < 2 || bParts.length < 2) return false
+        const [a1, a2] = [aParts[0], aParts[1]]
+        const [b1, b2] = [bParts[0], bParts[1]]
+        return (a1 === b1 && a2 === b2) || (a1 === b2 && a2 === b1)
+      }
+
+      // Проверка: строковое поле карточки человека (high_mentor/coord/ro) относится к текущему пользователю
+      const fieldMatchesUser = (fieldValue?: string) => {
+        if (!fieldValue) return false
+        return isSameFirstLast(fieldValue, currentUserFullName)
       }
       
       // Загружаем списки в зависимости от роли
       if (role === 'руководитель округа') {
-        // РО видит всех координаторов
-        const coordPeople = findPeopleByFullName(coordinator)
+        // РО видит координаторов, у которых поле ro соответствует ФИО текущего пользователя
+        const coordPeople = allPeople.filter(person => person.pos === 'координатор' && fieldMatchesUser(person.ro))
         setCoordinators(coordPeople)
         
-        // РО видит всех старших наставников
-        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник')
+        // РО видит старших наставников своего округа (по полю ro)
+        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.ro))
         setSeniorMentors(seniorMentorPeople)
         
-        // РО видит всех наставников
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        // РО видит наставников своего округа (по полю ro)
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.ro))
         setMentors(mentorPeople)
       } else if (role === 'координатор') {
-        // Координатор видит старших наставников и наставников
-        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник')
+        // Координатор видит старших наставников своего кураторства (по полю coord)
+        const seniorMentorPeople = allPeople.filter(person => person.pos === 'старший наставник' && fieldMatchesUser(person.coord))
         setSeniorMentors(seniorMentorPeople)
         
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        // Координатор видит наставников, которые прикреплены к нему (по полю coord)
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.coord))
         setMentors(mentorPeople)
         
         setCoordinators([]) // Координаторы не видят других координаторов
       } else if (role === 'старший наставник') {
-        // Старший наставник видит только наставников
-        const mentorPeople = allPeople.filter(person => person.pos === 'наставник')
+        // Старший наставник видит наставников своей группы (по полю high_mentor)
+        const mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.high_mentor))
         setMentors(mentorPeople)
         
         setCoordinators([])
