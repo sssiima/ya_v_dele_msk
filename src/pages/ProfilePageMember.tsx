@@ -81,6 +81,8 @@ const ProfilePageMember = () => {
   })
   const [isEditingTeamNameOnly, setIsEditingTeamNameOnly] = useState(false)
   const [tempTeamName, setTempTeamName] = useState('')
+  const [isEditingTeamData, setIsEditingTeamData] = useState(false)
+  const [tempTeamNameForEdit, setTempTeamNameForEdit] = useState('')
 
   const [tempLastname, setTempLastname] = useState(lastname)
   const [tempFirstname, setTempFirstname] = useState(firstname)
@@ -812,11 +814,19 @@ const loadTeamData = async (teamCode: string) => {
                   <div className='w-full text-xs'>
                     <div className='mb-2'>
                       <p><strong>Название команды</strong></p>
-                      <input 
-                        value={teamData.teamName}
-                        disabled
-                        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
-                      />
+                      {!isEditingTeamData ? (
+                        <input 
+                          value={teamData.teamName}
+                          disabled
+                          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                        />
+                      ) : (
+                        <input 
+                          value={tempTeamNameForEdit}
+                          onChange={(e) => setTempTeamNameForEdit(e.target.value)}
+                          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                        />
+                      )}
                     </div>
 
                     <div className='flex flex-row gap-2 mb-2'>
@@ -883,9 +893,44 @@ const loadTeamData = async (teamCode: string) => {
                     </div>
                     
                     <div className='w-full flex flex-col items-center mt-4'>
-                      <button className='text-brand mt-2 hover:underline italic'>
-                        Редактировать данные
-                      </button>
+                      {!isEditingTeamData ? (
+                        <button 
+                          className='text-brand mt-2 hover:underline italic'
+                          onClick={() => {
+                            setIsEditingTeamData(true)
+                            setTempTeamNameForEdit(teamData.teamName)
+                          }}
+                        >
+                          Редактировать данные
+                        </button>
+                      ) : (
+                        <div className='flex gap-2'>
+                          <button 
+                            className='bg-brand text-white rounded-full px-4 py-2 text-sm'
+                            onClick={async () => {
+                              try {
+                                if (!teamData.teamCode) return
+                                const newName = (tempTeamNameForEdit || '').trim()
+                                if (newName.length === 0) return
+                                await teamsApi.rename(teamData.teamCode, newName)
+                                // Обновляем локально
+                                setTeamData({ ...teamData, teamName: newName })
+                                setIsEditingTeamData(false)
+                              } catch (e) {
+                                console.error('Failed to rename team:', e)
+                              }
+                            }}
+                          >
+                            Сохранить
+                          </button>
+                          <button 
+                            className='border border-brand text-brand rounded-full px-4 py-2 text-sm'
+                            onClick={() => setIsEditingTeamData(false)}
+                          >
+                            Отмена
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

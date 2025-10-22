@@ -283,6 +283,15 @@ const ProfilePage = () => {
     }))
   }
 
+  // Функция для подсчета общего количества участников
+  const getTotalParticipantsCount = () => {
+    let totalCount = 0
+    Object.values(teamMembers).forEach(members => {
+      totalCount += members.length
+    })
+    return totalCount
+  }
+
   const handleEditProfile = () => {
     setTempLastname(lastname)
     setTempFirstname(firstname)
@@ -935,7 +944,7 @@ const ProfilePage = () => {
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mb-2" />
 
                 <div>
-                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
+                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">{getTotalParticipantsCount()}</span></strong></p>
                 </div>
                 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-2 mb-2" />
@@ -1152,7 +1161,7 @@ const ProfilePage = () => {
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
 
                 <div>
-                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">34/400</span></strong></p>
+                  <p><strong className='text-sm'>Количество участников: <span className="text-brand">{getTotalParticipantsCount()}</span></strong></p>
                 </div>
                 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
