@@ -1137,7 +1137,15 @@ const ProfilePage = () => {
                       </div>
                     </div>
                   )}
-                  <button className='w-full mt-4 text-xs text-brand hover:underline'>Редактировать команды</button>
+                  <button className='w-full mt-4 text-xs text-brand hover:underline' onClick={() => {
+                    const next = !isTeamsEditMode
+                    setIsTeamsEditMode(next)
+                    const expanded: {[key:string]: boolean} = {}
+                    for (const t of teams) {
+                      if (t.code) expanded[t.code] = next
+                    }
+                    setExpandedTeams(expanded)
+                  }}>{isTeamsEditMode ? 'Закончить редактирование' : 'Редактировать команды'}</button>
                 </div>
               </div>
 
