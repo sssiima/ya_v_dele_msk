@@ -879,7 +879,7 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
     const decodedTeamCode = decodeURIComponent(teamCode)
     
     const result = await pool.query(`
-      SELECT id, last_name, first_name, patronymic, team_code
+      SELECT id, last_name, first_name, patronymic, team_code, role
       FROM members 
       WHERE team_code = $1
       ORDER BY last_name, first_name
