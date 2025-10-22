@@ -892,7 +892,7 @@ const ProfilePage = () => {
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
-                                        {member.role === 'капитан' && (
+                                        {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
                                         {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
@@ -1108,7 +1108,7 @@ const ProfilePage = () => {
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
-                                        {member.role === 'капитан' && (
+                                        {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
                                         {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
