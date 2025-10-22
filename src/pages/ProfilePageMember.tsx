@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { membersApi, structureApi, teamsApi } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
+import TeamPage from '@/components/TeamPage';
 
 // Типы для данных
 interface TeamMember {
@@ -1068,7 +1069,7 @@ const loadTeamData = async (teamCode: string) => {
           <CalendarPage />
         )}
         {sect==='team' && (
-          <div>Команда программы</div>
+          <TeamPage />
         )}
       </div>
     </section>
