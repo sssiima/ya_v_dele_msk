@@ -959,103 +959,103 @@ const loadTeamData = async (teamCode: string) => {
                   <p className="text-sm font-semibold my-4">Получено баллов:</p>
                   
                   <div className='space-y-3'>
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Первое д/з</span>
-                      <div className="flex items-center gap-2">
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Первое д/з</span>
+                      <div className="flex items-center gap-2 ">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Второе д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Второе д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Третье д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Третье д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Четвертое д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Четвертое д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Промежуточный ВШ</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Промежуточный ВШ</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Пятое д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Пятое д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Шестое д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Шестое д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Седьмое д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Седьмое д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Восьмое д/з</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Восьмое д/з</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center'>
-                      <span className="text-sm text-brand">Финальный ВШ</span>
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Финальный ВШ</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-16" />
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
-                        <span className="text-sm font-semibold"></span>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
                       </div>
                     </div>
                   </div>
