@@ -759,7 +759,7 @@ const ProfilePage = () => {
                     <p><strong>Координаторы:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {coordinators.map((person, index) => (
-                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-2'>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
@@ -792,9 +792,9 @@ const ProfilePage = () => {
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                     <div className='leaders mb-4 text-sm'>
                       <p><strong>Старшие наставники:</strong></p>
-                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-2'>
+                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {seniorMentors.map((person, index) => (
-                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-2'>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
@@ -828,9 +828,9 @@ const ProfilePage = () => {
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                     <div className='leaders mb-4 text-sm'>
                       <p><strong>Наставники:</strong></p>
-                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-2'>
+                      <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                         {mentors.map((person, index) => (
-                          <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1'>
+                          <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                             <div className='flex flex-row gap-4 items-center'>
                               <p className="text-brand text-xs">{index + 1}</p>
                               <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
@@ -996,7 +996,7 @@ const ProfilePage = () => {
                 {userRole === 'руководитель округа' && coordinators.length > 0 && (
                   <div className='leaders text-sm mt-4'>
                     <p><strong>Координаторы:</strong></p>
-                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-2'>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-6'>
                       {coordinators.map((person, index) => (
                         <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
                           <p className="text-brand text-xs">{index + 1}</p>
@@ -1011,9 +1011,9 @@ const ProfilePage = () => {
                 {(userRole === 'руководитель округа' || userRole === 'координатор') && seniorMentors.length > 0 && (
                   <div className='leaders text-sm'>
                     <p><strong>Старшие наставники:</strong></p>
-                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-2'>
+                    <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {seniorMentors.map((person, index) => (
-                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-2'>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
@@ -1046,7 +1046,7 @@ const ProfilePage = () => {
                     <p><strong>Наставники:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
                       {mentors.map((person, index) => (
-                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-2'>
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>

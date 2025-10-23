@@ -10,7 +10,7 @@ const CalendarPage = () => {
     {
       id: 2,
       title: 'Менторская гостиная',
-      date: '20 декабря',
+      date: '5 ноября',
       image: '/images/event2.jpg'
     }
   ];
@@ -25,7 +25,7 @@ const CalendarPage = () => {
     {
       id: 2,
       title: 'Менторская гостиная',
-      date: '30 декабря',
+      date: '5 ноября',
       image: '/images/partner2.jpg'
     }
   ];
