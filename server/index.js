@@ -308,7 +308,7 @@ router.post('/', async (req, res) => {
         if (verify.rows.length === 0) {
           console.warn('Team upsert verification failed for code:', team_code)
         } else {
-          console.log('Team upserted:', verify.rows[0])
+          console.log('Team upserted')
         }
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -724,7 +724,7 @@ app.put('/api/structure/:id', async (req, res) => {
 app.put('/api/structure/by-ctid/:ctid', async (req, res) => {
   try {
     const { ctid } = req.params
-    console.log('Updating structure by ctid:', ctid, 'with data:', req.body)
+    console.log('Updating structure')
     const allowed = ['last_name','first_name','patronymic','birth_date','gender','vk_link','phone','education','grade','level','faculty','format','specialty','photo_url','pos','username','high_mentor','coord','ro']
     const incoming = req.body || {}
     const set = []
@@ -740,9 +740,9 @@ app.put('/api/structure/by-ctid/:ctid', async (req, res) => {
     if (set.length === 0) return res.status(400).json({ success: false, message: 'No updatable fields provided' })
     const q = `UPDATE structure SET ${set.join(', ')} WHERE ctid::text = $${i} RETURNING ctid::text as ctid`
     values.push(ctid)
-    console.log('Query:', q, 'Values:', values)
+    console.log('Query')
     const result = await pool.query(q, values)
-    console.log('Update result:', result.rows)
+    console.log('Update result')
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
     return res.json({ success: true, data: result.rows[0] })
   } catch (err) {

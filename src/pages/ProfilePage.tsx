@@ -113,7 +113,7 @@ const ProfilePage = () => {
     try {
       const allStructure = await structureApi.getAll()
       const allPeople = allStructure?.data || []
-      console.log('All structure data:', allPeople) // Отладочная информация
+      console.log('All structure data') // Отладочная информация
       
       // Нормализация ФИО к нижнему регистру без лишних пробелов
       const normalizeName = (fullName: string) => fullName.trim().toLowerCase().replace(/\s+/g, ' ')
@@ -150,7 +150,7 @@ const ProfilePage = () => {
         
         // РО видит наставников своего округа (по полю ro)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.ro))
-        console.log('RO mentors:', mentorPeople) // Отладочная информация
+        console.log('RO mentors') // Отладочная информация
         setMentors(mentorPeople)
       } else if (role === 'координатор') {
         // Координатор видит старших наставников своего кураторства (по полю coord)
@@ -159,14 +159,14 @@ const ProfilePage = () => {
         
         // Координатор видит наставников, которые прикреплены к нему (по полю coord)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.coord))
-        console.log('Coordinator mentors:', mentorPeople) // Отладочная информация
+        console.log('Coordinator mentors') // Отладочная информация
         setMentors(mentorPeople)
         
         setCoordinators([]) // Координаторы не видят других координаторов
       } else if (role === 'старший наставник') {
         // Старший наставник видит наставников своей группы (по полю high_mentor)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.high_mentor))
-        console.log('Senior mentor mentors:', mentorPeople) // Отладочная информация
+        console.log('Senior mentor mentors') // Отладочная информация
         setMentors(mentorPeople)
         
         setCoordinators([])
@@ -838,7 +838,7 @@ const ProfilePage = () => {
                             {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
                               <button title='Архивировать' onClick={async () => {
                                 try {
-                                  console.log('Mentor data:', person) // Отладочная информация
+                                  console.log('Mentor data') // Отладочная информация
                                   if (!person.ctid) {
                                     console.warn('Mentor has no ctid:', person)
                                     alert('Ошибка: у наставника отсутствует ctid')
@@ -1054,7 +1054,7 @@ const ProfilePage = () => {
                           {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
                             <button title='Архивировать' onClick={async () => {
                               try {
-                                console.log('Mentor data (desktop):', person) // Отладочная информация
+                                console.log('Mentor data (desktop)') // Отладочная информация
                                 if (!person.ctid) {
                                   console.warn('Mentor has no ctid (desktop):', person)
                                   alert('Ошибка: у наставника отсутствует ctid')

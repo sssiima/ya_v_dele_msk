@@ -101,7 +101,7 @@ const AuthPage = () => {
   // })
 
   // const onSubmit = (data: LoginValues) => {
-  //   console.log('login', data)
+  //   console.log('login')
   //   navigate('/profile') // Переход после успешной валидации
   // }
 
