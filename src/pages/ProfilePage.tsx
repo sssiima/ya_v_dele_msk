@@ -793,12 +793,30 @@ const ProfilePage = () => {
                     <div className='leaders mb-4 text-sm'>
                       <p><strong>Старшие наставники:</strong></p>
                       <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-2'>
-                        {seniorMentors.map((person, index) => (
-                          <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
+                      {seniorMentors.map((person, index) => (
+                        <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-2'>
+                          <div className='flex flex-row gap-4 items-center'>
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
-                          </button>
-                        ))}
+                          </div>
+                          {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                            <button title='Архивировать' onClick={async () => {
+                              try {
+                                if (!person.id) return
+                                const fullName = `${person.last_name || ''} ${person.first_name || ''}`.trim()
+                                const ok = window.confirm(`Действительно архивировать «${fullName}»?`)
+                                if (!ok) return
+                                await structureApi.archiveById(person.id)
+                                await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
+                              } catch (e) {
+                                console.error('Archive structure user failed', e)
+                              }
+                            }}>
+                              <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
+                            </button>
+                          )}
+                        </div>
+                      ))}
                       </div>
                     </div>
                   </>
