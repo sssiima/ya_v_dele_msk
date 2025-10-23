@@ -777,7 +777,7 @@ const ProfilePage = () => {
                                 console.error('Archive structure user failed', e)
                               }
                             }}>
-                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                              <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                             </button>
                           )}
                         </div>
@@ -836,7 +836,7 @@ const ProfilePage = () => {
                                   console.error('Archive structure user failed', e)
                                 }
                               }}>
-                                <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                                <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                               </button>
                             )}
                           </div>
@@ -910,7 +910,7 @@ const ProfilePage = () => {
                                               console.error('Archive member failed', e)
                                             }
                                           }}>
-                                            <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                                            <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                                           </button>
                                         )}
                                       </div>
@@ -1013,7 +1013,7 @@ const ProfilePage = () => {
                                 console.error('Archive structure user failed', e)
                               }
                             }}>
-                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                              <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                             </button>
                           )}
                         </div>
@@ -1052,7 +1052,7 @@ const ProfilePage = () => {
                                 console.error('Archive structure user failed', e)
                               }
                             }}>
-                              <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                              <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                             </button>
                           )}
                         </div>
@@ -1125,7 +1125,7 @@ const ProfilePage = () => {
                                               console.error('Archive member failed', e)
                                             }
                                           }}>
-                                            <img src='/images/close.png' alt='bin' className='w-3 h-3' />
+                                            <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
                                           </button>
                                         )}
                                       </div>
