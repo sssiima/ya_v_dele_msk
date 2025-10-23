@@ -82,7 +82,7 @@ const AuthPage = () => {
             <input type="password" className="w-full px-4 py-3 border border-gray-300 rounded-full" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <div className='text-white italic text-center hover:underline'>
-            Забыли пароль?
+            <button onClick={() => navigate('/reset')}>Забыли пароль?</button>
           </div>
           {error && <p className="text-red-200 text-xs">{error}</p>}
           <button type="submit" disabled={loading} className="w-full font-bold rounded-full transition-colors pt-4">
