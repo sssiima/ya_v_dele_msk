@@ -33,7 +33,7 @@ const TeamPage = () => {
         <div className="text-center">
             <h2 className="normal-case mt-4">Команда программы</h2>
             <div className="flex flex-col items-center justify-center mt-4 text-xs">
-                <div className="bg-gray-300 w-32 h-44 rounded-xl mb-2"></div>
+                <div className="bg-gray-300 w-32 h-48 rounded-xl mb-2"></div>
                 <p>Анисимов Максим</p>
                 <p>Руководитель программы в г. Москва</p>
             </div>
