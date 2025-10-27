@@ -722,8 +722,8 @@ const onSubmit = async (data: FormValues) => {
               required: 'Необходимо согласие с политикой конфиденциальности'
             })}
           />
-          <label htmlFor="privacy-policy" className="text-xs text-white italic">
-            Согласие на обработку персональных данных
+          <label htmlFor="privacy-policy" className="text-xs text-white italic underline">
+            <a href='https://drive.google.com/drive/folders/1gSDEvTsVhPYw5LhJyrIx8vh8OKBBF_Mf?usp=sharing'>Согласие на обработку персональных данных</a>
           </label>
         </div>
         {errors.privacy_policy && <p className="text-red-300 text-xs mt-1">{errors.privacy_policy.message}</p>}

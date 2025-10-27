@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { membersApi, structureApi, teamsApi } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
 import TeamPage from '@/components/TeamPage';
+import CoursesList from '@/components/Courses';
 
 // Типы для данных
 interface TeamMember {
@@ -373,6 +374,11 @@ const loadTeamData = async (teamCode: string) => {
             <li>
               <button onClick={() => {pageSelected('team')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'team' ? 'font-bold' : 'hover:font-bold'}`}>
                 <span>Команда программы</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => {pageSelected('courses')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'courses' ? 'font-bold' : 'hover:font-bold'}`}>
+                <span>Материалы курса</span>
               </button>
             </li>
           </ul>
@@ -1070,6 +1076,9 @@ const loadTeamData = async (teamCode: string) => {
         )}
         {sect==='team' && (
           <TeamPage />
+        )}
+        {sect==='courses' && (
+          <CoursesList />
         )}
       </div>
     </section>

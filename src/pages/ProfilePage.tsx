@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { structureApi, teamsApi, teamMembersApi, membersApi } from '@/services/api'
 import { useNavigate } from 'react-router-dom'
 import CalendarPage from '@/components/CalendarPage';
+import CoursesList from '@/components/Courses';
 
 const ProfilePage = () => {
   const navigate = useNavigate()
@@ -1211,7 +1212,7 @@ const ProfilePage = () => {
           <CalendarPage />
         )}
         {sect==='materials' && (
-          <div>Материалы курса</div>
+          <CoursesList />
         )}
         {sect==='handy' && (
           <div>Хэндик</div>
