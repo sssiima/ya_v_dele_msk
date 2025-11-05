@@ -9,6 +9,27 @@ interface RecoveryValues {
   recovery_email: string
 }
 
+// Функция для генерации пароля в формате ХххххNN
+const generateNewPassword = (): string => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz'
+  const numbers = '0123456789'
+  
+  // Первая буква - заглавная
+  let password = letters.charAt(Math.floor(Math.random() * letters.length)).toUpperCase()
+  
+  // Следующие 4 буквы - строчные
+  for (let i = 0; i < 4; i++) {
+    password += letters.charAt(Math.floor(Math.random() * letters.length))
+  }
+  
+  // Две цифры в конце
+  for (let i = 0; i < 2; i++) {
+    password += numbers.charAt(Math.floor(Math.random() * numbers.length))
+  }
+  
+  return password
+}
+
 const ResetPage = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<RecoveryValues>()
   const [emailError, setEmailError] = useState<string | null>(null)
@@ -65,9 +86,18 @@ const ResetPage = () => {
         const isPatronymicMatch = userData.patronymic?.toLowerCase().trim() === data.patronymic.toLowerCase().trim()
         
         if (isLastNameMatch && isFirstNameMatch && isPatronymicMatch) {
-          // Данные верны
-          alert('OK')
-          console.log('Данные верны, пользователь подтвержден:', userData)
+          // Данные верны - генерируем новый пароль
+          const newPassword = generateNewPassword()
+          
+          // Показываем алерт с новым паролем
+          alert(`Ваш новый пароль: ${newPassword}\n\nСохраните его в надежном месте!`)
+          
+          console.log('Данные верны, сгенерирован новый пароль:', newPassword)
+          console.log('Данные пользователя:', userData)
+          
+          // TODO: Здесь можно добавить вызов API для обновления пароля в базе данных
+          // await updatePasswordInDatabase(data.recovery_email, newPassword)
+          
         } else {
           // Данные не совпадают
           setEmailError('Неверные данные пользователя')
