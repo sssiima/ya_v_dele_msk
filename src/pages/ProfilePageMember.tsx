@@ -371,11 +371,11 @@ const loadTeamData = async (teamCode: string) => {
                 <span>Календарь программы</span>
               </button>
             </li>
-            <li>
+            {/* <li>
               <button onClick={() => {pageSelected('team')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'team' ? 'font-bold' : 'hover:font-bold'}`}>
                 <span>Команда программы</span>
               </button>
-            </li>
+            </li> */}
             <li>
               <button onClick={() => {pageSelected('courses')}} className={`flex items-center space-x-4 p-2 text-xl text-white ${sect === 'courses' ? 'font-bold' : 'hover:font-bold'}`}>
                 <span>Материалы курса</span>

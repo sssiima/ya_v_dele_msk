@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 
 const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subtitle?: string, image?: string, link?: string, disabled?: boolean }) => (
-  <div className="flex flex-col w-[205px] flex-shrink-0">
+  <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
       <a href={link} target="_blank">
         <img src={image} className="rounded-xl h-[130px] w-full object-cover bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity" />
@@ -9,11 +9,15 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
     ) : (
       <img src={image} className="rounded-xl h-[130px] w-full object-cover bg-gray-200" />
     )}
-    {title && subtitle && (
+    {title && (
       <>
         <p className="text-center text-brand font-bold text-sm mt-2 mb-1">
           {title}
         </p>
+      </>
+    )}
+    {subtitle && (
+      <>
         <p className="text-center text-black font-bold text-xs">
           {subtitle}
         </p>
@@ -36,6 +40,9 @@ const CoursesList = () => {
         { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', link: 'https://drive.google.com/drive/mobile/folders/1sb1L1MynvdLxU6jMOxTQR24-Nudx5-DD/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1I2AEC4OltOGGJWFncj8yS1Nqio9PczF3?sort=13&direction=a', disabled: false },
         { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1PjByX9ckPyi-1ANFeCrDKXq1_cso_4SQ?sort=13&direction=a', disabled: true },
         { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthird.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
+        { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
+        { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
+        { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
     ]
 
     const project_list = [
@@ -49,8 +56,11 @@ const CoursesList = () => {
     ]
 
     const podcast_list = [
-        { title: "Стартап за 5 часов", subtitle: '31 октября', image: '/images/' },
-        { title: "Менторская гостиная", subtitle: '5 ноября', image: '/images/' },
+        { title: "С психологом", image: '/images/podcast_psy.png', link: 'https://vkvideo.ru/video-210144042_456239649?pl=-210144042_2&t=3s'},
+        { title: "Про путешествия", image: '/images/podcast_travel.png', link: 'https://vkvideo.ru/video-210144042_456239626?pl=-210144042_2' },
+        { title: "Про личный бренд", image: '/images/podcast_brand.png', link: 'https://vkvideo.ru/video-210144042_456239623?pl=-210144042_2' },
+        { title: "Про креативность", image: '/images/podcast_create.png', link: 'https://vkvideo.ru/video-210144042_456239575?pl=-210144042_2' },
+        { title: "Про страхи и рост", image: '/images/podcast_fear.png', link: 'https://vkvideo.ru/video-210144042_456239501?pl=-210144042_2' },
     ]
   
     const handleScrollmk = useCallback(() => {
@@ -229,8 +239,8 @@ const CoursesList = () => {
               <div key={index} className="snap-start">
                 <Card 
                   title={podcast.title}
-                  subtitle={podcast.subtitle}
                   image={podcast.image}
+                  link={podcast.link}
                 />
               </div>
             ))}
