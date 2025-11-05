@@ -122,7 +122,7 @@ const ResetPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
-        <h1 className="text-xl font-bold text-white text-center mb-6 uppercase">ВОССТАНОВЛЕНИЕ</h1>
+        <h1 className="text-lg font-bold text-white text-center mb-6 uppercase">ВОССТАНОВЛЕНИЕ</h1>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
