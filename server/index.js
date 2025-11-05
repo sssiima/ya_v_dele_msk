@@ -595,21 +595,19 @@ const sendPasswordEmail = async (email, newPassword) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Восстановление пароля - Программа "Студенческий стартап"',
+      subject: 'Восстановление пароля - Программа "Я в деле"',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #08A6A5;">Восстановление пароля</h2>
-          <p>Вы запросили восстановление пароля для доступа к платформе программы "Студенческий стартап".</p>
+          <p>Вы запросили восстановление пароля для доступа к платформе программы "Я в деле".</p>
           <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0; font-size: 18px; font-weight: bold; color: #08A6A5;">
               Ваш новый пароль: <strong>${newPassword}</strong>
             </p>
           </div>
-          <p><strong>Рекомендуем:</strong></p>
           <ul>
             <li>Сохраните этот пароль в надежном месте</li>
             <li>Используйте его для входа в систему</li>
-            <li>Смените пароль после первого входа в настройках профиля</li>
           </ul>
           <p style="color: #666; font-size: 14px;">
             Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.
@@ -617,7 +615,7 @@ const sendPasswordEmail = async (email, newPassword) => {
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
           <p style="color: #999; font-size: 12px;">
             С уважением,<br>
-            Команда программы "Студенческий стартап"
+            Команда программы "Я в деле"
           </p>
         </div>
       `
