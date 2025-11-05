@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { membersApi, structureApi, teamsApi } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
 import TeamPage from '@/components/TeamPage';
+import { useNavigate } from 'react-router-dom'
 
 
 // Типы для данных
@@ -76,6 +77,7 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
 
 
 const ProfilePageMember = () => {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sect, setSect] = useState('profile')
@@ -539,8 +541,9 @@ const loadTeamData = async (teamCode: string) => {
             </li>
           </ul>
         </nav>
-        <div className='flex justify-center items-center'>
+        <div className='flex justify-center items-center flex-col'>
           <img src='images/logowhite.png' alt='logo' className='mt-10 w-80 z-0'/>
+          <button onClick={() => {navigate('#')}} className='text-white font-semibold text-sm absolute bottom-6'>Выйти из аккаунта</button>
         </div>
       </div>
 

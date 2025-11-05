@@ -651,8 +651,9 @@ const getDownloadLink = (url: string) => {
             </li> */}
           </ul>
         </nav>
-        <div className='flex justify-center items-center'>
+        <div className='flex justify-center items-center flex-col'>
           <img src='images/logowhite.png' alt='logo' className='mt-10 w-80 z-0'/>
+          <button onClick={() => {navigate('#')}} className='text-white font-semibold text-sm absolute bottom-6'>Выйти из аккаунта</button>
         </div>
       </div>
 
