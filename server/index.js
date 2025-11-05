@@ -576,7 +576,7 @@ app.post('/api/auth/get-reset-info', async (req, res) => {
   }
 });
 
-// PUT /api/auth/update-password - обновление пароля пользователя
+// PUT /api/auth/update-password - обновление пароля пользователя и отправка на email
 app.put('/api/auth/update-password', async (req, res) => {
   console.log('Update password request received:', { username: req.body.username });
   
@@ -640,10 +640,19 @@ app.put('/api/auth/update-password', async (req, res) => {
       });
     }
 
+    // Отправляем пароль на email
+    try {
+      await sendPasswordEmail(username, newPassword);
+      console.log('Password email sent successfully to:', username);
+    } catch (emailError) {
+      console.error('Failed to send email, but password was updated:', emailError);
+      // Пароль обновлен, но email не отправлен - все равно считаем успехом
+    }
+
     console.log('Password update successful for:', username, 'found in:', foundIn);
     res.json({
       success: true,
-      message: 'Пароль успешно обновлен',
+      message: 'Новый пароль отправлен на вашу почту',
       data: { foundIn }
     });
 

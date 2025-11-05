@@ -89,15 +89,14 @@ const ResetPage = () => {
           // Данные верны - генерируем новый пароль
           const newPassword = generateNewPassword()
           
-          // Обновляем пароль в базе данных
+          // Обновляем пароль в базе данных и отправляем на почту
           const updateResult = await authUtilsApi.updatePassword(data.recovery_email, newPassword)
           
           if (updateResult.success) {
-            // Показываем алерт с новым паролем
-            alert(`Ваш новый пароль: ${newPassword}\n\nСохраните его в надежном месте!`)
+            // Показываем сообщение об успешной отправке на почту
+            alert('Новый пароль отправлен на вашу почту! Проверьте папку "Входящие" или "Спам".')
             
-            console.log('Пароль успешно обновлен:', newPassword)
-            console.log('Данные пользователя:', userData)
+            console.log('Пароль успешно обновлен и отправлен на email:', data.recovery_email)
           } else {
             throw new Error('Не удалось обновить пароль')
           }
