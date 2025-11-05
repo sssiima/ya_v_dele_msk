@@ -996,7 +996,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {userRole === 'руководитель округа' && (
+                          {userRole === 'руководитель округа' && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1031,7 +1031,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                          {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1067,7 +1067,7 @@ const getDownloadLink = (url: string) => {
                               <p className="text-brand text-xs">{index + 1}</p>
                               <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                             </div>
-                            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                               <button title='Архивировать' onClick={async () => {
                                 try {
                                   console.log('Mentor data') // Отладочная информация
@@ -1145,7 +1145,7 @@ const getDownloadLink = (url: string) => {
                                         {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
-                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                                           <button title='Архивировать' onClick={async () => {
                                             try {
                                               if (!member.id) return
@@ -1250,7 +1250,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор') && (
+                          {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1283,7 +1283,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                          {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 console.log('Mentor data (desktop)') // Отладочная информация
@@ -1361,7 +1361,7 @@ const getDownloadLink = (url: string) => {
                                         {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
-                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                                           <button title='Архивировать' onClick={async () => {
                                             try {
                                               if (!member.id) return
