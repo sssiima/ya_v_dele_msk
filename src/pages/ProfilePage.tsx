@@ -1521,7 +1521,7 @@ const getDownloadLink = (url: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 mt-2">
+            <div className="flex justify-center space-x-2 my-2">
               {mk_list.map((_, index) => (
                 <button 
                   key={index}
@@ -1554,7 +1554,7 @@ const getDownloadLink = (url: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 mt-2">
+            <div className="flex justify-center space-x-2 my-2">
               {project_list.map((_, index) => (
                 <button 
                   key={index}
@@ -1587,7 +1587,7 @@ const getDownloadLink = (url: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 mt-2">
+            <div className="flex justify-center space-x-2 my-2">
               {video_lessons.map((_, index) => (
                 <button 
                   key={index}
@@ -1620,7 +1620,7 @@ const getDownloadLink = (url: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 mt-2">
+            <div className="flex justify-center space-x-2 my-2">
               {podcast_list.map((_, index) => (
                 <button 
                   key={index}
