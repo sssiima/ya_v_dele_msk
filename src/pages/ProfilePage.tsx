@@ -1454,8 +1454,8 @@ const ProfilePage = () => {
                        <img src={selectedMk.image} className="rounded-lg w-full lg:w-60 lg:h-40 mb-6"></img>
                      </div>
 
-                     <a download href={selectedMk.pres} className='text-brand italic hover:underline text-sm'>Скачать презентацию</a>
-                     <a download href={selectedMk.method} className='text-brand italic hover:underline text-sm'>Скачать методический материал</a>
+                     <a href={selectedMk.pres} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
+                     <a href={selectedMk.method} download className='text-brand italic hover:underline text-sm block'>Скачать методический материал</a>
           
          
                      <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
