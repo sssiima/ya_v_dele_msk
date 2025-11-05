@@ -505,6 +505,77 @@ app.post('/api/auth/check-username', async (req, res) => {
   }
 })
 
+// POST /api/auth/get-reset-info - получить информацию для восстановления пароля
+app.post('/api/auth/get-reset-info', async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email обязателен'
+      });
+    }
+
+    // Ищем пользователя в таблице members
+    const memberQuery = `
+      SELECT last_name, first_name, patronymic 
+      FROM members 
+      WHERE username = $1 AND COALESCE(archived, false) = false
+      LIMIT 1
+    `;
+    
+    // Ищем пользователя в таблице structure  
+    const structureQuery = `
+      SELECT last_name, first_name, patronymic
+      FROM structure 
+      WHERE username = $1 AND COALESCE(archived, false) = false
+      LIMIT 1
+    `;
+
+    const [memberResults, structureResults] = await Promise.all([
+      pool.query(memberQuery, [username]),
+      pool.query(structureQuery, [username])
+    ]);
+
+    let userData = null;
+    let foundIn = null;
+
+    // Приоритет: members > structure
+    if (memberResults.rows.length > 0) {
+      userData = memberResults.rows[0];
+      foundIn = structureResults.rows.length > 0 ? 'both' : 'member';
+    } else if (structureResults.rows.length > 0) {
+      userData = structureResults.rows[0];
+      foundIn = 'structure';
+    }
+
+    if (!userData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Пользователь не найден'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        last_name: userData.last_name || '',
+        first_name: userData.first_name || '',
+        patronymic: userData.patronymic || '',
+        foundIn: foundIn
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in get-reset-info:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Внутренняя ошибка сервера'
+    });
+  }
+});
+
 
 app.post('/api/structure', async (req, res) => {
   try {
