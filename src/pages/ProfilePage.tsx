@@ -978,9 +978,9 @@ const getDownloadLink = (url: string) => {
 
             {/* Правая колонка - списки координаторов, наставников и т.д. */}
             <div className="lg:flex-1">
-            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+            {/* {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
-            )}
+            )} */}
              
               
               {/* Для мобильных - списки идут после профиля */}
