@@ -20,7 +20,7 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
         <img src={image} className="rounded-xl w-60 h-40 cursor-pointer hover:opacity-90 transition-opacity" />
       </a>
     ) : (
-      <img src={image} className="rounded-xl w-60 h-40" />
+      <img src={image} className="rounded-xl w-64" />
     )}
     {title && (
       <>
