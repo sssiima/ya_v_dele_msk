@@ -1471,7 +1471,7 @@ const ProfilePage = () => {
                </div>
           )}
           
-          <div>
+          { !selectedMk && (<div>
           <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
     
           <div className="relative">
@@ -1487,8 +1487,6 @@ const ProfilePage = () => {
                     title={mk.title}
                     subtitle={mk.subtitle}
                     image={mk.image}
-                    link={mk.link}
-                    disabled={mk.disabled}
                   />
                 </div>
               ))}
@@ -1606,7 +1604,7 @@ const ProfilePage = () => {
               ))}
             </div>
           </div>
-        </div>
+        </div>)}
         </section>
         )}
         {sect==='handy' && (
