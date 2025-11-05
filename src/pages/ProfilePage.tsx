@@ -711,11 +711,11 @@ const getDownloadLink = (url: string) => {
                         <div className='w-full text-xs'>
                           <div className='mb-2 text-left'>
                             <p><strong>Фамилия</strong></p>
-                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-4 text-left'>
                             <p><strong>Имя</strong></p>
-                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           
                           <div className='w-full flex flex-col items-center'>
@@ -738,15 +738,15 @@ const getDownloadLink = (url: string) => {
                         <div className='w-full text-xs'>
                           <div className='mb-2'>
                             <p><strong>Фамилия</strong></p>
-                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Имя</strong></p>
-                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Отчество</strong></p>
-                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Электронная почта</strong></p>
