@@ -3,6 +3,14 @@ import { structureApi, teamsApi, teamMembersApi, membersApi } from '@/services/a
 import { useNavigate } from 'react-router-dom'
 import CalendarPage from '@/components/CalendarPage';
 
+interface Mk {
+  title: string;
+  subtitle: string;
+  image: string;
+  link?: string;
+  disabled?: boolean;
+}
+
 const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subtitle?: string, image?: string, link?: string, disabled?: boolean }) => (
   <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
@@ -491,6 +499,15 @@ const ProfilePage = () => {
     })
     return totalCount
   }
+  const [selectedMk, setSelectedMk] = useState<Mk | null>(null);
+
+  const handleMkClick = (mk: Mk) => {
+    setSelectedMk(mk);
+  };
+
+  const handleBackToMks = () => {
+    setSelectedMk(null);
+  };
 
   const handleEditProfile = () => {
     setTempLastname(lastname)
@@ -1410,7 +1427,51 @@ const ProfilePage = () => {
           <CalendarPage />
         )}
         {sect==='materials' && (
+
+          
           <section className="space-y-3">
+          {selectedMk && (
+                 <div className="py-4">
+                 <div className="">
+                   {/* Кнопка назад */}
+                   <button 
+                     onClick={handleBackToMks}
+                     className="flex items-center text-brand mb-2 hover:underline"
+                   >
+                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                     Назад к событиям
+                   </button>
+         
+                   {/* Детали мероприятия */}
+                   <div className="p-4">
+                     <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
+                     
+                     {/* Заглушка изображения */}
+                     <div className='w-full lg:px-8'>
+                       <div className="bg-[#D9D9D9] rounded-lg h-48 mb-6"></div>
+                     </div>
+         
+                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                     
+                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:px-8">
+                       {/* Левая колонка - описание */}
+                       <div className="lg:flex-1 lg:min-h-0 lg:mb-7">
+                         <div className="h-full">
+                           <p className="text-sm font-semibold text-black mb-2">Описание</p>
+                         </div>
+                       </div>
+         
+                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
+         
+                     </div>
+                   </div>
+                 </div>
+               </div>
+          )}
+          
+          <div>
           <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
     
           <div className="relative">
@@ -1421,7 +1482,7 @@ const ProfilePage = () => {
               onScroll={handleScrollmk}
             >
               {mk_list.map((mk, index) => (
-                <div key={index} className="snap-start">
+                <div key={index} className="snap-start" onClick={() => handleMkClick(mk)}>
                   <Card 
                     title={mk.title}
                     subtitle={mk.subtitle}
@@ -1545,6 +1606,7 @@ const ProfilePage = () => {
               ))}
             </div>
           </div>
+        </div>
         </section>
         )}
         {sect==='handy' && (

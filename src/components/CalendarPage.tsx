@@ -8,8 +8,6 @@ interface Event {
   description?: string;
   location?: string;
   time?: string;
-  maxParticipants?: number;
-  currentParticipants?: number;
 }
 
 const CalendarPage = () => {
