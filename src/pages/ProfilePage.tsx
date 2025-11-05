@@ -1445,12 +1445,12 @@ const ProfilePage = () => {
                    </button>
          
                    {/* Детали мероприятия */}
-                   <div className="p-4">
+                   <div className="p-2">
                      <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
                      
                      {/* Заглушка изображения */}
                      <div className='w-full lg:px-8'>
-                       <div className="bg-[#D9D9D9] rounded-lg h-48 w-30 mb-6"></div>
+                       <div className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 mb-6"></div>
                      </div>
 
                      <p className='text-brand italic hover:underline'>Скачать презентацию</p>
