@@ -1452,31 +1452,31 @@ const ProfilePage = () => {
                        <img src={selectedMk.image} className="rounded-lg w-full lg:w-60 lg:h-40 mb-6"></img>
                      </div>
 
-                     <p className='text-brand italic hover:underline'>Скачать презентацию</p>
-                     <p className='text-brand italic hover:underline'>Скачать методический материал</p>
+                     <p className='text-brand italic hover:underline text-sm'>Скачать презентацию</p>
+                     <p className='text-brand italic hover:underline text-sm'>Скачать методический материал</p>
           
          
                      <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
                      <div className="flex w-full flex-col">
-                        <p className="text-sm font-semibold text-black mb-2">Критерии домашнего задания</p>
+                        <p className="text-lg font-semibold text-black mb-2">Критерии домашнего задания</p>
                         <div className='rounded-lg border border-brand p-2'>
-                          <p>Что-то описание блабла</p>
+                          <p className='text-xs'>Что-то описание блабла</p>
                         </div>
                     </div>
 
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
                      <div className="flex w-full flex-col">
-                        <p className="text-sm font-semibold text-black mb-2">Отслеживание выполнения</p>
-                        <div className='rounded-lg border border-brand p-2'>
-                          <p>Название команды</p>
+                        <p className="text-lg font-semibold text-black mb-2">Отслеживание выполнения</p>
+                        <div className='rounded-full border border-brand p-2 gap-2'>
+                          <p className='text-xs'>Название команды</p>
                         </div>
-                        <div className='rounded-lg border border-brand p-2'>
-                          <p>Название команды</p>
+                        <div className='rounded-full border border-brand p-2'>
+                          <p className='text-xs'>Название команды</p>
                         </div>
-                        <div className='rounded-lg border border-brand p-2'>
-                          <p>Название команды</p>
+                        <div className='rounded-full border border-brand p-2'>
+                          <p className='text-xs'>Название команды</p>
                         </div>
                     </div>
 
