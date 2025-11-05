@@ -1441,7 +1441,7 @@ const ProfilePage = () => {
                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                      </svg>
-                     Назад к событиям
+                     Назад к материалам
                    </button>
          
                    {/* Детали мероприятия */}
@@ -1450,22 +1450,25 @@ const ProfilePage = () => {
                      
                      {/* Заглушка изображения */}
                      <div className='w-full lg:px-8'>
-                       <div className="bg-[#D9D9D9] rounded-lg h-48 mb-6"></div>
+                       <div className="bg-[#D9D9D9] rounded-lg h-48 w-30 mb-6"></div>
                      </div>
+
+                     <p className='text-brand italic hover:underline'>Скачать презентацию</p>
+                     <p className='text-brand italic hover:underline'>Скачать методический материал</p>
+          
          
                      <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
-                     <div className="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:px-8">
-                       {/* Левая колонка - описание */}
-                       <div className="lg:flex-1 lg:min-h-0 lg:mb-7">
-                         <div className="h-full">
-                           <p className="text-sm font-semibold text-black mb-2">Описание</p>
-                         </div>
-                       </div>
-         
-                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
-         
-                     </div>
+                     <div className="w-full">
+                        <p className="text-sm font-semibold text-black mb-2">Критерии домашнего задания</p>
+                    </div>
+
+                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                     
+                     <div className="w-full">
+                        <p className="text-sm font-semibold text-black mb-2">Отслеживание выполнения</p>
+                    </div>
+
                    </div>
                  </div>
                </div>
@@ -1482,7 +1485,7 @@ const ProfilePage = () => {
               onScroll={handleScrollmk}
             >
               {mk_list.map((mk, index) => (
-                <div key={index} className="snap-start" onClick={() => handleMkClick(mk)}>
+                <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
                   <Card 
                     title={mk.title}
                     subtitle={mk.subtitle}
