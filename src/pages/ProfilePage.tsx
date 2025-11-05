@@ -8,8 +8,8 @@ interface Mk {
   subtitle: string;
   image: string;
   link?: string;
-  pres?: string;
-  method?: string
+  pres: string;
+  method: string
   disabled?: boolean;
 }
 
@@ -96,18 +96,18 @@ const ProfilePage = () => {
 
   
     const mk_list = [
-      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link', disabled: false },
-      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1PjByX9ckPyi-1ANFeCrDKXq1_cso_4SQ?sort=13&direction=a', disabled: true },
-      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthird.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Базовый трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Базовый трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Базовый трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
+      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link', method: '', disabled: false },
+      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1PjByX9ckPyi-1ANFeCrDKXq1_cso_4SQ?sort=13&direction=a', method: '', disabled: true },
+      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthird.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Базовый трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Базовый трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Базовый трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixth.png', pres: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', method: '', disabled: true },
   ]
 
   const project_list = [
@@ -132,6 +132,18 @@ const ProfilePage = () => {
     { title: "урок 1", subtitle: 'что-то там', image: '/images/' },
     { title: "урок 2", subtitle: 'что-то там', image: '/images/' },
 ]
+
+const extractFileId = (url: string) => {
+  if (!url) return '';
+  const match = url.match(/\/file\/d\/([^\/]+)/);
+  return match && match[1] ? match[1] : url;
+};
+
+// Функция для создания ссылки скачивания
+const getDownloadLink = (url: string) => {
+  const fileId = extractFileId(url);
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+};
 
   const handleScrollmk = useCallback(() => {
     const container = scrollContainerRefmk.current;
@@ -1454,7 +1466,7 @@ const ProfilePage = () => {
                        <img src={selectedMk.image} className="rounded-lg w-full lg:w-60 lg:h-40 mb-6"></img>
                      </div>
 
-                     <a href={selectedMk.pres} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
+                     <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
                      <a href={selectedMk.method} download className='text-brand italic hover:underline text-sm block'>Скачать методический материал</a>
           
          
