@@ -104,7 +104,7 @@ const ProfilePageMember = () => {
 
   
     const mk_list = [
-      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', link: 'https://drive.google.com/drive/mobile/folders/1sb1L1MynvdLxU6jMOxTQR24-Nudx5-DD/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1I2AEC4OltOGGJWFncj8yS1Nqio9PczF3?sort=13&direction=a', disabled: false },
+      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', link: 'https://drive.google.com/drive/mobile/folders/1sb1L1MynvdLxU6jMOxTQR24-Nudx5-DD/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1I2AEC4OltOGGJWFncj8yS1Nqio9PczF3?sort=13&direction=a', disabled: true },
       { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1PjByX9ckPyi-1ANFeCrDKXq1_cso_4SQ?sort=13&direction=a', disabled: true },
       { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthird.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
       { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
