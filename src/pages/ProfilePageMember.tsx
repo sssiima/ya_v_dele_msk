@@ -600,11 +600,11 @@ const loadTeamData = async (teamCode: string) => {
                       <div className='w-full text-xs'>
                         <div className='mb-2 text-left'>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-4 text-left'>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         
                         <div className='w-full flex flex-col items-center'>
@@ -627,61 +627,61 @@ const loadTeamData = async (teamCode: string) => {
                       <div className='w-full text-xs'>
                         <div className='mb-2'>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Отчество</strong></p>
-                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={patronymic} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Электронная почта</strong></p>
-                          <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={email} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>ВУЗ</strong></p>
-                          <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={university} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='flex flex-row gap-2 mb-2'>
                           <div className='flex-1'>
                             <p><strong>Уровень подготовки</strong></p>
-                            <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={educationLevel} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex-1'>
                             <p><strong>Курс обучения</strong></p>
-                            <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={course} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                         </div>
                         <div className='flex flex-row gap-2 mb-2'>
                           <div className='flex-1'>
                             <p><strong>Факультет</strong></p>
-                            <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={faculty} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex-1'>
                             <p><strong>Форма обучения</strong></p>
-                            <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={educationForm} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Номер телефона</strong></p>
-                          <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={phone} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='mb-2'>
                           <p><strong>Ссылка на ВКонтакте</strong></p>
-                          <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='flex flex-row gap-2 mb-2'>
                           <div className='flex-1'>
                             <p><strong>Дата рождения</strong></p>
-                            <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex-1'>
                             <p><strong>Пол</strong></p>
                             <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
-                             disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                             readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                         </div>
                         
@@ -707,63 +707,63 @@ const loadTeamData = async (teamCode: string) => {
                       <div className='flex flex-col gap-2 mb-4'>
                         <div>
                           <p><strong>Фамилия</strong></p>
-                          <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Имя</strong></p>
-                          <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                         <div>
                           <p><strong>Отчество</strong></p>
-                          <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                          <input value={patronymic} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                         </div>
                       </div>
                       
                       <div className='mb-2'>
                         <p><strong>Электронная почта</strong></p>
-                        <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={email} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='mb-2'>
                         <p><strong>ВУЗ</strong></p>
-                        <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={university} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='flex flex-row gap-2 mb-2'>
                         <div className='flex-1'>
                           <p><strong>Уровень подготовки</strong></p>
-                          <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={educationLevel} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='flex-1'>
                           <p><strong>Курс обучения</strong></p>
-                          <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={course} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                       </div>
                       <div className='flex flex-row gap-2 mb-2'>
                         <div className='flex-1'>
                           <p><strong>Факультет</strong></p>
-                          <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={faculty} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='flex-1'>
                           <p><strong>Форма обучения</strong></p>
-                          <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={educationForm} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                       </div>
                       <div className='mb-2'>
                         <p><strong>Номер телефона</strong></p>
-                        <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={phone} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='mb-2'>
                         <p><strong>Ссылка на ВКонтакте</strong></p>
-                        <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='flex flex-row gap-2 mb-2'>
                         <div className='flex-1'>
                           <p><strong>Дата рождения</strong></p>
-                          <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                         <div className='flex-1'>
                           <p><strong>Пол</strong></p>
                           <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
-                           disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                           readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
                       </div>
                       
@@ -876,7 +876,7 @@ const loadTeamData = async (teamCode: string) => {
         <div className='flex gap-2 items-center'>
           <input 
             value={teamData.teamName}
-            disabled
+            readOnly
             className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
           />
           <button className='text-brand text-xs whitespace-nowrap hover:underline' onClick={() => { setIsEditingTeamNameOnly(true); setTempTeamName(teamData.teamName) }}>Редактировать</button>
@@ -909,27 +909,27 @@ const loadTeamData = async (teamCode: string) => {
     <div className='flex flex-row gap-2 mb-2'>
       <div className='flex-1'>
         <p><strong>Трек</strong></p>
-        <input value={teamData.track} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
       </div>
       <div className='flex-1'>
         <p><strong>Код команды</strong></p>
-        <input value={teamData.teamCode} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+        <input value={teamData.teamCode} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
       </div>
     </div>
     
     <div className='mb-2'>
       <p><strong>Наставник</strong></p>
-      <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+      <input value={teamData.mentor} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
     </div>
     
     <div className='mb-2'>
       <p><strong>Координатор</strong></p>
-      <input value={teamData.coordinator} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+      <input value={teamData.coordinator} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
     </div>
     
     <div className='mb-2'>
       <p><strong>Руководитель округа</strong></p>
-      <input value={teamData.districtManager} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+      <input value={teamData.districtManager} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
     </div>
 
     {/* Описание проекта (только просмотр) */}
@@ -937,7 +937,7 @@ const loadTeamData = async (teamCode: string) => {
       <p><strong>Описание проекта</strong></p>
       <input 
         value={teamData.projectDescription}
-        disabled
+        readOnly
         className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
       />
     </div>
@@ -983,7 +983,7 @@ const loadTeamData = async (teamCode: string) => {
                       {!isEditingTeamData ? (
                         <input 
                           value={teamData.teamName}
-                          disabled
+                          readOnly
                           className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
                         />
                       ) : (
@@ -998,27 +998,27 @@ const loadTeamData = async (teamCode: string) => {
                     <div className='flex flex-row gap-2 mb-2'>
                       <div className='flex-1'>
                         <p><strong>Трек</strong></p>
-                        <input value={teamData.track} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='flex-1'>
                         <p><strong>Код команды</strong></p>
-                        <input value={teamData.teamCode} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={teamData.teamCode} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                     </div>
                     
                     <div className='mb-2'>
                       <p><strong>Наставник</strong></p>
-                      <input value={teamData.mentor} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
+                      <input value={teamData.mentor} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1 capitalize"/>
                     </div>
                     
                     <div className='mb-2'>
                       <p><strong>Координатор</strong></p>
-                      <input value={teamData.coordinator} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                      <input value={teamData.coordinator} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                     </div>
                     
                     <div className='mb-2'>
                       <p><strong>Руководитель округа</strong></p>
-                      <input value={teamData.districtManager} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                      <input value={teamData.districtManager} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                     </div>
 
                     {/* Описание проекта */}
@@ -1026,7 +1026,7 @@ const loadTeamData = async (teamCode: string) => {
                       <p><strong>Описание проекта</strong></p>
                       <input 
                         value={teamData.projectDescription}
-                        disabled
+                        readOnly
                         className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
                       />
                     </div>
@@ -1035,7 +1035,7 @@ const loadTeamData = async (teamCode: string) => {
                       <p><strong>Сайт проекта</strong></p>
                       <input 
                         value={teamData.projectSite}
-                        disabled
+                        readOnly
                         className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
                       />
                     </div>

@@ -715,7 +715,7 @@ const getDownloadLink = (url: string) => {
                           </div>
                           <div className='mb-4 text-left'>
                             <p><strong>Имя</strong></p>
-                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           
                           <div className='w-full flex flex-col items-center'>
@@ -738,60 +738,60 @@ const getDownloadLink = (url: string) => {
                         <div className='w-full text-xs'>
                           <div className='mb-2'>
                             <p><strong>Фамилия</strong></p>
-                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Имя</strong></p>
-                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Отчество</strong></p>
-                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={patronymic} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Электронная почта</strong></p>
-                            <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={email} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>ВУЗ</strong></p>
-                            <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={university} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex flex-row gap-2 mb-2'>
                             <div className='flex-1'>
                               <p><strong>Уровень подготовки</strong></p>
-                              <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={educationLevel} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Курс обучения</strong></p>
-                              <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={course} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                           <div className='flex flex-row gap-2 mb-2'>
                             <div className='flex-1'>
                               <p><strong>Факультет</strong></p>
-                              <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={faculty} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Форма обучения</strong></p>
-                              <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={educationForm} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Номер телефона</strong></p>
-                            <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={phone} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-2'>
                             <p><strong>Ссылка на ВКонтакте</strong></p>
-                            <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex flex-row gap-2 mb-2'>
                             <div className='flex-1'>
                               <p><strong>Дата рождения</strong></p>
-                              <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Пол</strong></p>
-                              <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={gender} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                           
@@ -818,15 +818,15 @@ const getDownloadLink = (url: string) => {
                         <div className='flex flex-col gap-2 mb-2'>
                           <div className='flex-1'>
                             <p><strong>Фамилия</strong></p>
-                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex-1'>
                             <p><strong>Имя</strong></p>
-                            <input value={firstname} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={firstname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex-1'>
                             <p><strong>Отчество</strong></p>
-                            <input value={patronymic} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={patronymic} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                         </div>
                         
@@ -834,48 +834,48 @@ const getDownloadLink = (url: string) => {
                         <div className='space-y-3'>
                           <div>
                             <p><strong>Электронная почта</strong></p>
-                            <input value={email} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={email} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div>
                             <p><strong>ВУЗ</strong></p>
-                            <input value={university} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={university} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='flex flex-row gap-2'>
                             <div className='flex-1'>
                               <p><strong>Уровень подготовки</strong></p>
-                              <input value={educationLevel} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={educationLevel} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Курс обучения</strong></p>
-                              <input value={course} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={course} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                           <div className='flex flex-row gap-2'>
                             <div className='flex-1'>
                               <p><strong>Факультет</strong></p>
-                              <input value={faculty} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={faculty} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Форма обучения</strong></p>
-                              <input value={educationForm} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={educationForm} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                           <div>
                             <p><strong>Номер телефона</strong></p>
-                            <input value={phone} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={phone} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div>
                             <p><strong>Ссылка на ВКонтакте</strong></p>
-                            <input value={vkLink} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1" />
+                            <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1" />
                           </div>
                           <div className='flex flex-row gap-2'>
                             <div className='flex-1'>
                               <p><strong>Дата рождения</strong></p>
-                              <input value={birthDate} type='date' disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Пол</strong></p>
-                              <input value={gender} disabled className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
+                              <input value={gender} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-wgite h-[30px] flex items-center italic text-xs mt-1"/>
                             </div>
                           </div>
                         </div>
