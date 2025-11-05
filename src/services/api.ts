@@ -466,16 +466,23 @@ export const authUtilsApi = {
     }
     return await resp.json()
   },
-  async getResetInfo(username: string): Promise<ApiResponse<{
-    last_name: string
-    first_name: string 
-    patronymic: string
-    foundIn: 'member' | 'structure' | 'both'
-  }>> {
+  async getResetInfo(username: string): Promise<ApiResponse<ResetInfoResponse>> {
     const resp = await fetch(`${API_BASE_URL}/auth/get-reset-info`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username })
+    })
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}))
+      throw new Error(data.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
+  },
+  async updatePassword(username: string, newPassword: string) {
+    const resp = await fetch(`${API_BASE_URL}/auth/update-password`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, newPassword })
     })
     if (!resp.ok) {
       const data = await resp.json().catch(() => ({}))

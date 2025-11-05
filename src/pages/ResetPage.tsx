@@ -89,15 +89,18 @@ const ResetPage = () => {
           // Данные верны - генерируем новый пароль
           const newPassword = generateNewPassword()
           
-          // Показываем алерт с новым паролем
-          alert(`Ваш новый пароль: ${newPassword}\n\nСохраните его в надежном месте!`)
+          // Обновляем пароль в базе данных
+          const updateResult = await authUtilsApi.updatePassword(data.recovery_email, newPassword)
           
-          console.log('Данные верны, сгенерирован новый пароль:', newPassword)
-          console.log('Данные пользователя:', userData)
-          
-          // TODO: Здесь можно добавить вызов API для обновления пароля в базе данных
-          // await updatePasswordInDatabase(data.recovery_email, newPassword)
-          
+          if (updateResult.success) {
+            // Показываем алерт с новым паролем
+            alert(`Ваш новый пароль: ${newPassword}\n\nСохраните его в надежном месте!`)
+            
+            console.log('Пароль успешно обновлен:', newPassword)
+            console.log('Данные пользователя:', userData)
+          } else {
+            throw new Error('Не удалось обновить пароль')
+          }
         } else {
           // Данные не совпадают
           setEmailError('Неверные данные пользователя')

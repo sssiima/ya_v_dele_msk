@@ -576,6 +576,68 @@ app.post('/api/auth/get-reset-info', async (req, res) => {
   }
 });
 
+// PUT /api/auth/update-password - обновление пароля пользователя
+app.put('/api/auth/update-password', async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+
+    if (!username || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email и новый пароль обязательны'
+      });
+    }
+
+    // Хешируем новый пароль
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    let updated = false;
+    let foundIn = null;
+
+    // Пробуем обновить пароль в members
+    const memberResult = await pool.query(
+      'UPDATE members SET password_hash = $1, updated_at = NOW() WHERE username = $2 AND COALESCE(archived, false) = false RETURNING id',
+      [password_hash, username]
+    );
+
+    if (memberResult.rows.length > 0) {
+      updated = true;
+      foundIn = 'member';
+    }
+
+    // Пробуем обновить пароль в structure
+    const structureResult = await pool.query(
+      'UPDATE structure SET password_hash = $1, updated_at = NOW() WHERE username = $2 AND COALESCE(archived, false) = false RETURNING id',
+      [password_hash, username]
+    );
+
+    if (structureResult.rows.length > 0) {
+      updated = true;
+      foundIn = foundIn ? 'both' : 'structure';
+    }
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: 'Пользователь не найден'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Пароль успешно обновлен',
+      data: { foundIn }
+    });
+
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Внутренняя ошибка сервера при обновлении пароля'
+    });
+  }
+});
+
 
 app.post('/api/structure', async (req, res) => {
   try {
