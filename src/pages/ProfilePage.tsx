@@ -1448,8 +1448,8 @@ const ProfilePage = () => {
                    <div className="p-2">
                      <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
 
-                     <div className='w-full lg:px-8'>
-                       <img src={selectedMk.image} className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 mb-6"></img>
+                     <div className='flex w-full lg:px-8 items-center justify-center text-left'>
+                       <img src={selectedMk.image} className="rounded-lg w-36 h-20 lg:w-60 lg:h-40 mb-6"></img>
                      </div>
 
                      <p className='text-brand italic hover:underline'>Скачать презентацию</p>
