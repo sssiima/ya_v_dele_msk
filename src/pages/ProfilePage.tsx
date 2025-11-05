@@ -1463,7 +1463,7 @@ const getDownloadLink = (url: string) => {
                      <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
 
                      <div className='flex w-full lg:px-8 items-center justify-center text-left'>
-                       <img src={selectedMk.image} className="rounded-lg w-full lg:w-60 lg:h-40 mb-6"></img>
+                       <img src={selectedMk.image} className="rounded-lg w-full lg:w-96 mb-6"></img>
                      </div>
 
                      <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
