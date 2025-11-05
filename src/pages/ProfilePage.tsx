@@ -711,7 +711,7 @@ const getDownloadLink = (url: string) => {
                         <div className='w-full text-xs'>
                           <div className='mb-2 text-left'>
                             <p><strong>Фамилия</strong></p>
-                            <input value={lastname} disabled className="w-full px-4 py-3 border border-brand !important rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                            <input value={lastname} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div className='mb-4 text-left'>
                             <p><strong>Имя</strong></p>
