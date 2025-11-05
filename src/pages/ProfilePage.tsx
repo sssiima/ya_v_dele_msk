@@ -17,7 +17,7 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
   <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
       <a href={link} target="_blank">
-        <img src={image} className="rounded-xl w-60 h-40 cursor-pointer hover:opacity-90 transition-opacity" />
+        <img src={image} className="rounded-xl w-64 cursor-pointer hover:opacity-90 transition-opacity" />
       </a>
     ) : (
       <img src={image} className="rounded-xl w-64" />

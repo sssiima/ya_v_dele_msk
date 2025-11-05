@@ -52,10 +52,10 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
   <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
       <a href={link} target="_blank">
-        <img src={image} className="rounded-xl h-[130px] w-full object-cover bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity" />
+        <img src={image} className="rounded-xl w-64 object-cover bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity" />
       </a>
     ) : (
-      <img src={image} className="rounded-xl h-[130px] w-full object-cover bg-gray-200" />
+      <img src={image} className="rounded-xl w-64 object-cover bg-gray-200" />
     )}
     {title && (
       <>

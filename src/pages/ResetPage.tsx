@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { authUtilsApi } from '@/services/api'
 
 interface RecoveryValues {
   last_name: string
@@ -9,17 +10,53 @@ interface RecoveryValues {
 }
 
 const ResetPage = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm<RecoveryValues>()
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RecoveryValues>()
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [checkingEmail, setCheckingEmail] = useState(false)
+  
+  const watchedEmail = watch('recovery_email')
 
-    const onSubmit = (data: RecoveryValues) => {
+  // Проверка существования пользователя при изменении email
+  useEffect(() => {
+    const checkEmailExists = async () => {
+      if (!watchedEmail || errors.recovery_email) {
+        setEmailError(null)
+        return
+      }
+
+      setCheckingEmail(true)
+      try {
+        const exists = await authUtilsApi.checkUsername(watchedEmail)
+        const foundIn = exists?.data?.foundIn as 'member' | 'structure' | 'both' | null
+        
+        if (!foundIn) {
+          setEmailError('Пользователь не найден')
+        } else {
+          setEmailError(null)
+        }
+      } catch (error) {
+        console.error('Ошибка проверки email:', error)
+        setEmailError('Ошибка проверки пользователя')
+      } finally {
+        setCheckingEmail(false)
+      }
+    }
+
+    // Дебаунс проверки
+    const timeoutId = setTimeout(checkEmailExists, 500)
+    return () => clearTimeout(timeoutId)
+  }, [watchedEmail, errors.recovery_email])
+
+  const onSubmit = (data: RecoveryValues) => {
     console.log('recovery', data)
   }
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
-    return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="card w-full max-w-md bg-brand rounded-2xl shadow-lg p-6">
         <h1 className="text-xl font-bold text-white text-center mb-6 uppercase">ВОССТАНОВЛЕНИЕ</h1>
         
@@ -63,19 +100,27 @@ const ResetPage = () => {
                 }
               })}
             />
-            {errors.recovery_email && <p className="text-red-300 text-xs mt-1">{errors.recovery_email.message}</p>}
+            {checkingEmail && (
+              <p className="text-blue-300 text-xs mt-1">Проверка...</p>
+            )}
+            {errors.recovery_email && (
+              <p className="text-red-300 text-xs mt-1">{errors.recovery_email.message}</p>
+            )}
+            {emailError && !checkingEmail && !errors.recovery_email && (
+              <p className="text-red-300 text-xs mt-1">{emailError}</p>
+            )}
           </div>
 
           <button 
             type="submit"
-            className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colorsmt-6"
+            className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors mt-6"
           >
             <h2 className="uppercase text-white">Отправить форму</h2>
           </button>
         </form>
       </div>
     </div>
-    )
+  )
 }
 
 export default ResetPage
