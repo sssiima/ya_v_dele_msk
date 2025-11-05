@@ -15,10 +15,10 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
   <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
       <a href={link} target="_blank">
-        <img src={image} className="rounded-xl w-60 h-40 object-cover bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity" />
+        <img src={image} className="rounded-xl w-60 h-40 cursor-pointer hover:opacity-90 transition-opacity" />
       </a>
     ) : (
-      <img src={image} className="rounded-xl w-60 h-40 object-cover bg-gray-200" />
+      <img src={image} className="rounded-xl w-60 h-40" />
     )}
     {title && (
       <>
@@ -1458,14 +1458,26 @@ const ProfilePage = () => {
          
                      <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
-                     <div className="w-full">
+                     <div className="flex w-full flex-col">
                         <p className="text-sm font-semibold text-black mb-2">Критерии домашнего задания</p>
+                        <div className='rounded-lg border border-brand p-2'>
+                          <p>Что-то описание блабла</p>
+                        </div>
                     </div>
 
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
-                     <div className="w-full">
+                     <div className="flex w-full flex-col">
                         <p className="text-sm font-semibold text-black mb-2">Отслеживание выполнения</p>
+                        <div className='rounded-lg border border-brand p-2'>
+                          <p>Название команды</p>
+                        </div>
+                        <div className='rounded-lg border border-brand p-2'>
+                          <p>Название команды</p>
+                        </div>
+                        <div className='rounded-lg border border-brand p-2'>
+                          <p>Название команды</p>
+                        </div>
                     </div>
 
                    </div>
