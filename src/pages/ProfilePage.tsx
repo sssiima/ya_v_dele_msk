@@ -1467,9 +1467,9 @@ const ProfilePage = () => {
 
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                      
-                     <div className="flex w-full flex-col">
+                     <div className="flex w-full flex-col gap-2">
                         <p className="text-lg font-semibold text-black mb-2">Отслеживание выполнения</p>
-                        <div className='rounded-full border border-brand p-2 gap-2'>
+                        <div className='rounded-full border border-brand p-2'>
                           <p className='text-xs'>Название команды</p>
                         </div>
                         <div className='rounded-full border border-brand p-2'>
