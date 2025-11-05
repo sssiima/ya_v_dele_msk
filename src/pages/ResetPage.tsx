@@ -13,6 +13,7 @@ const ResetPage = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<RecoveryValues>()
   const [emailError, setEmailError] = useState<string | null>(null)
   const [checkingEmail, setCheckingEmail] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   
   const watchedEmail = watch('recovery_email')
 
@@ -47,8 +48,39 @@ const ResetPage = () => {
     return () => clearTimeout(timeoutId)
   }, [watchedEmail, errors.recovery_email])
 
-  const onSubmit = (data: RecoveryValues) => {
-    console.log('recovery', data)
+  const onSubmit = async (data: RecoveryValues) => {
+    setSubmitting(true)
+    setEmailError(null)
+    
+    try {
+      // Проверяем данные пользователя через новый эндпоинт
+      const resetInfo = await authUtilsApi.getResetInfo(data.recovery_email)
+      
+      if (resetInfo.success) {
+        const userData = resetInfo.data
+        
+        // Сравниваем введенные данные с данными из БД
+        const isLastNameMatch = userData.last_name?.toLowerCase().trim() === data.last_name.toLowerCase().trim()
+        const isFirstNameMatch = userData.first_name?.toLowerCase().trim() === data.first_name.toLowerCase().trim()
+        const isPatronymicMatch = userData.patronymic?.toLowerCase().trim() === data.patronymic.toLowerCase().trim()
+        
+        if (isLastNameMatch && isFirstNameMatch && isPatronymicMatch) {
+          // Данные верны
+          alert('OK')
+          console.log('Данные верны, пользователь подтвержден:', userData)
+        } else {
+          // Данные не совпадают
+          setEmailError('Неверные данные пользователя')
+        }
+      } else {
+        setEmailError('Ошибка проверки данных')
+      }
+    } catch (error: any) {
+      console.error('Ошибка при проверке данных:', error)
+      setEmailError(error.message || 'Ошибка при проверке данных')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   useEffect(() => {
@@ -83,8 +115,9 @@ const ResetPage = () => {
             <label className="block text-s font-semibold text-white mb-2">Отчество</label>
             <input 
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register('patronymic')}
+              {...register('patronymic', { required: 'Отчество обязательно' })}
             />
+            {errors.patronymic && <p className="text-red-300 text-xs mt-1">{errors.patronymic.message}</p>}
           </div>
 
           <div>
@@ -113,9 +146,12 @@ const ResetPage = () => {
 
           <button 
             type="submit"
-            className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors mt-6"
+            disabled={submitting}
+            className="w-full bg-brand font-bold py-4 px-6 rounded-full transition-colors mt-6 disabled:opacity-50"
           >
-            <h2 className="uppercase text-white">Отправить форму</h2>
+            <h2 className="uppercase text-white">
+              {submitting ? 'Проверка...' : 'Отправить форму'}
+            </h2>
           </button>
         </form>
       </div>

@@ -465,7 +465,31 @@ export const authUtilsApi = {
       throw new Error(data.message || `HTTP ${resp.status}`)
     }
     return await resp.json()
+  },
+  async getResetInfo(username: string): Promise<ApiResponse<{
+    last_name: string
+    first_name: string 
+    patronymic: string
+    foundIn: 'member' | 'structure' | 'both'
+  }>> {
+    const resp = await fetch(`${API_BASE_URL}/auth/get-reset-info`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    })
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}))
+      throw new Error(data.message || `HTTP ${resp.status}`)
+    }
+    return await resp.json()
   }
+}
+
+export interface ResetInfoResponse {
+  last_name: string
+  first_name: string
+  patronymic: string
+  foundIn: 'member' | 'structure' | 'both'
 }
 
 // API для работы с командами
