@@ -6,6 +6,19 @@ import { useNavigate } from 'react-router-dom'
 
 
 // Типы для данных
+interface Mk {
+  title: string;
+  subtitle: string;
+  image: string;
+  link?: string;
+  pres: string;
+  criteria: string;
+  tz: string;
+  track?: string;
+  disabled?: boolean;
+  description: string;
+}
+
 interface TeamMember {
   id: number;
   number: number;
@@ -52,10 +65,10 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
   <div className="flex flex-col w-[210px] flex-shrink-0">
     {link && !disabled ? (
       <a href={link} target="_blank">
-        <img src={image} className="rounded-xl w-64 object-cover bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity" />
+        <img src={image} className="rounded-xl w-64 cursor-pointer hover:opacity-90 transition-opacity" />
       </a>
     ) : (
-      <img src={image} className="rounded-xl w-64 object-cover bg-gray-200" />
+      <img src={image} className="rounded-xl w-64" />
     )}
     {title && (
       <>
@@ -97,6 +110,16 @@ const ProfilePageMember = () => {
   const [birthDate, setBirthDate] = useState('')
   const [gender, setGender] = useState('')
 
+  const [selectedMk, setSelectedMk] = useState<Mk | null>(null);
+
+  const handleMkClick = (mk: Mk) => {
+    setSelectedMk(mk);
+  };
+
+  const handleBackToMks = () => {
+    setSelectedMk(null);
+  };
+
   const scrollContainerRefmk = useRef<HTMLDivElement>(null);
     const [activeDotmk, setActiveDotmk] = useState(0);
     const scrollContainerRefpr = useRef<HTMLDivElement>(null);
@@ -106,12 +129,78 @@ const ProfilePageMember = () => {
 
   
     const mk_list = [
-      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png', link: 'https://drive.google.com/drive/mobile/folders/1sb1L1MynvdLxU6jMOxTQR24-Nudx5-DD/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1I2AEC4OltOGGJWFncj8yS1Nqio9PczF3?sort=13&direction=a', disabled: true },
-      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1PjByX9ckPyi-1ANFeCrDKXq1_cso_4SQ?sort=13&direction=a', disabled: true },
-      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthird.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixth.png', link: 'https://drive.google.com/drive/mobile/folders/1LOowiL6-yEtmQQSRNx-yhr07QqEnjPcF/1liKGGfATdDN_AvyhNXPN1ivVtvSVSreN?sort=13&direction=a', disabled: true },
+      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png',
+        pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link',
+        description: 'Всем привет! Вот и пришло время для первого домашнего задания. Сегодня мы попробуем развить предпринимательское мышление через выявление реальных проблем в нашей повседневной жизни, подумаем над их решениями и сгенерируем собственные.',
+        disabled: true,
+        criteria: '',
+        tz: '' },
+      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png',
+        pres: 'https://drive.google.com/file/d/1ET9n5nxgyf5KzRSqwBqRIb2v0aWFx84D/view?usp=drive_link',
+        description: 'Пришло время учиться анализировать целевую аудиторию и проводить кастдевы. Сегодня вас ждут два увлекательных задания. Погнали!',
+        disabled: true,
+        criteria: '',
+        tz: '' },
+      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthirdopen.png',
+        pres: 'https://drive.google.com/file/d/1KACuNbGwN4b2DXXe3eXNz9pyIhoRO7Nu/view?usp=drive_link',
+        description: 'После мастер-класса вы сформировали представление о минимально жизнеспособном продукте (MVP), который каждый из вас будет готов представить на финальном воркшопе курса. Сегодня попробуем его визуально представить. Да, так тоже можно!',
+        disabled: true,
+        criteria: '',
+        tz: '' },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Базовый трек', image: '/images/mkfourthbase.png',
+        pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
+        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+        disabled: true, track: 'Базовый трек',
+        criteria: '',
+        tz: '' },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Базовый трек', image: '/images/mkfifthbase.png',
+        pres: 'https://drive.google.com/file/d/1KZEn8Clb9KC1Lh4dR5GRtiI3YrU7CX_6/view?usp=drive_link',
+        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+        disabled: true, track: 'Базовый трек',
+        criteria: '',
+        tz: '' },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Базовый трек', image: '/images/mksixthbase.png',
+        pres: 'https://drive.google.com/file/d/1-ICPM2FI3bkJuMimfSe2SUr2w8OPrcOE/view?usp=drive_link',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: true, track: 'Базовый трек',
+        criteria: '',
+        tz: '' },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourthsoc.png',
+        pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
+        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+        disabled: true, track: 'Социальный трек',
+        criteria: '',
+        tz: '' },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifthsoc.png',
+        pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
+        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+        disabled: true, track: 'Социальный трек',
+        criteria: '',
+        tz: '' },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixthsoc.png',
+        pres: 'https://drive.google.com/file/d/1-bKB_NEDgbMvLkJpAvRq2b-3XDHTxawY/view?usp=drive_link',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: true, track: 'Социальный трек',
+        criteria: '',
+        tz: '' },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourthinn.png',
+        pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
+        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+        disabled: true, track: 'Инновационный трек',
+        criteria: '',
+        tz: '' },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
+        pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
+        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+        disabled: true, track: 'Инновационный трек',
+        criteria: '',
+        tz: '' },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixthinn.png',
+        pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: true, track: 'Инновационный трек',
+        criteria: '',
+        tz: '' },
   ]
 
   const project_list = [
@@ -337,6 +426,17 @@ const ProfilePageMember = () => {
   const handleCancelEdit = () => {
     setIsEditing(false)
   }
+
+  const extractFileId = (url: string) => {
+    if (!url) return '';
+    const match = url.match(/\/file\/d\/([^\/]+)/);
+    return match && match[1] ? match[1] : url;
+  };
+
+  const getDownloadLink = (url: string) => {
+    const fileId = extractFileId(url);
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  };
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -964,10 +1064,9 @@ const loadTeamData = async (teamCode: string) => {
           </div>
         )}
         {sect==='myteam' && (
-          // <Navigate to="/my-team" />
           <div className="lg:flex lg:gap-6">
             {/* Левая колонка - информация о команде */}
-            <div className='baseinfo flex flex-col justify-center items-start mt-4 lg:flex-1'>
+            <div className='baseinfo flex flex-col items-start mt-6 lg:flex-1'>
               <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
                 {/* Аватар */}
                 <div className='flex flex-row py-4 relative lg:flex-col lg:items-start'>
@@ -1237,109 +1336,157 @@ const loadTeamData = async (teamCode: string) => {
           <TeamPage />
         )}
         {sect==='courses' && (
-              <section className="space-y-3">
-              <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
-        
-              <div className="relative">
-                <div 
-                  ref={scrollContainerRefmk}
-                  className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
-                              [-webkit-overflow-scrolling:touch] pb-4 snap-x snap-mandatory"
-                  onScroll={handleScrollmk}
-                >
-                  {mk_list.map((mk, index) => (
-                    <div key={index} className="snap-start">
-                      <Card 
-                        title={mk.title}
-                        subtitle={mk.subtitle}
-                        image={mk.image}
-                        link={mk.link}
-                        disabled={mk.disabled}
-                      />
+
+          
+          <section className="space-y-3">
+          {selectedMk && (
+                 <div className="py-4">
+                 <div className="">
+                   {/* Кнопка назад */}
+                   <button 
+                     onClick={handleBackToMks}
+                     className="flex items-center text-brand mb-2 hover:underline"
+                   >
+                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                     Назад к материалам
+                   </button>
+         
+                   {/* Детали мероприятия */}
+                   <div className="p-2">
+                     <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
+
+                     <div className='flex w-full lg:px-8 items-center justify-center text-left'>
+                       <img src={selectedMk.image} className="rounded-lg w-full lg:w-96 mb-6"></img>
+                     </div>
+
+                     <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
+                     <a href={getDownloadLink(selectedMk.criteria)} download className='text-brand italic hover:underline text-sm block'>Скачать критерии для выполнения д/з</a>
+                     <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
+          
+         
+                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                     
+                     <div className="flex w-full flex-col">
+                      <div className='w-full text-left'>
+                        <p className="text-md font-semibold text-black mb-2">Описание домашнего задания</p>
+                        <div className='rounded-lg border border-brand p-2'>
+                          <p className='text-xs'>{selectedMk.description}</p>
+                        </div>
                     </div>
-                  ))}
-                </div>
-                
-                {/* Точки прогресса */}
-                <div className="flex justify-center space-x-2 mt-2">
-                  {mk_list.map((_, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => scrollToDotmk(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-      
-              <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase pb-3">Примеры проектов</h3>
-              <div className="relative">
-                <div 
-                  ref={scrollContainerRefpr}
-                  className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
-                              [-webkit-overflow-scrolling:touch] snap-x snap-mandatory"
-                  onScroll={handleScrollpr}
-                >
-                  {project_list.map((project, index) => (
-                    <div key={index} className="snap-start">
-                      <Card 
-                        title={project.title}
-                        subtitle={project.subtitle}
-                        image={project.image}
-                      />
+                    <div className="flex w-full justify-center">
+                      <button className='rounded-xl bg-brand text-white font-semibold p-3 mt-4 text-xs w-2/3 lg:w-1/3 lg:text-lg'>Перейти к выполнению</button>
                     </div>
-                  ))}
-                </div>
-                
-                {/* Точки прогресса */}
-                <div className="flex justify-center space-x-2 mt-2">
-                  {project_list.map((_, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => scrollToDotpr(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === activeDotpr ? 'bg-brand scale-125' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-      
-              <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase pb-3">Подкаст "Давай по делу"</h3>
-              <div className="relative">
-                <div 
-                  ref={scrollContainerRefpod}
-                  className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
-                              [-webkit-overflow-scrolling:touch] snap-x snap-mandatory"
-                  onScroll={handleScrollpod}
-                >
-                  {podcast_list.map((podcast, index) => (
-                    <div key={index} className="snap-start">
-                      <Card 
-                        title={podcast.title}
-                        image={podcast.image}
-                        link={podcast.link}
-                      />
                     </div>
-                  ))}
+
+                   </div>
+                 </div>
+               </div>
+          )}
+          
+          { !selectedMk && (<div>
+          <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
+    
+          <div className="relative">
+            <div 
+              ref={scrollContainerRefmk}
+              className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
+                          [-webkit-overflow-scrolling:touch] pb-4 snap-x snap-mandatory"
+              onScroll={handleScrollmk}
+            >
+              {mk_list.map((mk, index) => (
+                <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
+                  <Card 
+                    title={mk.title}
+                    subtitle={mk.subtitle}
+                    image={mk.image}
+                  />
                 </div>
-                
-                {/* Точки прогресса */}
-                <div className="flex justify-center space-x-2 mt-2">
-                  {podcast_list.map((_, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => scrollToDotpod(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === activeDotpod ? 'bg-brand scale-125' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
+              ))}
+            </div>
+            
+            {/* Точки прогресса */}
+            <div className="flex justify-center space-x-2 my-2">
+              {mk_list.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => scrollToDotmk(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+  
+          <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase pb-3">Примеры проектов</h3>
+          <div className="relative">
+            <div 
+              ref={scrollContainerRefpr}
+              className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
+                          [-webkit-overflow-scrolling:touch] snap-x snap-mandatory"
+              onScroll={handleScrollpr}
+            >
+              {project_list.map((project, index) => (
+                <div key={index} className="snap-start">
+                  <Card 
+                    title={project.title}
+                    subtitle={project.subtitle}
+                    image={project.image}
+                  />
                 </div>
-              </div>
-            </section>
+              ))}
+            </div>
+            
+            {/* Точки прогресса */}
+            <div className="flex justify-center space-x-2 my-2">
+              {project_list.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => scrollToDotpr(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === activeDotpr ? 'bg-brand scale-125' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+  
+          <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase pb-3">Подкаст "Давай по делу"</h3>
+          <div className="relative">
+            <div 
+              ref={scrollContainerRefpod}
+              className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
+                          [-webkit-overflow-scrolling:touch] snap-x snap-mandatory"
+              onScroll={handleScrollpod}
+            >
+              {podcast_list.map((podcast, index) => (
+                <div key={index} className="snap-start">
+                  <Card 
+                    title={podcast.title}
+                    image={podcast.image}
+                    link={podcast.link}
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Точки прогресса */}
+            <div className="flex justify-center space-x-2 my-2">
+              {podcast_list.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => scrollToDotpod(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === activeDotpod ? 'bg-brand scale-125' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>)}
+        </section>
         )}
       </div>
     </section>
