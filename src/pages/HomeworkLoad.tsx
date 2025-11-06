@@ -10,6 +10,7 @@ interface HomeworkLoadProps {
   prezlink?: string;
   templink?: string;
   teamCode?: string;
+  onSuccess?: () => void;
 }
 
 const HomeworkLoad: React.FC<HomeworkLoadProps> = ({ 
@@ -20,6 +21,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   prezlink, 
   templink,
   teamCode,
+  onSuccess
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -60,7 +62,6 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   
     setUploading(true);
     try {
-      // Передаем title как homeworkTitle - теперь это работает!
       const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', teamCode);
       
       console.log('Upload result:', result);
@@ -68,8 +69,13 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
       if (result.success && result.data) {
         alert('Файл успешно загружен и сохранен в базе!');
         
-        // Переадресация на profilePageMember
-        navigate('/profile-member');
+        // Вместо navigate вызываем колбэк onSuccess
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // fallback если колбэк не передан
+          navigate('/profile-member');
+        }
       } else {
         throw new Error(result.message || 'Ошибка загрузки файла');
       }

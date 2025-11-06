@@ -1746,6 +1746,10 @@ const loadTeamData = async (teamCode: string) => {
           prezlink={selectedMk?.pres}
           templink={selectedMk?.template}
           teamCode={memberData?.team_code}
+          onSuccess={() => {
+            setShowHomework(false); // ⬅️ СКРЫВАЕМ КОМПОНЕНТ ЗАГРУЗКИ
+            setSelectedMk(null);    // ⬅️ СБРАСЫВАЕМ ВЫБРАННЫЙ МК
+          }}
         />
         )}
         </section>
