@@ -599,7 +599,7 @@ const sendPasswordEmail = async (email, newPassword) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://api-production-2fd7.up.railway.app/images/email.png" alt="Я в деле" style="max-width: 200px; height: auto;" />
+            <img src="https://api-production-2fd7.up.railway.app/images/email.png" alt="Я в деле" style="height: auto;" />
           </div>
           <p">Здравствуйте!</p>
           <p>Не расстраивайтесь, мы все иногда забываем пароли.</p>
@@ -611,7 +611,7 @@ const sendPasswordEmail = async (email, newPassword) => {
           <p>
               Сохраните этот пароль в надежном месте и используйте его для входа в систему.
           </p>
-          <button style="background-color: #08A6A5; font-weight: 800; border-radius: 100px; padding: 12px 24px; border: none; cursor: pointer;">
+          <button style="background-color:rgb(6, 116, 116); font-weight: 800; border-radius: 100px; padding: 12px 24px; border: none; cursor: pointer;">
             Вернуться на платформу
           </button>
           <p style="color: #666; font-size: 14px; font-style: italic;">
