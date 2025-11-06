@@ -1264,11 +1264,11 @@ const loadTeamData = async (teamCode: string) => {
     <div className='flex flex-row gap-2 mb-2'>
       <div className='flex-1'>
         <p><strong>Трек</strong></p>
-        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-gray-200 h-[30px] flex items-center italic text-xs mt-1"/>
       </div>
       <div className='flex-1'>
         <p><strong>Код команды</strong></p>
-        <input value={teamData.teamCode} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+        <input value={teamData.teamCode} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1" />      
       </div>
     </div>
     
@@ -1293,7 +1293,7 @@ const loadTeamData = async (teamCode: string) => {
       <input 
         value={teamData.projectDescription}
         readOnly
-        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+        className="w-full px-4 py-3 border border-brand rounded-full bg-gray-200 h-[30px] flex items-center italic text-xs mt-1"
       />
     </div>
     
@@ -1354,7 +1354,7 @@ const loadTeamData = async (teamCode: string) => {
                     <div className='flex flex-row gap-2 mb-2'>
                       <div className='flex-1'>
                         <p><strong>Трек</strong></p>
-                        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input value={teamData.track} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-gray-200 h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='flex-1'>
                         <p><strong>Код команды</strong></p>
@@ -1383,7 +1383,7 @@ const loadTeamData = async (teamCode: string) => {
                       <input 
                         value={teamData.projectDescription}
                         readOnly
-                        className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                        className="w-full px-4 py-3 border border-brand rounded-full bg-gray-200 h-[30px] flex items-center italic text-xs mt-1"
                       />
                     </div>
 

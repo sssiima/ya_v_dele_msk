@@ -91,8 +91,6 @@ const ProfilePage = () => {
     const [activeDotpr, setActiveDotpr] = useState(0);
     const scrollContainerRefpod = useRef<HTMLDivElement>(null);
     const [activeDotpod, setActiveDotpod] = useState(0);
-    const scrollContainerRefvid = useRef<HTMLDivElement>(null);
-    const [activeDotvid, setActiveDotvid] = useState(0);
 
   
     const mk_list = [
@@ -127,11 +125,6 @@ const ProfilePage = () => {
       { title: "Про креативность", image: '/images/podcast_create.png', link: 'https://vkvideo.ru/video-210144042_456239575?pl=-210144042_2' },
       { title: "Про страхи и рост", image: '/images/podcast_fear.png', link: 'https://vkvideo.ru/video-210144042_456239501?pl=-210144042_2' },
   ]
-
-  const video_lessons = [
-    { title: "урок 1", subtitle: 'что-то там', image: '/images/' },
-    { title: "урок 2", subtitle: 'что-то там', image: '/images/' },
-]
 
 const extractFileId = (url: string) => {
   if (!url) return '';
@@ -206,37 +199,6 @@ const getDownloadLink = (url: string) => {
         behavior: 'smooth'
       });
     };
-
-    const handleScrollvid = useCallback(() => {
-      const container = scrollContainerRefvid.current;
-      if (!container) return;
-  
-      const scrollLeft = container.scrollLeft;
-      const containerWidth = container.clientWidth;
-      const cardWidth = 205; // w-[120px]
-      const gap = 12; // space-x-3 = 12px
-      
-      // Вычисляем индекс активной карточки
-      const scrollPosition = scrollLeft + containerWidth / 2;
-      const activeIndex = Math.floor(scrollPosition / (cardWidth + gap));
-      
-      setActiveDotvid(Math.min(activeIndex, podcast_list.length - 1));
-    }, [podcast_list.length]);
-  
-    // Функция для скролла к определенной точке
-    const scrollToDotvid = (index: number) => {
-      const container = scrollContainerRefvid.current;
-      if (!container) return;
-  
-      const cardWidth = 205; // w-[200px]
-      const gap = 12; // space-x-3 = 12px
-      const scrollPosition = index * (cardWidth + gap);
-      
-      container.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      })
-    }
 
     const handleScrollpod = useCallback(() => {
       const container = scrollContainerRefpod.current;
@@ -1562,39 +1524,6 @@ const getDownloadLink = (url: string) => {
                   onClick={() => scrollToDotpr(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     index === activeDotpr ? 'bg-brand scale-125' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase pb-3">Видео-уроки</h3>
-          <div className="relative">
-            <div 
-              ref={scrollContainerRefvid}
-              className="flex overflow-x-auto space-x-3 hide-scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] 
-                          [-webkit-overflow-scrolling:touch] snap-x snap-mandatory"
-              onScroll={handleScrollvid}
-            >
-              {video_lessons.map((video, index) => (
-                <div key={index} className="snap-start">
-                  <Card 
-                    title={video.title}
-                    subtitle={video.subtitle}
-                    image={video.image}
-                  />
-                </div>
-              ))}
-            </div>
-            
-            {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 my-2">
-              {video_lessons.map((_, index) => (
-                <button 
-                  key={index}
-                  onClick={() => scrollToDotvid(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === activeDotvid ? 'bg-brand scale-125' : 'bg-gray-300'
                   }`}
                 />
               ))}
