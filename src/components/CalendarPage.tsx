@@ -113,7 +113,7 @@ const CalendarPage = () => {
             <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedEvent.title}</h2>
             
             <div className='w-full lg:px-8'>
-              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6 object-cover"></img>
+              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6 object-cover lg:w-full"></img>
             </div>
 
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
