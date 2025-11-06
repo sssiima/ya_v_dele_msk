@@ -58,13 +58,15 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   
     setUploading(true);
     try {
-      // Используем новый API для загрузки
-      const result = await fileUploadApi.uploadHomework(selectedFile);
+      // Просто передаем существующий title из props
+      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание');
       
-      if (result.success) {
-        alert('Файл успешно загружен!');
+      console.log('Upload result:', result);
+      
+      if (result.success && result.data) {
+        alert('Файл успешно загружен и сохранен в базе!');
         
-        // Переадресация на profilePageMember после успешной загрузки
+        // Переадресация на profilePageMember
         navigate('/profile-member');
       } else {
         throw new Error(result.message || 'Ошибка загрузки файла');
