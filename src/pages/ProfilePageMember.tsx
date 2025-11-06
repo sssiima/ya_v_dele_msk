@@ -115,6 +115,8 @@ const ProfilePageMember = () => {
 
   const [selectedMk, setSelectedMk] = useState<Mk | null>(null);
 
+  const [memberData, setMemberData] = useState<MemberData | null>(null)
+
   const handleMkClick = (mk: Mk) => {
     setSelectedMk(mk);
   };
@@ -701,6 +703,7 @@ MVP возможно реализовать до конца курса в так
         // Загрузка данных пользователя
         const resp = await membersApi.getById(memberId)
         const m: MemberData = resp?.data
+        setMemberData(m)
         if (!m) return
         
         setLastname(m.last_name || '')
@@ -1742,6 +1745,7 @@ const loadTeamData = async (teamCode: string) => {
           desc={selectedMk?.fulldesc}
           prezlink={selectedMk?.pres}
           templink={selectedMk?.template}
+          teamCode={memberData?.team_code}
         />
         )}
         </section>

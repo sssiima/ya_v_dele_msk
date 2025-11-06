@@ -9,6 +9,7 @@ interface HomeworkLoadProps {
   desc?: string;
   prezlink?: string;
   templink?: string;
+  teamCode?: string;
 }
 
 const HomeworkLoad: React.FC<HomeworkLoadProps> = ({ 
@@ -17,7 +18,8 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   desclink, 
   desc, 
   prezlink, 
-  templink 
+  templink,
+  teamCode,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -59,7 +61,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
     setUploading(true);
     try {
       // Передаем title как homeworkTitle - теперь это работает!
-      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание');
+      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', teamCode);
       
       console.log('Upload result:', result);
       
