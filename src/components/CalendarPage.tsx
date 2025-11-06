@@ -154,7 +154,7 @@ const CalendarPage = () => {
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
+            {/* <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
 
             <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
             <div className='flex items-center justify-center'>
@@ -212,7 +212,7 @@ const CalendarPage = () => {
                   </button>
                 </form>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

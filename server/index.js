@@ -1141,12 +1141,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Удалите старый эндпоинт и добавьте этот:
 app.post('/api/upload-homework', async (req, res) => {
+  let client;
   try {
     console.log('Upload homework request received');
     
-    const { file: base64File, filename = `homework-${Date.now()}.pdf` } = req.body;
+    const { file: base64File, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode } = req.body;
 
     if (!base64File) {
       return res.status(400).json({
@@ -1155,20 +1155,14 @@ app.post('/api/upload-homework', async (req, res) => {
       });
     }
 
-    console.log('File received, size:', base64File.length, 'characters');
-    
-    // Проверяем конфигурацию Cloudinary
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_CLOUD_NAME');
-    }
-    if (!process.env.CLOUDINARY_API_KEY) {
-      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_API_KEY');
-    }
-    if (!process.env.CLOUDINARY_API_SECRET) {
-      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_API_SECRET');
+    if (!homeworkTitle) {
+      return res.status(400).json({
+        success: false,
+        message: 'Название домашнего задания обязательно'
+      });
     }
 
-    console.log('Cloudinary config OK, uploading...');
+    console.log('File received, uploading to Cloudinary...');
     
     // Загружаем в Cloudinary
     const uploadResult = await cloudinary.uploader.upload(
@@ -1178,20 +1172,38 @@ app.post('/api/upload-homework', async (req, res) => {
         folder: 'homeworks',
         format: 'pdf',
         public_id: `homework-${Date.now()}`,
-        overwrite: false
+        overwrite: false,
+        access_mode: 'public'
       }
     );
 
-    console.log('Cloudinary upload successful:', {
-      url: uploadResult.secure_url,
-      size: uploadResult.bytes,
-      id: uploadResult.public_id
-    });
+    console.log('Cloudinary upload successful:', uploadResult.secure_url);
+
+    // Сохраняем в существующую таблицу homeworks
+    client = await pool.connect();
+    
+    const insertQuery = `
+      INSERT INTO homeworks (hw_name, file_url, status, team_code)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id
+    `;
+    
+    const insertResult = await client.query(insertQuery, [
+      homeworkTitle,           // hw_name
+      uploadResult.secure_url, // file_url  
+      'uploaded',              // status
+      teamCode || null         // team_code (если есть)
+    ]);
+
+    const homeworkId = insertResult.rows[0].id;
+
+    console.log('Homework saved to database with ID:', homeworkId);
 
     res.json({
       success: true,
-      message: 'Файл успешно загружен в облачное хранилище',
+      message: 'Файл успешно загружен и сохранен в базе данных',
       data: {
+        homeworkId: homeworkId,
         fileUrl: uploadResult.secure_url,
         fileName: filename,
         fileSize: uploadResult.bytes,
@@ -1205,6 +1217,8 @@ app.post('/api/upload-homework', async (req, res) => {
       success: false,
       message: 'Ошибка при загрузке файла: ' + error.message
     });
+  } finally {
+    if (client) client.release();
   }
 });
 
