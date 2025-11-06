@@ -503,6 +503,7 @@ export interface UploadResponse {
   success: boolean;
   message: string;
   data: {
+    homeworkId: number; // Добавляем homeworkId
     fileUrl: string;
     fileName: string;
     fileSize: number;
@@ -545,7 +546,7 @@ export const teamMembersApi = {
 }
 
 export const fileUploadApi = {
-  async uploadHomework(file: File, homeworkId?: string): Promise<ApiResponse<UploadResponse>> {
+  async uploadHomework(file: File, homeworkTitle: string): Promise<ApiResponse<UploadResponse>> { // Добавляем homeworkTitle параметр
     // Проверяем размер файла
     if (file.size > 10 * 1024 * 1024) {
       throw new Error('Файл слишком большой. Максимальный размер: 10MB');
@@ -577,8 +578,8 @@ export const fileUploadApi = {
     const payload = {
       file: base64File,
       filename: file.name,
+      homeworkTitle: homeworkTitle, // ⬅️ ДОБАВЛЯЕМ homeworkTitle
       fileSize: file.size,
-      homeworkId: homeworkId,
       timestamp: new Date().toISOString()
     };
 

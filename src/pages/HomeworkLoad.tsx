@@ -58,7 +58,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   
     setUploading(true);
     try {
-      // Просто передаем существующий title из props
+      // Передаем title как homeworkTitle - теперь это работает!
       const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание');
       
       console.log('Upload result:', result);
