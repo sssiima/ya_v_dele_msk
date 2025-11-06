@@ -1155,13 +1155,6 @@ app.post('/api/upload-homework', async (req, res) => {
       });
     }
 
-    if (!homeworkTitle) {
-      return res.status(400).json({
-        success: false,
-        message: 'Название домашнего задания обязательно'
-      });
-    }
-
     console.log('File received, uploading to Cloudinary...');
     
     // Загружаем в Cloudinary
