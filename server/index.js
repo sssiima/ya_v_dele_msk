@@ -5,6 +5,7 @@ const cors = require('cors')
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
+app.use('/images', express.static('public/images'));
 
 async function ensureTeamsTable() {
   const createQuery = `
@@ -600,7 +601,7 @@ const sendPasswordEmail = async (email, newPassword) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="images/email.png" alt="Я в деле" style="max-width: 200px; height: auto;" />
+            <img src="https://api-production-2fd7.up.railway.app/images/email.png" alt="Я в деле" style="max-width: 200px; height: auto;" />
           </div>
           <p">Здравствуйте!</p>
           <p>Не расстраивайтесь, мы все иногда забываем пароли.</p>
