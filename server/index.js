@@ -602,19 +602,19 @@ const sendPasswordEmail = async (email, newPassword) => {
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="images/email.png" alt="Я в деле" style="max-width: 200px; height: auto;" />
           </div>
-          <p style="color: #f8f9fa;">Здравствуйте!</p>
+          <p">Здравствуйте!</p>
           <p>Не расстраивайтесь, мы все иногда забываем пароли.</p>
           <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0; font-size: 18px; font-weight: bold; color: #08A6A5;">
               Ваш новый пароль для входа в систему: <strong>${newPassword}</strong>
             </p>
-            <p>
-              Сохраните этот пароль в надежном месте и используйте его для входа в систему.
-            </p>
-            <button style="background-color: #08A6A5; color: white; font-weight: 600; border-radius: 12px; padding: 12px 24px; border: none; cursor: pointer;">
-              Вернуться на платформу
-            </button>
           </div>
+          <p>
+              Сохраните этот пароль в надежном месте и используйте его для входа в систему.
+          </p>
+          <button style="background-color: #08A6A5; font-weight: 800; border-radius: 100px; padding: 12px 24px; border: none; cursor: pointer;">
+            Вернуться на платформу
+          </button>
           <p style="color: #666; font-size: 14px; font-style: italic;">
             Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.
           </p>
