@@ -660,7 +660,7 @@ const getDownloadLink = (url: string) => {
                 <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
                   {/* Аватар */}
                   <div className='flex flex-row py-4 relative lg:flex-col lg:items-start'>
-                    <div className='bg-[#D9D9D9] rounded-lg w-44 aspect-square'></div>
+                    <img src='images/logomember.png' className=' rounded-lg w-44 aspect-square'></img>
                     <img src='images/heading-icon.png' alt='logo' className='absolute w-48 right-5 lg:-right-0 lg:top-40'/>
                   </div>
                   
