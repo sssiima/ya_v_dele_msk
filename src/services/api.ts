@@ -545,7 +545,7 @@ export const teamMembersApi = {
 }
 
 export const fileUploadApi = {
-  async uploadHomework(file: File, homeworkId?: number): Promise<ApiResponse<UploadResponse>> {
+  async uploadHomework(file: File, homeworkId?: string): Promise<ApiResponse<UploadResponse>> {
     // Проверяем размер файла
     if (file.size > 10 * 1024 * 1024) {
       throw new Error('Файл слишком большой. Максимальный размер: 10MB');
