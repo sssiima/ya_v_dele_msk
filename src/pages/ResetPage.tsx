@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { authUtilsApi } from '@/services/api'
+import { useNavigate } from 'react-router-dom'
 
 interface RecoveryValues {
   last_name: string
@@ -8,6 +9,8 @@ interface RecoveryValues {
   patronymic: string
   recovery_email: string
 }
+
+const navigate = useNavigate()
 
 // Функция для генерации пароля в формате ХххххNN
 const generateNewPassword = (): string => {
@@ -95,8 +98,7 @@ const ResetPage = () => {
           if (updateResult.success) {
             // Показываем сообщение об успешной отправке на почту
             alert('Новый пароль отправлен на вашу почту! Проверьте папку "Входящие" или "Спам".')
-            
-            console.log('Пароль успешно обновлен и отправлен на email:', data.recovery_email)
+            navigate('/auth')
           } else {
             throw new Error('Не удалось обновить пароль')
           }

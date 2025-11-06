@@ -599,7 +599,7 @@ const sendPasswordEmail = async (email, newPassword) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://api-production-2fd7.up.railway.app/images/email.png" alt="Я в деле" style="height: auto; max-width: 800px;" />
+            <img src="https://api-production-2fd7.up.railway.app/images/email.png" alt="Я в деле" style="height: auto; max-width: 600px;" />
           </div>
           <p">Здравствуйте!</p>
           <p>Не расстраивайтесь, мы все иногда забываем пароли.</p>
