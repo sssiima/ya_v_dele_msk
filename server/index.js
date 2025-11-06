@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const cors = require('cors')
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
@@ -1142,28 +1143,30 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   }
 })
 
-// В index.js замените эндпоинт upload на этот:
+// Настройка Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Удалите старый эндпоинт upload и добавьте новый:
 app.post('/api/upload', async (req, res) => {
   try {
-    // Используем временную директорию Railway
-    const uploadsDir = process.env.NODE_ENV === 'production' 
-      ? '/tmp/uploads'
-      : path.join(__dirname, 'uploads');
+    console.log('Upload request received');
     
-    // Создаем папку если не существует
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    // Простой парсинг multipart/form-data
+    // Простой парсинг multipart/form-data для Cloudinary
     let body = '';
     req.setEncoding('binary');
+    
+    let fileBuffer = null;
+    let filename = '';
     
     req.on('data', (chunk) => {
       body += chunk;
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const contentType = req.headers['content-type'];
         if (!contentType || !contentType.includes('multipart/form-data')) {
@@ -1180,7 +1183,7 @@ app.post('/api/upload', async (req, res) => {
           if (part.includes('filename="') && (part.includes('application/pdf') || part.includes('filename=".pdf"'))) {
             // Извлекаем имя файла
             const filenameMatch = part.match(/filename="([^"]+)"/);
-            const filename = filenameMatch ? filenameMatch[1] : `file-${Date.now()}.pdf`;
+            filename = filenameMatch ? filenameMatch[1] : `homework-${Date.now()}.pdf`;
             
             // Извлекаем содержимое файла
             const fileContentMatch = part.match(/\r\n\r\n(.*)$/s);
@@ -1189,44 +1192,63 @@ app.post('/api/upload', async (req, res) => {
               // Убираем trailing boundary
               fileContent = fileContent.replace(/\r\n--[^-]+--\r\n$/, '');
               
-              const fileBuffer = Buffer.from(fileContent, 'binary');
-              
-              // Сохраняем файл
-              const filePath = path.join(uploadsDir, filename);
-              fs.writeFileSync(filePath, fileBuffer);
-              
-              // В Railway используем абсолютный URL
-              const baseUrl = process.env.NODE_ENV === 'production' 
-                ? 'https://api-production-2fd7.up.railway.app'
-                : `${req.protocol}://${req.get('host')}`;
-              
-              const fileUrl = `${baseUrl}/api/uploads/${filename}`;
-              
-              return res.json({
-                success: true,
-                message: 'Файл успешно загружен',
-                data: {
-                  fileUrl: fileUrl,
-                  fileName: filename,
-                  fileSize: fileBuffer.length
-                }
-              });
+              fileBuffer = Buffer.from(fileContent, 'binary');
+              break;
             }
           }
         }
         
-        return res.status(400).json({
-          success: false,
-          message: 'PDF файл не найден в запросе'
+        if (!fileBuffer) {
+          return res.status(400).json({
+            success: false,
+            message: 'PDF файл не найден в запросе'
+          });
+        }
+
+        // Загружаем в Cloudinary
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              resource_type: 'raw', // Для PDF файлов
+              folder: 'homeworks',
+              format: 'pdf',
+              public_id: filename.replace('.pdf', '')
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          ).end(fileBuffer);
+        });
+
+        console.log('Cloudinary upload result:', uploadResult);
+
+        res.json({
+          success: true,
+          message: 'Файл успешно загружен в облачное хранилище',
+          data: {
+            fileUrl: uploadResult.secure_url,
+            fileName: filename,
+            fileSize: fileBuffer.length,
+            publicId: uploadResult.public_id
+          }
         });
         
       } catch (parseError) {
-        console.error('Parse error:', parseError);
-        return res.status(500).json({
+        console.error('Parse/upload error:', parseError);
+        res.status(500).json({
           success: false,
-          message: 'Ошибка обработки файла'
+          message: 'Ошибка обработки файла: ' + parseError.message
         });
       }
+    });
+
+    req.on('error', (error) => {
+      console.error('Request error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Ошибка при загрузке файла'
+      });
     });
 
   } catch (error) {
@@ -1234,75 +1256,6 @@ app.post('/api/upload', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Ошибка при загрузке файла: ' + error.message
-    });
-  }
-});
-
-// Эндпоинт для отдачи файлов
-app.get('/api/uploads/:filename', (req, res) => {
-  try {
-    const filename = req.params.filename;
-    const uploadsDir = process.env.NODE_ENV === 'production' 
-      ? '/tmp/uploads'
-      : path.join(__dirname, 'uploads');
-    
-    const filePath = path.join(uploadsDir, filename);
-    
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
-        success: false,
-        message: 'Файл не найден'
-      });
-    }
-    
-    // Устанавливаем правильные headers для PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    
-    // Отправляем файл
-    const fileStream = fs.createReadStream(filePath);
-    fileStream.pipe(res);
-    
-  } catch (error) {
-    console.error('File serve error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при загрузке файла'
-    });
-  }
-});
-
-// Специфичный эндпоинт для домашних заданий
-app.post('/api/upload/homework', upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Файл не был загружен'
-      });
-    }
-
-    const homeworkId = req.body.homeworkId;
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    
-    // Здесь можно сохранить информацию о загруженном файле в БД
-    // например, привязать к конкретному домашнему заданию
-    
-    res.json({
-      success: true,
-      message: 'Домашнее задание успешно загружено',
-      data: {
-        fileUrl: fileUrl,
-        fileName: req.file.originalname,
-        fileSize: req.file.size,
-        homeworkId: homeworkId
-      }
-    });
-  } catch (error) {
-    console.error('Homework upload error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при загрузке домашнего задания'
     });
   }
 });

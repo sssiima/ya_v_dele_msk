@@ -63,7 +63,6 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
       
       if (result.success) {
         alert('Файл успешно загружен!');
-        console.log('File uploaded:', result.data.fileUrl);
         
         // Переадресация на profilePageMember после успешной загрузки
         navigate('/profile-member');

@@ -502,8 +502,12 @@ export interface ResetInfoResponse {
 export interface UploadResponse {
   success: boolean;
   message: string;
-  fileUrl: string;
-  fileName: string;
+  data: {
+    fileUrl: string;
+    fileName: string;
+    fileSize: number;
+    publicId?: string;
+  };
 }
 
 // API для работы с командами
@@ -541,33 +545,29 @@ export const teamMembersApi = {
 }
 
 export const fileUploadApi = {
-  async uploadFile(file: File): Promise<ApiResponse<UploadResponse>> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/upload`, {
-      method: 'POST',
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
-  },
-
   async uploadHomework(file: File, homeworkId?: number): Promise<ApiResponse<UploadResponse>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    if (homeworkId) {
-      formData.append('homeworkId', homeworkId.toString());
-    }
+    // Конвертируем файл в base64
+    const base64File = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Убираем data:application/pdf;base64, префикс
+        resolve(result.split(',')[1]);
+      };
+      reader.onerror = error => reject(error);
+    });
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+    const response = await fetch(`${API_BASE_URL}/upload-base64`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        file: base64File,
+        filename: file.name,
+        homeworkId: homeworkId
+      }),
     });
     
     if (!response.ok) {
