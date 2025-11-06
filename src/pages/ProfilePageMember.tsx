@@ -1481,7 +1481,7 @@ const loadTeamData = async (teamCode: string) => {
                   <p className="text-sm font-semibold my-4">Получено баллов:</p>
                   
                   <div className='space-y-3'>
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                    {/* <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Первое д/з</span>
                       <div className="flex items-center gap-2 ">
                         <button className="rounded flex items-center justify-center" onClick={() => handleHomeworkClick(1)}>
@@ -1493,6 +1493,35 @@ const loadTeamData = async (teamCode: string) => {
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Второе д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center" onClick={() => handleHomeworkClick(2)}>
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
+                      </div>
+                    </div> */}
+                    
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-brand text-white'>
+                      <span className="text-sm">Первое д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(3)}>
+                          Загрузить
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Второе д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
+                      </div>
+                    </div>
+                    
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Промежуточный ВШ</span>
                       <div className="flex items-center gap-2">
                         <button className="rounded flex items-center justify-center">
                           <img src="/images/locked.png" alt="lock" className="w-3" />
@@ -1521,55 +1550,7 @@ const loadTeamData = async (teamCode: string) => {
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Промежуточный ВШ</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
-                    
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Пятое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
-                    
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Шестое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
-                    
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Седьмое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
-                    
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Восьмое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Финальный ВШ</span>
