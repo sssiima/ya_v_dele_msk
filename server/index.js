@@ -5,8 +5,6 @@ const cors = require('cors')
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
-app.use('/images', express.static('public/images'));
-
 async function ensureTeamsTable() {
   const createQuery = `
     CREATE TABLE IF NOT EXISTS teams (
@@ -48,7 +46,7 @@ async function ensureTeamsTable() {
 dotenv.config()
 
 const app = express()
-
+app.use('/images', express.static('public/images'));
 
 // Обработчик для всех OPTIONS запросов - должен быть первым
 app.use((req, res, next) => {
