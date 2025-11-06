@@ -499,6 +499,13 @@ export interface ResetInfoResponse {
   foundIn: 'member' | 'structure' | 'both'
 }
 
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  fileUrl: string;
+  fileName: string;
+}
+
 // API для работы с командами
 export const teamsApi = {
   async getAll(): Promise<ApiResponse<any[]>> {
@@ -532,3 +539,70 @@ export const teamMembersApi = {
     return response.data
   }
 }
+
+export const fileUploadApi = {
+  async uploadFile(file: File): Promise<ApiResponse<UploadResponse>> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      // Пробуем через axios с правильными headers для FormData
+      const response = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000, // Увеличиваем таймаут для загрузки файлов
+      });
+      return response.data;
+    } catch (error: any) {
+      // Fallback to fetch if axios fails
+      console.log('Axios upload failed, trying fetch...');
+      
+      const response = await fetch(`${API_BASE_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+        // Не устанавливаем Content-Type для FormData - браузер сделает это сам
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    }
+  },
+
+  // Метод для загрузки домашних заданий (специфичный для PDF)
+  async uploadHomework(file: File, homeworkId?: number): Promise<ApiResponse<UploadResponse>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (homeworkId) {
+      formData.append('homeworkId', homeworkId.toString());
+    }
+    formData.append('type', 'homework');
+
+    try {
+      const response = await api.post('/upload/homework', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000,
+      });
+      return response.data;
+    } catch (error: any) {
+      // Fallback to fetch
+      const response = await fetch(`${API_BASE_URL}/upload/homework`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    }
+  }
+};

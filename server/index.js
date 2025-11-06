@@ -2,8 +2,36 @@ const express = require('express')
 const dotenv = require('dotenv')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
+const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/') // Папка для загрузок
+  },
+  filename: function (req, file, cb) {
+    // Генерируем уникальное имя файла
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB лимит
+  },
+  fileFilter: function (req, file, cb) {
+    // Проверяем тип файла
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Разрешены только PDF файлы'), false);
+    }
+  }
+});
 
 async function ensureTeamsTable() {
   const createQuery = `
@@ -1113,6 +1141,75 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })
+
+// Эндпоинт для загрузки файлов
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Файл не был загружен'
+      });
+    }
+
+    // Формируем URL для доступа к файлу
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    
+    res.json({
+      success: true,
+      message: 'Файл успешно загружен',
+      data: {
+        fileUrl: fileUrl,
+        fileName: req.file.originalname,
+        fileSize: req.file.size
+      }
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке файла'
+    });
+  }
+});
+
+// Специфичный эндпоинт для домашних заданий
+app.post('/api/upload/homework', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Файл не был загружен'
+      });
+    }
+
+    const homeworkId = req.body.homeworkId;
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    
+    // Здесь можно сохранить информацию о загруженном файле в БД
+    // например, привязать к конкретному домашнему заданию
+    
+    res.json({
+      success: true,
+      message: 'Домашнее задание успешно загружено',
+      data: {
+        fileUrl: fileUrl,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        homeworkId: homeworkId
+      }
+    });
+  } catch (error) {
+    console.error('Homework upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке домашнего задания'
+    });
+  }
+});
+
+// Обслуживание загруженных файлов
+app.use('/uploads', express.static('uploads'));
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
