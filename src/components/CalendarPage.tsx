@@ -112,9 +112,8 @@ const CalendarPage = () => {
           <div className="p-4">
             <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedEvent.title}</h2>
             
-            {/* Заглушка изображения */}
             <div className='w-full lg:px-8'>
-              <div className="bg-[#D9D9D9] rounded-lg h-48 mb-6"></div>
+              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6"></img>
             </div>
 
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
@@ -229,10 +228,10 @@ const CalendarPage = () => {
         <div className="flex flex-row justify-center gap-4 lg:gap-8">
           {upcomingEvents.map((event) => (
             <div key={event.id} className="flex flex-col items-center cursor-pointer">
-              <div 
-                className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity"
+              <img src={event.image}
+                className="rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity"
                 onClick={() => handleEventClick(event)}
-              ></div>
+              ></img>
               <div className="flex-1">
                 <p className="text-brand font-semibold text-xs mt-2 lg:text-sm">{event.title}</p>
                 <p className="text-black font-semibold text-xs mt-1 lg:text-sm">{event.date}</p>
@@ -250,10 +249,10 @@ const CalendarPage = () => {
         <div className="flex flex-row justify-center gap-4 lg:gap-8">
           {partnerEvents.map((event) => (
             <div key={event.id} className="flex flex-col items-center cursor-pointer">
-              <div 
+              <img src={event.image}
                 className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity"
                 onClick={() => handleEventClick(event)}
-              ></div>
+              ></img>
               <div className="flex-1">
                 <p className="text-brand font-semibold text-xs mt-2 lg:text-sm">{event.title}</p>
                 <p className="text-black font-semibold text-xs mt-1 lg:text-sm">{event.date}</p>
