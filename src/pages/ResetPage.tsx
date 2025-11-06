@@ -10,7 +10,7 @@ interface RecoveryValues {
   recovery_email: string
 }
 
-const navigate = useNavigate()
+
 
 // Функция для генерации пароля в формате ХххххNN
 const generateNewPassword = (): string => {
@@ -40,6 +40,7 @@ const ResetPage = () => {
   const [submitting, setSubmitting] = useState(false)
   
   const watchedEmail = watch('recovery_email')
+  const navigate = useNavigate()
 
   // Проверка существования пользователя при изменении email
   useEffect(() => {
