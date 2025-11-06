@@ -113,7 +113,7 @@ const CalendarPage = () => {
             <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedEvent.title}</h2>
             
             <div className='w-full lg:px-8'>
-              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6"></img>
+              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6 object-cover"></img>
             </div>
 
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
@@ -229,7 +229,7 @@ const CalendarPage = () => {
           {upcomingEvents.map((event) => (
             <div key={event.id} className="flex flex-col items-center cursor-pointer">
               <img src={event.image}
-                className="rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity"
+                className="rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity object-cover"
                 onClick={() => handleEventClick(event)}
               ></img>
               <div className="flex-1">
@@ -250,7 +250,7 @@ const CalendarPage = () => {
           {partnerEvents.map((event) => (
             <div key={event.id} className="flex flex-col items-center cursor-pointer">
               <img src={event.image}
-                className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity"
+                className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity object-cover"
                 onClick={() => handleEventClick(event)}
               ></img>
               <div className="flex-1">
