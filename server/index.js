@@ -1142,30 +1142,129 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   }
 })
 
-// Эндпоинт для загрузки файлов
-app.post('/api/upload', upload.single('file'), async (req, res) => {
+// В index.js замените эндпоинт upload на этот:
+app.post('/api/upload', async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Файл не был загружен'
-      });
+    // Используем временную директорию Railway
+    const uploadsDir = process.env.NODE_ENV === 'production' 
+      ? '/tmp/uploads'
+      : path.join(__dirname, 'uploads');
+    
+    // Создаем папку если не существует
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
     }
 
-    // Формируем URL для доступа к файлу
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    // Простой парсинг multipart/form-data
+    let body = '';
+    req.setEncoding('binary');
     
-    res.json({
-      success: true,
-      message: 'Файл успешно загружен',
-      data: {
-        fileUrl: fileUrl,
-        fileName: req.file.originalname,
-        fileSize: req.file.size
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      try {
+        const contentType = req.headers['content-type'];
+        if (!contentType || !contentType.includes('multipart/form-data')) {
+          return res.status(400).json({
+            success: false,
+            message: 'Неверный формат запроса'
+          });
+        }
+
+        const boundary = contentType.split('boundary=')[1];
+        const parts = body.split(`--${boundary}`);
+        
+        for (const part of parts) {
+          if (part.includes('filename="') && (part.includes('application/pdf') || part.includes('filename=".pdf"'))) {
+            // Извлекаем имя файла
+            const filenameMatch = part.match(/filename="([^"]+)"/);
+            const filename = filenameMatch ? filenameMatch[1] : `file-${Date.now()}.pdf`;
+            
+            // Извлекаем содержимое файла
+            const fileContentMatch = part.match(/\r\n\r\n(.*)$/s);
+            if (fileContentMatch && fileContentMatch[1]) {
+              let fileContent = fileContentMatch[1];
+              // Убираем trailing boundary
+              fileContent = fileContent.replace(/\r\n--[^-]+--\r\n$/, '');
+              
+              const fileBuffer = Buffer.from(fileContent, 'binary');
+              
+              // Сохраняем файл
+              const filePath = path.join(uploadsDir, filename);
+              fs.writeFileSync(filePath, fileBuffer);
+              
+              // В Railway используем абсолютный URL
+              const baseUrl = process.env.NODE_ENV === 'production' 
+                ? 'https://api-production-2fd7.up.railway.app'
+                : `${req.protocol}://${req.get('host')}`;
+              
+              const fileUrl = `${baseUrl}/api/uploads/${filename}`;
+              
+              return res.json({
+                success: true,
+                message: 'Файл успешно загружен',
+                data: {
+                  fileUrl: fileUrl,
+                  fileName: filename,
+                  fileSize: fileBuffer.length
+                }
+              });
+            }
+          }
+        }
+        
+        return res.status(400).json({
+          success: false,
+          message: 'PDF файл не найден в запросе'
+        });
+        
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        return res.status(500).json({
+          success: false,
+          message: 'Ошибка обработки файла'
+        });
       }
     });
+
   } catch (error) {
     console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке файла: ' + error.message
+    });
+  }
+});
+
+// Эндпоинт для отдачи файлов
+app.get('/api/uploads/:filename', (req, res) => {
+  try {
+    const filename = req.params.filename;
+    const uploadsDir = process.env.NODE_ENV === 'production' 
+      ? '/tmp/uploads'
+      : path.join(__dirname, 'uploads');
+    
+    const filePath = path.join(uploadsDir, filename);
+    
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Файл не найден'
+      });
+    }
+    
+    // Устанавливаем правильные headers для PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    
+    // Отправляем файл
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+    
+  } catch (error) {
+    console.error('File serve error:', error);
     res.status(500).json({
       success: false,
       message: 'Ошибка при загрузке файла'
