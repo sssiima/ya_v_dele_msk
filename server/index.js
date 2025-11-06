@@ -5,6 +5,7 @@ const cors = require('cors')
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
 
+
 async function ensureTeamsTable() {
   const createQuery = `
     CREATE TABLE IF NOT EXISTS teams (
@@ -595,21 +596,26 @@ const sendPasswordEmail = async (email, newPassword) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Восстановление пароля - Программа "Я в деле"',
+      subject: 'Программа "Я в деле": Восстановление пароля от личного кабинета.',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #08A6A5;">Восстановление пароля</h2>
-          <p>Вы запросили восстановление пароля для доступа к платформе программы "Я в деле".</p>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="images/email.png" alt="Я в деле" style="max-width: 200px; height: auto;" />
+          </div>
+          <p style="color: #f8f9fa;">Здравствуйте!</p>
+          <p>Не расстраивайтесь, мы все иногда забываем пароли.</p>
           <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0; font-size: 18px; font-weight: bold; color: #08A6A5;">
-              Ваш новый пароль: <strong>${newPassword}</strong>
+              Ваш новый пароль для входа в систему: <strong>${newPassword}</strong>
             </p>
+            <p>
+              Сохраните этот пароль в надежном месте и используйте его для входа в систему.
+            </p>
+            <button style="background-color: #08A6A5; color: white; font-weight: 600; border-radius: 12px; padding: 12px 24px; border: none; cursor: pointer;">
+              Вернуться на платформу
+            </button>
           </div>
-          <ul>
-            <li>Сохраните этот пароль в надежном месте</li>
-            <li>Используйте его для входа в систему</li>
-          </ul>
-          <p style="color: #666; font-size: 14px;">
+          <p style="color: #666; font-size: 14px; font-style: italic;">
             Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.
           </p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
