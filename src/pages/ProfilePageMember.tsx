@@ -117,6 +117,12 @@ const ProfilePageMember = () => {
 
   const [memberData, setMemberData] = useState<MemberData | null>(null)
 
+  const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
+
+  const handleHomeworkClick = (homeworkNumber: number) => {
+    setCurrentHomeworkView(homeworkNumber);
+  };
+
   const handleMkClick = (mk: Mk) => {
     setSelectedMk(mk);
   };
@@ -605,6 +611,10 @@ MVP возможно реализовать до конца курса в так
     if (page==='courses') {
       setShowHomework(false)
       setSelectedMk(null)
+      
+    }
+    if (page ==='myteam') {
+      setCurrentHomeworkView(null)
     }
   }
 
@@ -1311,7 +1321,9 @@ const loadTeamData = async (teamCode: string) => {
         {sect==='myteam' && (
           <div className="lg:flex lg:gap-6">
             {/* Левая колонка - информация о команде */}
-            <div className='baseinfo flex flex-col items-start mt-6 lg:flex-1'>
+            {!currentHomeworkView && (
+              <>
+              <div className='baseinfo flex flex-col items-start mt-6 lg:flex-1'>
               <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
                 {/* Аватар */}
                 <div className='flex flex-row py-4 relative lg:flex-col lg:items-start'>
@@ -1472,7 +1484,7 @@ const loadTeamData = async (teamCode: string) => {
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Первое д/з</span>
                       <div className="flex items-center gap-2 ">
-                        <button className="rounded flex items-center justify-center">
+                        <button className="rounded flex items-center justify-center" onClick={() => handleHomeworkClick(1)}>
                           <img src="/images/locked.png" alt="lock" className="w-3" />
                         </button>
                         <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
@@ -1571,7 +1583,23 @@ const loadTeamData = async (teamCode: string) => {
                   </div>
                 </div>
               </div>
+              
             </div>
+            </>
+            )}
+          
+       {currentHomeworkView && ( <HomeworkLoad 
+          title={mk_list[currentHomeworkView - 1]?.subtitle || `Домашнее задание ${currentHomeworkView}`}
+          preview={mk_list[currentHomeworkView - 1]?.description}
+          desclink={mk_list[currentHomeworkView - 1]?.tz}
+          desc={mk_list[currentHomeworkView - 1]?.fulldesc}
+          prezlink={mk_list[currentHomeworkView - 1]?.pres}
+          templink={mk_list[currentHomeworkView - 1]?.template}
+          teamCode={memberData?.team_code}
+          onSuccess={() => {
+            setCurrentHomeworkView(null); // Возвращаем к списку заданий
+          }}
+        />)}
           </div>
         )}
         {sect==='calendar' && (
