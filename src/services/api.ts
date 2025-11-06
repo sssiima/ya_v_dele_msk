@@ -546,28 +546,48 @@ export const teamMembersApi = {
 
 export const fileUploadApi = {
   async uploadHomework(file: File, homeworkId?: number): Promise<ApiResponse<UploadResponse>> {
+    // Проверяем размер файла
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error('Файл слишком большой. Максимальный размер: 10MB');
+    }
+
     // Конвертируем файл в base64
     const base64File = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const result = reader.result as string;
-        // Убираем data:application/pdf;base64, префикс
-        resolve(result.split(',')[1]);
+        try {
+          const result = reader.result as string;
+          // Убираем data:application/pdf;base64, префикс
+          const base64Data = result.split(',')[1];
+          if (!base64Data) {
+            reject(new Error('Ошибка конвертации файла'));
+            return;
+          }
+          resolve(base64Data);
+        } catch (error) {
+          reject(error);
+        }
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = error => reject(new Error('Ошибка чтения файла: ' + error));
     });
 
-    const response = await fetch(`${API_BASE_URL}/upload-base64`, {
+    console.log('File converted to base64, sending to server...');
+
+    const payload = {
+      file: base64File,
+      filename: file.name,
+      fileSize: file.size,
+      homeworkId: homeworkId,
+      timestamp: new Date().toISOString()
+    };
+
+    const response = await fetch(`${API_BASE_URL}/upload-homework`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        file: base64File,
-        filename: file.name,
-        homeworkId: homeworkId
-      }),
+      body: JSON.stringify(payload),
     });
     
     if (!response.ok) {

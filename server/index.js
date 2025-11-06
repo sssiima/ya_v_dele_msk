@@ -76,6 +76,8 @@ dotenv.config()
 
 const app = express()
 app.use('/images', express.static('public/images'));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Обработчик для всех OPTIONS запросов - должен быть первым
 app.use((req, res, next) => {
@@ -117,17 +119,6 @@ app.get('/api/test', (_req, res) => {
   res.json({ message: 'CORS test successful', timestamp: new Date().toISOString() })
 })
 
-// Эндпоинт для загрузки фото (заглушка)
-app.post('/api/upload', (req, res) => {
-  try {
-    // Временно возвращаем заглушку для фото
-    const photoUrl = '/placeholder-photo.jpg'
-    res.json({ success: true, photoUrl })
-  } catch (error) {
-    // upload error
-    res.status(500).json({ success: false, message: 'Ошибка загрузки файла' })
-  }
-})
 
 app.get('/api/health', async (_req, res) => {
   try {
@@ -1150,105 +1141,62 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Удалите старый эндпоинт upload и добавьте новый:
-app.post('/api/upload', async (req, res) => {
+// Удалите старый эндпоинт и добавьте этот:
+app.post('/api/upload-homework', async (req, res) => {
   try {
-    console.log('Upload request received');
+    console.log('Upload homework request received');
     
-    // Простой парсинг multipart/form-data для Cloudinary
-    let body = '';
-    req.setEncoding('binary');
-    
-    let fileBuffer = null;
-    let filename = '';
-    
-    req.on('data', (chunk) => {
-      body += chunk;
-    });
+    const { file: base64File, filename = `homework-${Date.now()}.pdf` } = req.body;
 
-    req.on('end', async () => {
-      try {
-        const contentType = req.headers['content-type'];
-        if (!contentType || !contentType.includes('multipart/form-data')) {
-          return res.status(400).json({
-            success: false,
-            message: 'Неверный формат запроса'
-          });
-        }
-
-        const boundary = contentType.split('boundary=')[1];
-        const parts = body.split(`--${boundary}`);
-        
-        for (const part of parts) {
-          if (part.includes('filename="') && (part.includes('application/pdf') || part.includes('filename=".pdf"'))) {
-            // Извлекаем имя файла
-            const filenameMatch = part.match(/filename="([^"]+)"/);
-            filename = filenameMatch ? filenameMatch[1] : `homework-${Date.now()}.pdf`;
-            
-            // Извлекаем содержимое файла
-            const fileContentMatch = part.match(/\r\n\r\n(.*)$/s);
-            if (fileContentMatch && fileContentMatch[1]) {
-              let fileContent = fileContentMatch[1];
-              // Убираем trailing boundary
-              fileContent = fileContent.replace(/\r\n--[^-]+--\r\n$/, '');
-              
-              fileBuffer = Buffer.from(fileContent, 'binary');
-              break;
-            }
-          }
-        }
-        
-        if (!fileBuffer) {
-          return res.status(400).json({
-            success: false,
-            message: 'PDF файл не найден в запросе'
-          });
-        }
-
-        // Загружаем в Cloudinary
-        const uploadResult = await new Promise((resolve, reject) => {
-          cloudinary.uploader.upload_stream(
-            {
-              resource_type: 'raw', // Для PDF файлов
-              folder: 'homeworks',
-              format: 'pdf',
-              public_id: filename.replace('.pdf', '')
-            },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          ).end(fileBuffer);
-        });
-
-        console.log('Cloudinary upload result:', uploadResult);
-
-        res.json({
-          success: true,
-          message: 'Файл успешно загружен в облачное хранилище',
-          data: {
-            fileUrl: uploadResult.secure_url,
-            fileName: filename,
-            fileSize: fileBuffer.length,
-            publicId: uploadResult.public_id
-          }
-        });
-        
-      } catch (parseError) {
-        console.error('Parse/upload error:', parseError);
-        res.status(500).json({
-          success: false,
-          message: 'Ошибка обработки файла: ' + parseError.message
-        });
-      }
-    });
-
-    req.on('error', (error) => {
-      console.error('Request error:', error);
-      res.status(500).json({
+    if (!base64File) {
+      return res.status(400).json({
         success: false,
-        message: 'Ошибка при загрузке файла'
+        message: 'Файл не предоставлен'
       });
+    }
+
+    console.log('File received, size:', base64File.length, 'characters');
+    
+    // Проверяем конфигурацию Cloudinary
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_CLOUD_NAME');
+    }
+    if (!process.env.CLOUDINARY_API_KEY) {
+      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_API_KEY');
+    }
+    if (!process.env.CLOUDINARY_API_SECRET) {
+      throw new Error('Cloudinary не настроен. Проверьте CLOUDINARY_API_SECRET');
+    }
+
+    console.log('Cloudinary config OK, uploading...');
+    
+    // Загружаем в Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(
+      `data:application/pdf;base64,${base64File}`, 
+      {
+        resource_type: 'raw',
+        folder: 'homeworks',
+        format: 'pdf',
+        public_id: `homework-${Date.now()}`,
+        overwrite: false
+      }
+    );
+
+    console.log('Cloudinary upload successful:', {
+      url: uploadResult.secure_url,
+      size: uploadResult.bytes,
+      id: uploadResult.public_id
+    });
+
+    res.json({
+      success: true,
+      message: 'Файл успешно загружен в облачное хранилище',
+      data: {
+        fileUrl: uploadResult.secure_url,
+        fileName: filename,
+        fileSize: uploadResult.bytes,
+        publicId: uploadResult.public_id
+      }
     });
 
   } catch (error) {
@@ -1262,6 +1210,28 @@ app.post('/api/upload', async (req, res) => {
 
 // Обслуживание загруженных файлов
 app.use('/uploads', express.static('uploads'));
+
+app.get('/api/check-cloudinary', async (req, res) => {
+  try {
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    
+    res.json({
+      success: true,
+      cloudinary: {
+        configured: !!(cloudName && apiKey),
+        cloudName: cloudName,
+        apiKey: apiKey ? `***${apiKey.slice(-4)}` : 'not set',
+        apiSecret: process.env.CLOUDINARY_API_SECRET ? '***set***' : 'not set'
+      }
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
