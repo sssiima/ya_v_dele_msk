@@ -26,6 +26,7 @@
     "express": "^5.1.0",
     "googleapis": "^163.0.0",
     "lucide-react": "^0.294.0",
+    "multer": "^2.0.2",
     "next": "^15.5.5",
     "nodemailer": "^7.0.10",
     "pg": "^8.16.3",
