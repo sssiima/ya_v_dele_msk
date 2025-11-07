@@ -124,7 +124,9 @@ const ProfilePageMember = () => {
   };
 
   const handleMkClick = (mk: Mk) => {
+    if (!mk.disabled) {
     setSelectedMk(mk);
+    }
   };
 
   const handleBackToMks = () => {
@@ -140,79 +142,79 @@ const ProfilePageMember = () => {
 
   
     const mk_list = [
-      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png',
-        pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link',
-        description: 'Всем привет! Вот и пришло время для первого домашнего задания. Сегодня мы попробуем развить предпринимательское мышление через выявление реальных проблем в нашей повседневной жизни, подумаем над их решениями и сгенерируем собственные.',
-        disabled: true,
-        criteria: 'https://drive.google.com/file/d/1grBNXxTPi6L51dKFD9lpeIlijmZxYHOX/view?usp=drive_link',
-        tz: 'https://drive.google.com/file/d/1MscbGCIqvg3PwjE4Osft6HCoWLqqwnmD/view?usp=drive_link',
-        template: '',
-        fulldesc: `Критерии оценки домашнего задания No 1:
-«Проблемы, идея, решение»
-Оцениваем каждое предложенное решение.
+//       { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png',
+//         pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link',
+//         description: 'Всем привет! Вот и пришло время для первого домашнего задания. Сегодня мы попробуем развить предпринимательское мышление через выявление реальных проблем в нашей повседневной жизни, подумаем над их решениями и сгенерируем собственные.',
+//         disabled: true,
+//         criteria: 'https://drive.google.com/file/d/1grBNXxTPi6L51dKFD9lpeIlijmZxYHOX/view?usp=drive_link',
+//         tz: 'https://drive.google.com/file/d/1MscbGCIqvg3PwjE4Osft6HCoWLqqwnmD/view?usp=drive_link',
+//         template: '',
+//         fulldesc: `Критерии оценки домашнего задания No 1:
+// «Проблемы, идея, решение»
+// Оцениваем каждое предложенное решение.
 
-1. Качество выявления проблемы
-➜ Проблема существует в реальной жизни и подтверждена фотографией (не
-выдумана)
-➜ Проблема актуальна для значительного числа людей, а не является узко
-личной
-➜ Проблема имеет социальную или экономическую значимость
+// 1. Качество выявления проблемы
+// ➜ Проблема существует в реальной жизни и подтверждена фотографией (не
+// выдумана)
+// ➜ Проблема актуальна для значительного числа людей, а не является узко
+// личной
+// ➜ Проблема имеет социальную или экономическую значимость
 
-2. Анализ существующего решения
-➜ Найдено реально существующее решение (подтверждено фото или
-описанием)
-➜ Решение действительно связано с выявленной проблемой
-➜ Выбрано наиболее распространенное или типичное решение
+// 2. Анализ существующего решения
+// ➜ Найдено реально существующее решение (подтверждено фото или
+// описанием)
+// ➜ Решение действительно связано с выявленной проблемой
+// ➜ Выбрано наиболее распространенное или типичное решение
 
-3. Качество предложенного решения
-➜ Решение действительно устраняет выявленные недостатки
-существующего подхода
-➜ Объяснено, как именно решение работает
-➜ Описаны конкретные преимущества для пользователей
-➜ Решение имеет измеримую ценность
+// 3. Качество предложенного решения
+// ➜ Решение действительно устраняет выявленные недостатки
+// существующего подхода
+// ➜ Объяснено, как именно решение работает
+// ➜ Описаны конкретные преимущества для пользователей
+// ➜ Решение имеет измеримую ценность
 
-4. Дополнительный балл можно получить за инновационность и
-нестандартность решения.` },
-      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png',
-        pres: 'https://drive.google.com/file/d/1ET9n5nxgyf5KzRSqwBqRIb2v0aWFx84D/view?usp=drive_link',
-        description: 'Пришло время учиться анализировать целевую аудиторию и проводить кастдевы. Сегодня вас ждут два увлекательных задания. Погнали!',
-        disabled: true,
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/1yTiCgu36x2qyrL0DuXVqryWHSmT5iKE1/view?usp=drive_link',
-        template: '',
-        fulldesc: `Критерии оценки домашнего задания No 2: «Customer development. ЦА»
-Оцениваем задания по отдельности
+// 4. Дополнительный балл можно получить за инновационность и
+// нестандартность решения.` },
+//       { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png',
+//         pres: 'https://drive.google.com/file/d/1ET9n5nxgyf5KzRSqwBqRIb2v0aWFx84D/view?usp=drive_link',
+//         description: 'Пришло время учиться анализировать целевую аудиторию и проводить кастдевы. Сегодня вас ждут два увлекательных задания. Погнали!',
+//         disabled: true,
+//         criteria: '',
+//         tz: 'https://drive.google.com/file/d/1yTiCgu36x2qyrL0DuXVqryWHSmT5iKE1/view?usp=drive_link',
+//         template: '',
+//         fulldesc: `Критерии оценки домашнего задания No 2: «Customer development. ЦА»
+// Оцениваем задания по отдельности
 
-Задание 1: Проведение customer development и монтаж видео
+// Задание 1: Проведение customer development и монтаж видео
 
-1. Качество вопросов опроса
-Вопросы должны быть релевантными, раскрывать потребности, боли и
-ожидания целевой аудитории по проекту.
+// 1. Качество вопросов опроса
+// Вопросы должны быть релевантными, раскрывать потребности, боли и
+// ожидания целевой аудитории по проекту.
 
-2. Креативность и юмор в подборе ответов для видео
-В видео должны быть интересно и забавно смонтированные ответы,
-отражающие уникальные инсайты или неожиданные реакции.
+// 2. Креативность и юмор в подборе ответов для видео
+// В видео должны быть интересно и забавно смонтированные ответы,
+// отражающие уникальные инсайты или неожиданные реакции.
 
-3. Техническое исполнение видео
-Качество монтажа, использование трендовой музыки, динамика и общий
-визуальный эффект.
+// 3. Техническое исполнение видео
+// Качество монтажа, использование трендовой музыки, динамика и общий
+// визуальный эффект.
 
-Задание 2: Анализ ЦА двух мест
+// Задание 2: Анализ ЦА двух мест
 
-1. Качество фото
-Фотографии должны быть чёткими, информативными, отражать реальную
-обстановку и сопровождать описания.
+// 1. Качество фото
+// Фотографии должны быть чёткими, информативными, отражать реальную
+// обстановку и сопровождать описания.
 
-2. Качество и подробность описаний людей
-Четкие, осмысленные описания с ключевыми характеристиками и деталями.
+// 2. Качество и подробность описаний людей
+// Четкие, осмысленные описания с ключевыми характеристиками и деталями.
 
-3. Обоснованность и логичность гипотезы по ЦА
-Гипотезы должны логично вытекать из наблюдений и описаний, учитывать
-поведение и внешние признаки.`  },
-      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthirdopen.png',
+// 3. Обоснованность и логичность гипотезы по ЦА
+// Гипотезы должны логично вытекать из наблюдений и описаний, учитывать
+// поведение и внешние признаки.`  },
+      { title: "Первый мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthirdopen.png',
         pres: 'https://drive.google.com/file/d/1KACuNbGwN4b2DXXe3eXNz9pyIhoRO7Nu/view?usp=drive_link',
         description: 'После мастер-класса вы сформировали представление о минимально жизнеспособном продукте (MVP), который каждый из вас будет готов представить на финальном воркшопе курса. Сегодня попробуем его визуально представить. Да, так тоже можно!',
-        disabled: true,
+        disabled: false,
         criteria: '',
         tz: 'https://drive.google.com/file/d/16YNXVqiC3g4rq9C-XGzoGLNkUTTbkT7a/view?usp=drive_link',
         template: '',
@@ -225,7 +227,7 @@ MVP возможно реализовать до конца курса в так
 Промт чётко структурирован, содержит все необходимые параметры (описание проекта, ограничения по времени/ресурсам, требуемый функционал MVP), написан понятным языком.
 
 3. Соответствие MVP сути проекта MVP демонстрирует ключевую ценность проекта, показывает основную функцию или решает главную проблему целевой аудитории.`  },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Базовый трек', image: '/images/mkfourthbase.png',
+      { title: "Второй мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthlock.png',
         pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
         description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
         disabled: true, track: 'Базовый трек',
@@ -266,7 +268,7 @@ MVP возможно реализовать до конца курса в так
 6. Дополнительный балл за оригинальность и глубину проработки
 Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
 творческий подход к применению элементов.`  },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Базовый трек', image: '/images/mkfifthbase.png',
+      { title: "Третий мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthlock.png',
         pres: 'https://drive.google.com/file/d/1KZEn8Clb9KC1Lh4dR5GRtiI3YrU7CX_6/view?usp=drive_link',
         description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
         disabled: true, track: 'Базовый трек',
@@ -342,7 +344,7 @@ MVP возможно реализовать до конца курса в так
 Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
 оформлена аккуратно, содержит пояснения, цвета или группировки для
 наглядности. Присутствует краткий итог с ключевыми выводами.`  },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Базовый трек', image: '/images/mksixthbase.png',
+      { title: "Четвертый мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthlock.png',
         pres: 'https://drive.google.com/file/d/1-ICPM2FI3bkJuMimfSe2SUr2w8OPrcOE/view?usp=drive_link',
         description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
         disabled: true, track: 'Базовый трек',
@@ -399,48 +401,48 @@ MVP возможно реализовать до конца курса в так
 
 3. Креативность и оригинальность идеи.
 Поддерживается творческий и нестандартный подход.`  },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourthsoc.png',
-        pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
-        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
-        disabled: true, track: 'Социальный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/1sH-5hekaOJifBTJh7i3hHJTtDhsK0N7w/view?usp=drive_link',
-        template: '', fulldesc: ''  },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifthsoc.png',
-        pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
-        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-        disabled: true, track: 'Социальный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/18l90yVyIsOemFnkyQcFAh3pxyZzS0pLG/view?usp=drive_link',
-        template: '', fulldesc: ''  },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixthsoc.png',
-        pres: 'https://drive.google.com/file/d/1-bKB_NEDgbMvLkJpAvRq2b-3XDHTxawY/view?usp=drive_link',
-        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-        disabled: true, track: 'Социальный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/1YRlVOwsQHohX7QqdbF2d2SIEiFJNhPWc/view?usp=drive_link',
-        template: '', fulldesc: ''  },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourthinn.png',
-        pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
-        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
-        disabled: true, track: 'Инновационный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/12YITLqF4tidK-OWnO1C8W7XbfkYRhsqq/view?usp=drive_link',
-        template: '', fulldesc: ''  },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
-        pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
-        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-        disabled: true, track: 'Инновационный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/19QSMPcsMBtjyJdLJon0YfzNgHhn50mX9/view?usp=drive_link',
-        template: '', fulldesc: ''  },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixthinn.png',
-        pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
-        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-        disabled: true, track: 'Инновационный трек',
-        criteria: '',
-        tz: 'https://drive.google.com/file/d/1gULz1yHW8kMc1vYekqmFMbwcj2g3OAM8/view?usp=drive_link',
-        template: '', fulldesc: ''  },
+      // { title: "Второй мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourthsoc.png',
+      //   pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
+      //   description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+      //   disabled: true, track: 'Социальный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/1sH-5hekaOJifBTJh7i3hHJTtDhsK0N7w/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
+      // { title: "Третий мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifthsoc.png',
+      //   pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
+      //   description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+      //   disabled: true, track: 'Социальный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/18l90yVyIsOemFnkyQcFAh3pxyZzS0pLG/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
+      // { title: "Четвертый мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixthsoc.png',
+      //   pres: 'https://drive.google.com/file/d/1-bKB_NEDgbMvLkJpAvRq2b-3XDHTxawY/view?usp=drive_link',
+      //   description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+      //   disabled: true, track: 'Социальный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/1YRlVOwsQHohX7QqdbF2d2SIEiFJNhPWc/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
+      // { title: "Второй мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourthinn.png',
+      //   pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
+      //   description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+      //   disabled: true, track: 'Инновационный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/12YITLqF4tidK-OWnO1C8W7XbfkYRhsqq/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
+      // { title: "Третий мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
+      //   pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
+      //   description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+      //   disabled: true, track: 'Инновационный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/19QSMPcsMBtjyJdLJon0YfzNgHhn50mX9/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
+      // { title: "Четвертый мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixthinn.png',
+      //   pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
+      //   description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+      //   disabled: true, track: 'Инновационный трек',
+      //   criteria: '',
+      //   tz: 'https://drive.google.com/file/d/1gULz1yHW8kMc1vYekqmFMbwcj2g3OAM8/view?usp=drive_link',
+      //   template: '', fulldesc: ''  },
   ]
 
   const project_list = [
@@ -1504,7 +1506,7 @@ const loadTeamData = async (teamCode: string) => {
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-brand text-white'>
                       <span className="text-sm">Первое д/з</span>
                       <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(3)}>
+                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
                           Загрузить
                         </button>
                       </div>
@@ -1667,7 +1669,7 @@ const loadTeamData = async (teamCode: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 my-2">
+            <div className="flex justify-center space-x-2 my-2 lg:hidden">
               {mk_list.map((_, index) => (
                 <button 
                   key={index}
@@ -1733,7 +1735,7 @@ const loadTeamData = async (teamCode: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 my-2">
+            <div className="flex justify-center space-x-2 my-2 lg:hidden">
               {podcast_list.map((_, index) => (
                 <button 
                   key={index}
