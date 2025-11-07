@@ -540,6 +540,26 @@ const getDownloadLink = (url: string) => {
     loadStructureProfile();
   }, [navigate]);
 
+  // Синхронизируем временные значения с исходными, когда данные загружаются (только если не в режиме редактирования)
+  useEffect(() => {
+    if (!isEditing) {
+      // Обрабатываем "не указан" как пустую строку для редактирования
+      setTempLastname(lastname === 'не указан' ? '' : (lastname || ''))
+      setTempFirstname(firstname === 'не указан' ? '' : (firstname || ''))
+      setTempPatronymic(patronymic === 'не указан' ? '' : (patronymic || ''))
+      setTempEmail(email === 'не указан' ? '' : (email || ''))
+      setTempUniversity(university === 'не указан' ? '' : (university || ''))
+      setTempEducationLevel(educationLevel === 'не указан' ? '' : (educationLevel || ''))
+      setTempCourse(course === 'не указан' ? '' : (course || ''))
+      setTempFaculty(faculty === 'не указан' ? '' : (faculty || ''))
+      setTempEducationForm(educationForm === 'не указан' ? '' : (educationForm || ''))
+      setTempPhone(phone === 'не указан' ? '' : (phone || ''))
+      setTempVkLink(vkLink === 'не указан' ? '' : (vkLink || ''))
+      setTempBirthDate(birthDate || '')
+      setTempGender(gender === 'не указан' ? '' : (gender || ''))
+    }
+  }, [lastname, firstname, patronymic, email, university, educationLevel, course, faculty, educationForm, phone, vkLink, birthDate, gender, isEditing])
+
   // Функция для загрузки списков в зависимости от роли и привязки по ФИО
   const loadRoleLists = async (role: string, currentUserFullName: string) => {
     try {
@@ -735,19 +755,20 @@ const getDownloadLink = (url: string) => {
 
   const handleEditProfile = () => {
     // Инициализируем все временные значения исходными данными
-    setTempLastname(lastname || '')
-    setTempFirstname(firstname || '')
-    setTempPatronymic(patronymic || '')
-    setTempEmail(email || '')
-    setTempUniversity(university || '')
-    setTempEducationLevel(educationLevel || '')
-    setTempCourse(course || '')
-    setTempFaculty(faculty || '')
-    setTempEducationForm(educationForm || '')
-    setTempPhone(phone || '')
-    setTempVkLink(vkLink || '')
+    // Обрабатываем "не указан" как пустую строку для редактирования
+    setTempLastname(lastname === 'не указан' ? '' : (lastname || ''))
+    setTempFirstname(firstname === 'не указан' ? '' : (firstname || ''))
+    setTempPatronymic(patronymic === 'не указан' ? '' : (patronymic || ''))
+    setTempEmail(email === 'не указан' ? '' : (email || ''))
+    setTempUniversity(university === 'не указан' ? '' : (university || ''))
+    setTempEducationLevel(educationLevel === 'не указан' ? '' : (educationLevel || ''))
+    setTempCourse(course === 'не указан' ? '' : (course || ''))
+    setTempFaculty(faculty === 'не указан' ? '' : (faculty || ''))
+    setTempEducationForm(educationForm === 'не указан' ? '' : (educationForm || ''))
+    setTempPhone(phone === 'не указан' ? '' : (phone || ''))
+    setTempVkLink(vkLink === 'не указан' ? '' : (vkLink || ''))
     setTempBirthDate(birthDate || '')
-    setTempGender(gender || '')
+    setTempGender(gender === 'не указан' ? '' : (gender || ''))
     setIsEditing(true)
     setIsProfileExpanded(true)
   }

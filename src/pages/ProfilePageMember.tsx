@@ -804,6 +804,25 @@ MVP возможно реализовать до конца курса в так
     loadUserData()
   }, [])
 
+  // Синхронизируем временные значения с исходными, когда данные загружаются (только если не в режиме редактирования)
+  useEffect(() => {
+    if (!isEditing) {
+      setTempLastname(lastname)
+      setTempFirstname(firstname)
+      setTempPatronymic(patronymic)
+      setTempEmail(email)
+      setTempUniversity(university)
+      setTempEducationLevel(educationLevel)
+      setTempCourse(course)
+      setTempFaculty(faculty)
+      setTempEducationForm(educationForm)
+      setTempPhone(phone)
+      setTempVkLink(vkLink)
+      setTempBirthDate(birthDate)
+      setTempGender(gender)
+    }
+  }, [lastname, firstname, patronymic, email, university, educationLevel, course, faculty, educationForm, phone, vkLink, birthDate, gender, isEditing])
+
 // Функция для загрузки координатора и руководителя округа
 const loadCoordRo = async (mentorFullName: string): Promise<{ coordinator: string; districtManager: string }> => {
   try {
