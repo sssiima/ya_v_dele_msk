@@ -1686,7 +1686,7 @@ const getDownloadLink = (url: string) => {
                      <div className="flex w-full flex-col">
                         <p className="text-lg font-semibold text-black mb-2">Критерии домашнего задания</p>
                         <div className='rounded-lg border border-brand p-2'>
-                          <p className='text-xs'>Что-то описание блабла</p>
+                          <p className='text-xs'>{selectedMk.criteria}</p>
                         </div>
                     </div>
 
@@ -1798,7 +1798,7 @@ const getDownloadLink = (url: string) => {
             </div>
             
             {/* Точки прогресса */}
-            <div className="flex justify-center space-x-2 my-2">
+            <div className="flex justify-center space-x-2 my-2 lg:hidden">
               {podcast_list.map((_, index) => (
                 <button 
                   key={index}
