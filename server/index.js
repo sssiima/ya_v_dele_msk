@@ -1090,7 +1090,7 @@ app.put('/api/teams/rename', async (req, res) => {
 app.put('/api/structure/:id/archive', async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('UPDATE structure SET archived = true, updated_at = NOW() WHERE id = $1', [id])
+    await pool.query('UPDATE structure SET archived = true WHERE id = $1', [id])
     return res.json({ success: true })
   } catch (err) {
     console.error('Error archiving structure user:', err)
@@ -1102,7 +1102,7 @@ app.put('/api/structure/:id/archive', async (req, res) => {
 app.put('/api/structure/by-ctid/:ctid/archive', async (req, res) => {
   try {
     const { ctid } = req.params
-    await pool.query('UPDATE structure SET archived = true, updated_at = NOW() WHERE ctid::text = $1', [ctid])
+    await pool.query('UPDATE structure SET archived = true WHERE ctid::text = $1', [ctid])
     return res.json({ success: true })
   } catch (err) {
     console.error('Error archiving structure user by ctid:', err)
@@ -1114,7 +1114,7 @@ app.put('/api/structure/by-ctid/:ctid/archive', async (req, res) => {
 app.put('/api/members/:id/archive', async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('UPDATE members SET archived = true, updated_at = NOW() WHERE id = $1', [id])
+    await pool.query('UPDATE members SET archived = true WHERE id = $1', [id])
     return res.json({ success: true })
   } catch (err) {
     console.error('Error archiving member:', err)
