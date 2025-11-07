@@ -1156,6 +1156,8 @@ app.post('/api/upload-homework', async (req, res) => {
     
     const { file: base64File, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode } = req.body;
 
+    console.log('Received teamCode:', teamCode, 'Type:', typeof teamCode);
+
     if (!base64File) {
       return res.status(400).json({
         success: false,
@@ -1189,11 +1191,15 @@ app.post('/api/upload-homework', async (req, res) => {
       RETURNING id
     `;
     
+    // Проверяем, что teamCode не пустая строка
+    const finalTeamCode = (teamCode && typeof teamCode === 'string' && teamCode.trim() !== '') ? teamCode.trim() : null;
+    console.log('Saving homework with teamCode:', finalTeamCode);
+    
     const insertResult = await client.query(insertQuery, [
       homeworkTitle,           // hw_name
       uploadResult.secure_url, // file_url  
       'uploaded',              // status
-      teamCode || null         // team_code (если есть)
+      finalTeamCode            // team_code (если есть и не пустая строка)
     ]);
 
     const homeworkId = insertResult.rows[0].id;

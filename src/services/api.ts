@@ -574,15 +574,18 @@ export const fileUploadApi = {
     });
 
     console.log('File converted to base64, sending to server...');
+    console.log('Preparing payload with teamCode:', teamCode, 'Type:', typeof teamCode);
 
     const payload = {
       file: base64File,
       filename: file.name,
       homeworkTitle: homeworkTitle, // ⬅️ ДОБАВЛЯЕМ homeworkTitle
-      teamCode: teamCode,
+      teamCode: teamCode && teamCode.trim() !== '' ? teamCode.trim() : undefined, // Убираем пустые строки
       fileSize: file.size,
       timestamp: new Date().toISOString()
     };
+    
+    console.log('Payload teamCode:', payload.teamCode);
 
     const response = await fetch(`${API_BASE_URL}/upload-homework`, {
       method: 'POST',
