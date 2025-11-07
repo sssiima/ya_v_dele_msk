@@ -1310,8 +1310,13 @@ const getDownloadLink = (url: string) => {
                 
                 <div className='teams mb-4 text-sm'>
                   <p><strong>Команды:</strong></p>
-                  {teams.length > 0 ? (
-                    teams.map((team, index) => {
+                  {(() => {
+                    const teamsWithMembers = teams.filter(team => {
+                      const members = teamMembers[team.code] || []
+                      return members.length > 0
+                    })
+                    return teamsWithMembers.length > 0 ? (
+                      teamsWithMembers.map((team, index) => {
                       const isExpanded = expandedTeams[team.code] || false
                       const members = teamMembers[team.code] || []
                       
@@ -1390,7 +1395,8 @@ const getDownloadLink = (url: string) => {
                         <p className="italic text-xs">Команды не найдены</p>
                       </div>
                     </div>
-                  )}
+                    )
+                  })()}
                   <button className='w-full mt-4 text-xs text-brand hover:underline' onClick={() => {
                     const next = !isTeamsEditMode
                     setIsTeamsEditMode(next)
@@ -1526,8 +1532,13 @@ const getDownloadLink = (url: string) => {
                 
                 <div className='teams mb-6 text-sm mt-4'>
                   <p><strong>Команды:</strong></p>
-                  {teams.length > 0 ? (
-                    teams.map((team, index) => {
+                  {(() => {
+                    const teamsWithMembers = teams.filter(team => {
+                      const members = teamMembers[team.code] || []
+                      return members.length > 0
+                    })
+                    return teamsWithMembers.length > 0 ? (
+                      teamsWithMembers.map((team, index) => {
                       const isExpanded = expandedTeams[team.code] || false
                       const members = teamMembers[team.code] || []
                       
@@ -1605,7 +1616,8 @@ const getDownloadLink = (url: string) => {
                         <p className="italic text-xs">Команды не найдены</p>
                       </div>
                     </div>
-                  )}
+                    )
+                  })()}
                   <button className='w-full mt-4 text-xs text-brand hover:underline' onClick={() => {
                     const next = !isTeamsEditMode
                     setIsTeamsEditMode(next)
