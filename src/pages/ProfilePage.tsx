@@ -801,6 +801,20 @@ const getDownloadLink = (url: string) => {
   }
 
   const handleCancelEdit = () => {
+    // Сбрасываем все временные значения к исходным
+    setTempLastname(lastname)
+    setTempFirstname(firstname)
+    setTempPatronymic(patronymic)
+    setTempEmail(email)
+    setTempUniversity(university)
+    setTempEducationLevel(educationLevel)
+    setTempCourse(course)
+    setTempFaculty(faculty)
+    setTempEducationForm(educationForm)
+    setTempPhone(phone)
+    setTempVkLink(vkLink)
+    setTempBirthDate(birthDate)
+    setTempGender(gender)
     setIsEditing(false)
   }
 
