@@ -1686,7 +1686,7 @@ const getDownloadLink = (url: string) => {
                      <div className="flex w-full flex-col">
                         <p className="text-lg font-semibold text-black mb-2">Критерии домашнего задания</p>
                         <div className='rounded-lg border border-brand p-2'>
-                          <p className='text-xs'>{selectedMk.criteria}</p>
+                          <p className='text-xs'>{selectedMk.fulldesc}</p>
                         </div>
                     </div>
 
