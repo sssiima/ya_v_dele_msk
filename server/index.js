@@ -380,6 +380,7 @@ router.get('/', async (_req, res) => {
         team_code,
         team_name,
         role,
+        COALESCE(archived,false) as archived,
         created_at
       FROM members
       WHERE COALESCE(archived,false) = false
@@ -396,7 +397,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const result = await pool.query(
-      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, created_at FROM members WHERE id = $1 AND COALESCE(archived,false) = false`,
+      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, COALESCE(archived,false) as archived, created_at FROM members WHERE id = $1 AND COALESCE(archived,false) = false`,
       [id]
     )
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
@@ -849,11 +850,16 @@ app.get('/api/structure', async (_req, res) => {
         phone,
         education,
         grade,
+        level,
+        faculty,
+        format,
+        specialty,
         pos,
         username,
         high_mentor,
         coord,
         ro,
+        COALESCE(archived,false) as archived,
         created_at
       FROM structure
       WHERE COALESCE(archived,false) = false
@@ -890,6 +896,7 @@ app.get('/api/structure/by-ctid/:ctid', async (req, res) => {
         high_mentor,
         coord,
         ro,
+        COALESCE(archived,false) as archived,
         created_at
       FROM structure WHERE ctid::text = $1 AND COALESCE(archived,false) = false`,
       [ctid]
@@ -926,6 +933,7 @@ app.get('/api/structure/:id', async (req, res) => {
         high_mentor,
         coord,
         ro,
+        COALESCE(archived,false) as archived,
         created_at
       FROM structure WHERE id = $1 AND COALESCE(archived,false) = false`, [id])
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })
@@ -1121,7 +1129,7 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
     const decodedTeamCode = decodeURIComponent(teamCode)
     
     const result = await pool.query(`
-      SELECT id, last_name, first_name, patronymic, team_code, role
+      SELECT id, last_name, first_name, patronymic, team_code, role, COALESCE(archived,false) as archived
       FROM members 
       WHERE team_code = $1 AND COALESCE(archived,false) = false
       ORDER BY last_name, first_name
