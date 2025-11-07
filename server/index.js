@@ -166,7 +166,7 @@ app.get('/api/mentors', async (req, res) => {
         CONCAT(first_name, ' ', last_name) as full_name,
         pos
       FROM structure
-      WHERE pos IN ('наставник', 'старший наставник')
+      WHERE pos IN ('наставник', 'старший наставник') AND COALESCE(archived,false) = false
     `);
     
     // mentors count
@@ -1123,7 +1123,7 @@ app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
     const result = await pool.query(`
       SELECT id, last_name, first_name, patronymic, team_code, role
       FROM members 
-      WHERE team_code = $1
+      WHERE team_code = $1 AND COALESCE(archived,false) = false
       ORDER BY last_name, first_name
     `, [decodedTeamCode])
     
