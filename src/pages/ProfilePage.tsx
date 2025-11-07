@@ -1127,25 +1127,55 @@ const getDownloadLink = (url: string) => {
                             <p><strong>ВУЗ</strong></p>
                             <input value={tempUniversity} onChange={(e) => setTempUniversity(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
-                          <div className='flex flex-row gap-2'>
-                            <div className='flex-1'>
-                              <p><strong>Уровень подготовки</strong></p>
-                              <input value={tempEducationLevel} onChange={(e) => setTempEducationLevel(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                            </div>
+                          <div className='mb-2'>
+                            <p><strong>Уровень подготовки</strong></p>
+                            <select 
+                              value={tempEducationLevel} 
+                              onChange={(e) => setTempEducationLevel(e.target.value)} 
+                              className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                            >
+                              <option value="">Выберите уровень</option>
+                              <option value="бакалавриат">Бакалавриат</option>
+                              <option value="специалитет">Специалитет</option>
+                              <option value="магистратура">Магистратура</option>
+                              <option value="аспирантура">Аспирантура</option>
+                            </select>
+                          </div>
+                          <div className='flex flex-row gap-2 mb-2'>
                             <div className='flex-1'>
                               <p><strong>Курс обучения</strong></p>
-                              <input value={tempCourse} onChange={(e) => setTempCourse(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                            </div>
-                          </div>
-                          <div className='flex flex-row gap-2'>
-                            <div className='flex-1'>
-                              <p><strong>Факультет</strong></p>
-                              <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <select 
+                                value={tempCourse} 
+                                onChange={(e) => setTempCourse(e.target.value)} 
+                                className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                              >
+                                <option value="">Выберите курс</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="0">Не обучаюсь в ВУЗе</option>
+                              </select>
                             </div>
                             <div className='flex-1'>
                               <p><strong>Форма обучения</strong></p>
-                              <input value={tempEducationForm} onChange={(e) => setTempEducationForm(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                              <select 
+                                value={tempEducationForm} 
+                                onChange={(e) => setTempEducationForm(e.target.value)} 
+                                className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                              >
+                                <option value="">Выберите форму</option>
+                                <option value="очная">Очная</option>
+                                <option value="очнозаочная">Очно-заочная</option>
+                                <option value="заочная">Заочная</option>
+                              </select>
                             </div>
+                          </div>
+                          <div className='mb-2'>
+                            <p><strong>Факультет</strong></p>
+                            <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                           </div>
                           <div>
                             <p><strong>Номер телефона</strong></p>

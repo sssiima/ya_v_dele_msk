@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { membersApi, structureApi, teamsApi } from '@/services/api'
+import { membersApi, structureApi, teamsApi, vusesApi } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
 import TeamPage from '@/components/TeamPage';
 import { useNavigate } from 'react-router-dom'
 import HomeworkLoad from './HomeworkLoad';
+
+interface Vus {
+  id: number
+  vus: string
+}
 
 
 // Типы для данных
@@ -582,6 +587,11 @@ MVP возможно реализовать до конца курса в так
   const [tempUniversity, setTempUniversity] = useState(university)
   const [tempEducationLevel, setTempEducationLevel] = useState(educationLevel)
   const [tempCourse, setTempCourse] = useState(course)
+  
+  // Состояние для автодополнения ВУЗов
+  const [vuses, setVuses] = useState<Vus[]>([])
+  const [filteredVuses, setFilteredVuses] = useState<Vus[]>([])
+  const [showVusSuggestions, setShowVusSuggestions] = useState(false)
   const [tempFaculty, setTempFaculty] = useState(faculty)
   const [tempEducationForm, setTempEducationForm] = useState(educationForm)
   const [tempPhone, setTempPhone] = useState(phone)
@@ -704,6 +714,41 @@ MVP возможно реализовать до конца курса в так
 
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
+
+  // Загрузка ВУЗов
+  useEffect(() => {
+    const fetchVuses = async () => {
+      try {
+        const response = await vusesApi.getAll()
+        if (response.success && response.data) {
+          setVuses(response.data)
+          setFilteredVuses(response.data)
+        }
+      } catch (error) {
+        console.error('Error fetching VUSes:', error)
+      }
+    }
+    fetchVuses()
+  }, [])
+
+  // Фильтрация ВУЗов при вводе
+  useEffect(() => {
+    if (tempUniversity && tempUniversity.length > 1) {
+      const filtered = vuses.filter(vus => 
+        vus.vus.toLowerCase().includes(tempUniversity.toLowerCase())
+      )
+      setFilteredVuses(filtered)
+      setShowVusSuggestions(true)
+    } else {
+      setFilteredVuses(vuses)
+      setShowVusSuggestions(false)
+    }
+  }, [tempUniversity, vuses])
+
+  const handleVusSelect = (vusName: string) => {
+    setTempUniversity(vusName)
+    setShowVusSuggestions(false)
+  }
 
   // Загрузка данных пользователя и команды
   useEffect(() => {
@@ -1154,29 +1199,79 @@ const loadTeamData = async (teamCode: string) => {
                         <p><strong>Электронная почта</strong></p>
                         <input value={tempEmail} onChange={(e) => setTempEmail(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
-                      <div className='mb-2'>
+                      <div className='mb-2 relative'>
                         <p><strong>ВУЗ</strong></p>
-                        <input value={tempUniversity} onChange={(e) => setTempUniversity(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <input 
+                          value={tempUniversity} 
+                          onChange={(e) => setTempUniversity(e.target.value)} 
+                          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                          placeholder="не обучаюсь в вузе"
+                          autoComplete="off"
+                          onFocus={() => tempUniversity && tempUniversity.length > 1 && setShowVusSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowVusSuggestions(false), 200)}
+                        />
+                        {showVusSuggestions && filteredVuses.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            {filteredVuses.map((vus) => (
+                              <div
+                                key={vus.id}
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-800"
+                                onClick={() => handleVusSelect(vus.vus)}
+                                onMouseDown={(e) => e.preventDefault()}
+                              >
+                                {vus.vus}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className='mb-2'>
+                        <p><strong>Уровень подготовки</strong></p>
+                        <select 
+                          value={tempEducationLevel} 
+                          onChange={(e) => setTempEducationLevel(e.target.value)} 
+                          className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                        >
+                          <option value="">Выберите уровень</option>
+                          <option value="бакалавриат">Бакалавриат</option>
+                          <option value="специалитет">Специалитет</option>
+                          <option value="магистратура">Магистратура</option>
+                          <option value="аспирантура">Аспирантура</option>
+                        </select>
                       </div>
                       <div className='flex flex-row gap-2 mb-2'>
-                        <div className='flex-1'>
-                          <p><strong>Уровень подготовки</strong></p>
-                          <input value={tempEducationLevel} onChange={(e) => setTempEducationLevel(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                        </div>
                         <div className='flex-1'>
                           <p><strong>Курс обучения</strong></p>
-                          <input value={tempCourse} onChange={(e) => setTempCourse(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                        </div>
-                      </div>
-                      <div className='flex flex-row gap-2 mb-2'>
-                        <div className='flex-1'>
-                          <p><strong>Факультет</strong></p>
-                          <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <select 
+                            value={tempCourse} 
+                            onChange={(e) => setTempCourse(e.target.value)} 
+                            className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                          >
+                            <option value="">Выберите курс</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                          </select>
                         </div>
                         <div className='flex-1'>
                           <p><strong>Форма обучения</strong></p>
-                          <input value={tempEducationForm} onChange={(e) => setTempEducationForm(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          <select 
+                            value={tempEducationForm} 
+                            onChange={(e) => setTempEducationForm(e.target.value)} 
+                            className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"
+                          >
+                            <option value="">Выберите форму</option>
+                            <option value="очная">Очная</option>
+                            <option value="очнозаочная">Очно-заочная</option>
+                            <option value="заочная">Заочная</option>
+                          </select>
                         </div>
+                      </div>
+                      <div className='mb-2'>
+                        <p><strong>Факультет</strong></p>
+                        <input value={tempFaculty} onChange={(e) => setTempFaculty(e.target.value)} className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                       </div>
                       <div className='mb-2'>
                         <p><strong>Номер телефона</strong></p>
