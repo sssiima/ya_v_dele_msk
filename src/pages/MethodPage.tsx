@@ -46,29 +46,29 @@ const MethodPage = () => {
               <table className="w-full table-fixed">
                 <thead>
                   <tr className="border-b border-brand">
-                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-2/5">Код команды</th>
-                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-2/5">Название</th>
-                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-1/5">Оценить работу</th>
+                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '30%' }}>Код команды</th>
+                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '48%' }}>Название</th>
+                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '22%' }}>Оценить работу</th>
                   </tr>
                 </thead>
                 <tbody>
                   {homeworks.map((homework) => (
                     <tr key={homework.id} className="border-b border-gray-100">
-                      <td className="py-2 px-2">
+                      <td className="py-2 px-1.5">
                         <input
                           type="text"
                           value={homework.team_code || ''}
                           readOnly
-                          className="w-full px-2 py-1.5 border border-brand rounded-full bg-white text-xs focus:outline-none"
+                          className="w-full px-1.5 py-1.5 border border-brand rounded-full bg-white text-xs focus:outline-none"
                         />
                       </td>
-                      <td className="py-2 px-2">
+                      <td className="py-2 px-1.5">
                         <span className="text-brand font-medium text-xs break-words">{homework.hw_name}</span>
                       </td>
-                      <td className="py-2 px-2">
+                      <td className="py-2 px-1.5">
                         <button
                           onClick={() => handleEvaluate(homework)}
-                          className="px-3 py-1.5 bg-brand text-white rounded-full text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
+                          className="px-2 py-1.5 bg-brand text-white rounded-full text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
                         >
                           Оценить работу
                         </button>
