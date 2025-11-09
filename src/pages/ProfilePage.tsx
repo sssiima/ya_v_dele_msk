@@ -1907,7 +1907,7 @@ const getDownloadLink = (url: string) => {
                                          <span className="font-bold">{homework.mark}</span> баллов
                                        </span>
                                      ) : (
-                                       <span className="text-xs lg:text-sm text-pink italic">Не выполнено</span>
+                                       <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
                                      )
                                    ) : (
                                      <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
