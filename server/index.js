@@ -1265,6 +1265,27 @@ app.get('/api/homeworks/by-team-code/:teamCode', async (req, res) => {
   }
 })
 
+// GET /api/homeworks/uploaded - получить все домашние задания со статусом uploaded
+app.get('/api/homeworks/uploaded', async (req, res) => {
+  let client;
+  try {
+    client = await pool.connect();
+    const result = await client.query(`
+      SELECT id, hw_name, file_url, status, team_code
+      FROM homeworks 
+      WHERE status = 'uploaded'
+      ORDER BY id DESC
+    `)
+    
+    res.json({ success: true, data: result.rows })
+  } catch (err) {
+    console.error('Error fetching uploaded homeworks:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message })
+  } finally {
+    if (client) client.release();
+  }
+})
+
 // Обслуживание загруженных файлов
 app.use('/uploads', express.static('uploads'));
 

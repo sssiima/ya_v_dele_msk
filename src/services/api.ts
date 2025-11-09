@@ -559,6 +559,10 @@ export const homeworksApi = {
   async getByTeamCode(teamCode: string): Promise<ApiResponse<Homework[]>> {
     const response = await api.get(`/homeworks/by-team-code/${encodeURIComponent(teamCode)}`)
     return response.data
+  },
+  async getUploaded(): Promise<ApiResponse<Homework[]>> {
+    const response = await api.get('/homeworks/uploaded')
+    return response.data
   }
 }
 

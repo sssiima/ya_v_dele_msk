@@ -13,6 +13,7 @@ import AuthPageMute from './pages/AuthPageMute'
 import ResetPage from './pages/ResetPage'
 import RegistrationPageStructure from './pages/RegistrationPageStructure'
 import MyTeam from './pages/MyTeam'
+import MethodPage from './pages/MethodPage'
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/profile" element={<ProfileMute />} />
           <Route path="/profile-member" element={<ProfilePageMember />} />
           <Route path="/my-team" element={<MyTeam />} />
+          <Route path="/method" element={<MethodPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
