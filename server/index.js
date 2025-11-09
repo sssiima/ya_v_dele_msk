@@ -1286,6 +1286,47 @@ app.get('/api/homeworks/uploaded', async (req, res) => {
   }
 })
 
+// PUT /api/homeworks/:id/review - обновить домашнее задание после проверки
+app.put('/api/homeworks/:id/review', async (req, res) => {
+  let client;
+  try {
+    const { id } = req.params
+    const { mark, comment } = req.body
+    
+    // Проверяем наличие полей mark и comment в таблице, если нет - добавляем
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='homeworks' AND column_name='mark') THEN
+          ALTER TABLE homeworks ADD COLUMN mark INTEGER;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='homeworks' AND column_name='comment') THEN
+          ALTER TABLE homeworks ADD COLUMN comment TEXT;
+        END IF;
+      END $$;
+    `)
+    
+    client = await pool.connect();
+    const result = await client.query(`
+      UPDATE homeworks 
+      SET status = 'reviewed', mark = $1, comment = $2
+      WHERE id = $3
+      RETURNING id, hw_name, file_url, status, team_code, mark, comment
+    `, [mark, comment || null, id])
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Homework not found' })
+    }
+    
+    res.json({ success: true, data: result.rows[0] })
+  } catch (err) {
+    console.error('Error reviewing homework:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message })
+  } finally {
+    if (client) client.release();
+  }
+})
+
 // Обслуживание загруженных файлов
 app.use('/uploads', express.static('uploads'));
 

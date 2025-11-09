@@ -523,12 +523,13 @@ export const teamsApi = {
     return response.data
   },
   
-  async getByMentor(mentorName: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`/teams/by-mentor/${encodeURIComponent(mentorName)}`)
+  async getByCode(teamCode: string): Promise<ApiResponse<any>> {
+    const response = await api.get(`/teams/by-code/${encodeURIComponent(teamCode)}`)
     return response.data
   },
-  async getByCode(code: string): Promise<ApiResponse<any>> {
-    const response = await api.get(`/teams/by-code/${encodeURIComponent(code)}`)
+  
+  async getByMentor(mentorName: string): Promise<ApiResponse<any[]>> {
+    const response = await api.get(`/teams/by-mentor/${encodeURIComponent(mentorName)}`)
     return response.data
   },
   async rename(code: string, newName: string): Promise<ApiResponse<void>> {
@@ -562,6 +563,10 @@ export const homeworksApi = {
   },
   async getUploaded(): Promise<ApiResponse<Homework[]>> {
     const response = await api.get('/homeworks/uploaded')
+    return response.data
+  },
+  async review(id: number, mark: number, comment: string): Promise<ApiResponse<Homework>> {
+    const response = await api.put(`/homeworks/${id}/review`, { mark, comment })
     return response.data
   }
 }
