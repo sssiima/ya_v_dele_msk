@@ -124,6 +124,11 @@ const ProfilePageMember = () => {
   const [teamHomeworks, setTeamHomeworks] = useState<Homework[]>([])
 
   const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
+  
+  // Состояния для статусов мастер-классов
+  const [mkHomeworkStatus, setMkHomeworkStatus] = useState<{ status: 'uploaded' | 'reviewed' | null, mark?: number } | null>(null);
+  const [structureTeamsForMk, setStructureTeamsForMk] = useState<any[]>([]);
+  const [teamsHomeworksForMk, setTeamsHomeworksForMk] = useState<{[teamCode: string]: Homework[]}>({});
 
   const handleHomeworkClick = (homeworkNumber: number) => {
     setCurrentHomeworkView(homeworkNumber);
@@ -159,14 +164,153 @@ const ProfilePageMember = () => {
     return { status: null }
   }
 
-  const handleMkClick = (mk: Mk) => {
+  const handleMkClick = async (mk: Mk) => {
     if (!mk.disabled) {
-    setSelectedMk(mk);
+      setSelectedMk(mk);
+      
+      // Загружаем статусы домашних заданий для этого мастер-класса
+      const memberId = localStorage.getItem('member_id');
+      const structureCtid = localStorage.getItem('structure_ctid');
+      
+      if (memberId && memberData?.team_code) {
+        // Участник - загружаем статус его команды
+        try {
+          const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code);
+          if (homeworksResult?.success && homeworksResult.data) {
+            const homeworks = homeworksResult.data;
+            const normalizedSubtitle = (mk.subtitle || '').trim();
+            const homework = homeworks.find(hw => {
+              const normalizedHwName = (hw.hw_name || '').trim();
+              return normalizedHwName === normalizedSubtitle;
+            });
+            
+            if (homework) {
+              if (homework.status === 'uploaded') {
+                setMkHomeworkStatus({ status: 'uploaded' });
+              } else if (homework.status === 'reviewed') {
+                setMkHomeworkStatus({ status: 'reviewed', mark: homework.mark });
+              } else {
+                setMkHomeworkStatus({ status: null });
+              }
+            } else {
+              setMkHomeworkStatus({ status: null });
+            }
+          }
+        } catch (error) {
+          console.error('Error loading homework status:', error);
+          setMkHomeworkStatus({ status: null });
+        }
+      } else if (structureCtid) {
+        // Структура - загружаем команды и их статусы
+        try {
+          const resp = await structureApi.getByCtid(structureCtid);
+          const structure = resp?.data;
+          
+          if (structure) {
+            const fullName = `${structure.last_name || ''} ${structure.first_name || ''}`.trim();
+            let teams: any[] = [];
+            
+            if (structure.pos === 'наставник' || structure.pos === 'старший наставник' || structure.pos === 'координатор' || structure.pos === 'руководитель округа') {
+              // Получаем команды наставника
+              const userTeamsResult = await teamsApi.getByMentor(fullName);
+              const userTeams = userTeamsResult?.data || [];
+              teams = [...userTeams];
+              
+              // Для координаторов и РО - получаем команды подчиненных
+              if ((structure.pos === 'координатор' || structure.pos === 'руководитель округа')) {
+                const allStructure = await structureApi.getAll();
+                const allPeople = allStructure?.data || [];
+                
+                if (structure.pos === 'руководитель округа') {
+                  const mentorPeople = allPeople.filter(person => 
+                    person.pos === 'наставник' && person.ro === structure.ro
+                  );
+                  for (const mentor of mentorPeople) {
+                    const mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''}`.trim();
+                    if (mentorName) {
+                      try {
+                        const mentorTeamsResult = await teamsApi.getByMentor(mentorName);
+                        const mentorTeams = mentorTeamsResult?.data || [];
+                        teams = [...teams, ...mentorTeams];
+                      } catch (e) {
+                        console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+                      }
+                    }
+                  }
+                } else if (structure.pos === 'координатор') {
+                  const mentorPeople = allPeople.filter(person => 
+                    person.pos === 'наставник' && person.coord === fullName
+                  );
+                  for (const mentor of mentorPeople) {
+                    const mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''}`.trim();
+                    if (mentorName) {
+                      try {
+                        const mentorTeamsResult = await teamsApi.getByMentor(mentorName);
+                        const mentorTeams = mentorTeamsResult?.data || [];
+                        teams = [...teams, ...mentorTeams];
+                      } catch (e) {
+                        console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+                      }
+                    }
+                  }
+                }
+              } else if (structure.pos === 'старший наставник') {
+                const allStructure = await structureApi.getAll();
+                const allPeople = allStructure?.data || [];
+                const mentorPeople = allPeople.filter(person => 
+                  person.pos === 'наставник' && person.high_mentor === fullName
+                );
+                for (const mentor of mentorPeople) {
+                  const mentorName = `${mentor.last_name || ''} ${mentor.first_name || ''}`.trim();
+                  if (mentorName) {
+                    try {
+                      const mentorTeamsResult = await teamsApi.getByMentor(mentorName);
+                      const mentorTeams = mentorTeamsResult?.data || [];
+                      teams = [...teams, ...mentorTeams];
+                    } catch (e) {
+                      console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+                    }
+                  }
+                }
+              }
+              
+              // Удаляем дубликаты
+              const uniqueTeams = teams.filter((team, index, self) => 
+                index === self.findIndex(t => t.code === team.code)
+              );
+              
+              setStructureTeamsForMk(uniqueTeams);
+              
+              // Загружаем домашние задания для всех команд
+              const homeworksMap: {[teamCode: string]: Homework[]} = {};
+              
+              for (const team of uniqueTeams) {
+                if (team.code) {
+                  try {
+                    const homeworksResult = await homeworksApi.getByTeamCode(team.code);
+                    if (homeworksResult?.success && homeworksResult.data) {
+                      homeworksMap[team.code] = homeworksResult.data;
+                    }
+                  } catch (e) {
+                    console.error(`Failed to load homeworks for team ${team.code}:`, e);
+                  }
+                }
+              }
+              setTeamsHomeworksForMk(homeworksMap);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading structure teams:', error);
+        }
+      }
     }
   };
 
   const handleBackToMks = () => {
     setSelectedMk(null);
+    setMkHomeworkStatus(null);
+    setStructureTeamsForMk([]);
+    setTeamsHomeworksForMk({});
   };
 
   const scrollContainerRefmk = useRef<HTMLDivElement>(null);
@@ -1824,9 +1968,71 @@ const loadTeamData = async (teamCode: string) => {
                      <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
           
          
-                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                     
-                     <div className="flex w-full flex-col">
+                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                    
+                    {/* Отображение статуса для участника */}
+                    {memberData?.team_code && mkHomeworkStatus !== null && (
+                      <div className="mb-4">
+                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${
+                          mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
+                            ? 'bg-white text-black' 
+                            : 'bg-brand text-white'
+                        }`}>
+                          <span className="text-sm">Статус выполнения</span>
+                          <div className="flex items-center gap-2">
+                            {mkHomeworkStatus.status === 'uploaded' ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : mkHomeworkStatus.status === 'reviewed' ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                <span className="font-bold">{mkHomeworkStatus.mark}</span> баллов
+                              </span>
+                            ) : (
+                              <span className="text-xs lg:text-sm">Не выполнено</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Отображение статусов для структуры */}
+                    {structureTeamsForMk.length > 0 && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-semibold text-gray-700 mb-2">Статусы выполнения командами:</h3>
+                        <div className="space-y-2">
+                          {structureTeamsForMk.map((team) => {
+                            const teamHomeworks = teamsHomeworksForMk[team.code] || [];
+                            const normalizedSubtitle = (selectedMk?.subtitle || '').trim();
+                            const homework = teamHomeworks.find(hw => {
+                              const normalizedHwName = (hw.hw_name || '').trim();
+                              return normalizedHwName === normalizedSubtitle;
+                            });
+                            
+                            return (
+                              <div key={team.code} className="flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-white">
+                                <span className="text-sm text-black">{team.name || team.code}</span>
+                                <div className="flex items-center gap-2">
+                                  {homework ? (
+                                    homework.status === 'uploaded' ? (
+                                      <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                                    ) : homework.status === 'reviewed' ? (
+                                      <span className="text-xs lg:text-sm text-brand">
+                                        <span className="font-bold">{homework.mark}</span> баллов
+                                      </span>
+                                    ) : (
+                                      <span className="text-xs lg:text-sm text-gray-500">Не выполнено</span>
+                                    )
+                                  ) : (
+                                    <span className="text-xs lg:text-sm text-pink-500">Не выполнили</span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex w-full flex-col">
                       <div className='w-full text-left'>
                         <p className="text-md font-semibold text-black mb-2">Описание домашнего задания</p>
                         <div className='rounded-lg border border-brand p-2'>
