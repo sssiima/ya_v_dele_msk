@@ -1234,20 +1234,32 @@ app.get('/api/homeworks/by-team-code/:teamCode', async (req, res) => {
   let client;
   try {
     const { teamCode } = req.params
-    const decodedTeamCode = decodeURIComponent(teamCode)
+    console.log('Received teamCode param:', teamCode)
+    
+    let decodedTeamCode
+    try {
+      decodedTeamCode = decodeURIComponent(teamCode)
+    } catch (decodeError) {
+      // Если декодирование не удалось, используем исходное значение
+      decodedTeamCode = teamCode
+      console.warn('Failed to decode teamCode, using original:', decodeError)
+    }
+    
+    console.log('Decoded teamCode:', decodedTeamCode)
     
     client = await pool.connect();
     const result = await client.query(`
-      SELECT id, hw_name, file_url, status, team_code, created_at
+      SELECT id, hw_name, file_url, status, team_code
       FROM homeworks 
       WHERE team_code = $1
-      ORDER BY created_at DESC
+      ORDER BY id DESC
     `, [decodedTeamCode])
     
+    console.log('Found homeworks:', result.rows.length)
     res.json({ success: true, data: result.rows })
   } catch (err) {
     console.error('Error fetching team homeworks:', err)
-    res.status(500).json({ success: false, message: 'Internal Server Error' })
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message })
   } finally {
     if (client) client.release();
   }
