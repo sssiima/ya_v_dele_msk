@@ -237,49 +237,49 @@ const MethodPage = () => {
               />
             </div>
             
-            <div className="flex gap-3 relative">
-              <div className="relative" ref={markSelectorRef}>
-                <button
-                  onClick={() => setShowMarkSelector(!showMarkSelector)}
-                  className="px-3 py-2 border border-brand rounded-lg bg-white text-brand text-xs font-medium hover:bg-gray-50 transition-colors whitespace-nowrap"
-                >
-                  Ввести балл {selectedMark !== null ? `(${selectedMark})` : ''}
-                </button>
-                
-                {showMarkSelector && (
-                  <div className="absolute top-full left-0 mt-2 bg-white border border-brand rounded-lg p-2 shadow-lg z-10">
-                    <div className="grid grid-cols-4 gap-2">
-                      {Array.from({ length: 16 }, (_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            setSelectedMark(i)
-                            setShowMarkSelector(false)
-                          }}
-                          className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                            selectedMark === i
-                              ? 'bg-brand text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {i}
-                        </button>
-                      ))}
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex gap-3 relative">
+                <div className="relative" ref={markSelectorRef}>
+                  <button
+                    onClick={() => setShowMarkSelector(!showMarkSelector)}
+                    className="px-3 py-2 border border-brand rounded-lg bg-white text-brand text-xs font-medium hover:bg-gray-50 transition-colors whitespace-nowrap"
+                  >
+                    Ввести балл {selectedMark !== null ? `(${selectedMark})` : ''}
+                  </button>
+                  
+                  {showMarkSelector && (
+                    <div className="absolute top-full left-0 mt-2 bg-white border border-brand rounded-lg p-2 shadow-lg z-10">
+                      <div className="grid grid-cols-4 gap-2">
+                        {Array.from({ length: 16 }, (_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              setSelectedMark(i)
+                              setShowMarkSelector(false)
+                            }}
+                            className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                              selectedMark === i
+                                ? 'bg-brand text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {i}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+                
+                <button
+                  onClick={handleSave}
+                  disabled={saving || selectedMark === null}
+                  className="px-3 py-2 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  {saving ? 'Сохранение...' : 'Отправить результат'}
+                </button>
               </div>
               
-              <button
-                onClick={handleSave}
-                disabled={saving || selectedMark === null}
-                className="px-3 py-2 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                {saving ? 'Сохранение...' : 'Отправить результат'}
-              </button>
-            </div>
-            
-            <div className="pt-4">
               <button
                 onClick={handleBack}
                 className="text-brand text-sm hover:underline"
