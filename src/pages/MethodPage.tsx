@@ -138,8 +138,8 @@ const MethodPage = () => {
                   <thead>
                     <tr className="border-b border-brand">
                       <th className="text-left pb-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '30%' }}>Код команды</th>
-                      <th className="text-left pb-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '47%' }}>Название</th>
-                      <th className="text-left pb-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '23%' }}>Оценить</th>
+                      <th className="text-left pb-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '46%' }}>Название</th>
+                      <th className="text-left pb-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '24%' }}>Оценить работу</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -161,7 +161,7 @@ const MethodPage = () => {
                             onClick={() => handleEvaluate(homework)}
                             className="px-2 py-1.5 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
                           >
-                            Оценить работу
+                            Оценить
                           </button>
                         </td>
                       </tr>
