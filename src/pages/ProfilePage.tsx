@@ -1885,7 +1885,7 @@ const getDownloadLink = (url: string) => {
                      {/* Отображение статусов для структуры */}
                      {structureTeamsForMk.length > 0 && (
                        <div className="mb-4">
-                         <h3 className="text-sm font-semibold text-gray-700 mb-2">Статусы выполнения командами:</h3>
+                         <p className="text-sm font-semibold text-gray-700 mb-2">Отслеживание выполнения</p>
                          <div className="space-y-2">
                            {structureTeamsForMk.map((team) => {
                              const teamHomeworks = teamsHomeworksForMk[team.code] || [];
@@ -1907,10 +1907,10 @@ const getDownloadLink = (url: string) => {
                                          <span className="font-bold">{homework.mark}</span> баллов
                                        </span>
                                      ) : (
-                                       <span className="text-xs lg:text-sm text-gray-500">Не выполнено</span>
+                                       <span className="text-xs lg:text-sm text-pink italic">Не выполнено</span>
                                      )
                                    ) : (
-                                     <span className="text-xs lg:text-sm text-pink-500">Не выполнили</span>
+                                     <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
                                    )}
                                  </div>
                                </div>

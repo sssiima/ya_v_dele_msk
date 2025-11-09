@@ -1921,6 +1921,27 @@ const loadTeamData = async (teamCode: string) => {
                 const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
                 if (homeworksResult?.success && homeworksResult.data) {
                   setTeamHomeworks(homeworksResult.data)
+                  
+                  // Обновляем статус для текущего мастер-класса
+                  if (selectedMk) {
+                    const normalizedSubtitle = (selectedMk.subtitle || '').trim();
+                    const homework = homeworksResult.data.find(hw => {
+                      const normalizedHwName = (hw.hw_name || '').trim();
+                      return normalizedHwName === normalizedSubtitle;
+                    });
+                    
+                    if (homework) {
+                      if (homework.status === 'uploaded') {
+                        setMkHomeworkStatus({ status: 'uploaded' });
+                      } else if (homework.status === 'reviewed') {
+                        setMkHomeworkStatus({ status: 'reviewed', mark: homework.mark });
+                      } else {
+                        setMkHomeworkStatus({ status: null });
+                      }
+                    } else {
+                      setMkHomeworkStatus({ status: null });
+                    }
+                  }
                 }
               } catch (error) {
                 console.error('Error reloading team homeworks:', error)
@@ -1969,30 +1990,6 @@ const loadTeamData = async (teamCode: string) => {
           
          
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                    
-                    {/* Отображение статуса для участника */}
-                    {memberData?.team_code && mkHomeworkStatus !== null && (
-                      <div className="mb-4">
-                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${
-                          mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
-                            ? 'bg-white text-black' 
-                            : 'bg-brand text-white'
-                        }`}>
-                          <span className="text-sm">Статус выполнения</span>
-                          <div className="flex items-center gap-2">
-                            {mkHomeworkStatus.status === 'uploaded' ? (
-                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
-                            ) : mkHomeworkStatus.status === 'reviewed' ? (
-                              <span className="text-xs lg:text-sm text-brand">
-                                <span className="font-bold">{mkHomeworkStatus.mark}</span> баллов
-                              </span>
-                            ) : (
-                              <span className="text-xs lg:text-sm">Не выполнено</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Отображение статусов для структуры */}
                     {structureTeamsForMk.length > 0 && (
@@ -2039,15 +2036,39 @@ const loadTeamData = async (teamCode: string) => {
                           <p className='text-xs'>{selectedMk.description}</p>
                         </div>
                     </div>
-                    <div className="flex w-full justify-center">
-        <button 
-          onClick={handleButtonClick}
-          className='rounded-xl bg-brand text-white font-semibold p-3 mt-4 text-xs w-2/3 lg:w-1/3 lg:text-lg'
-        >
-          Перейти к выполнению
-        </button>
-        
-                    </div>
+                    
+                    {/* Отображение статуса или кнопки для участника */}
+                    {memberData?.team_code && (
+                      <div className="flex w-full justify-center mt-4">
+                        {mkHomeworkStatus !== null && (mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed') ? (
+                          <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-2/3 lg:w-1/3 ${
+                            mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
+                              ? 'bg-white text-black' 
+                              : 'bg-brand text-white'
+                          }`}>
+                            <span className="text-sm">Статус выполнения</span>
+                            <div className="flex items-center gap-2">
+                              {mkHomeworkStatus.status === 'uploaded' ? (
+                                <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                              ) : mkHomeworkStatus.status === 'reviewed' ? (
+                                <span className="text-xs lg:text-sm text-brand">
+                                  <span className="font-bold">{mkHomeworkStatus.mark}</span> баллов
+                                </span>
+                              ) : (
+                                <span className="text-xs lg:text-sm">Не выполнено</span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <button 
+                            onClick={handleButtonClick}
+                            className='rounded-xl bg-brand text-white font-semibold p-3 text-xs w-2/3 lg:w-1/3 lg:text-lg'
+                          >
+                            Перейти к выполнению
+                          </button>
+                        )}
+                      </div>
+                    )}
                     </div>
 
                    </div>
