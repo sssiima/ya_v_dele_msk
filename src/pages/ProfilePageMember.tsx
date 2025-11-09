@@ -2041,7 +2041,7 @@ const loadTeamData = async (teamCode: string) => {
                     {memberData?.team_code && (
                       <div className="flex w-full justify-center mt-4">
                         {mkHomeworkStatus !== null && (mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed') ? (
-                          <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-2/3 lg:w-1/3 ${
+                          <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full ${
                             mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
                               ? 'bg-white text-black' 
                               : 'bg-brand text-white'
