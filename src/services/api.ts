@@ -553,6 +553,8 @@ export interface Homework {
   file_url: string
   status: string
   team_code: string
+  mark?: number
+  comment?: string
 }
 
 // API для получения домашних заданий команды

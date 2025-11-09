@@ -130,13 +130,13 @@ const ProfilePageMember = () => {
   };
 
   // Функция для проверки статуса домашнего задания по номеру
-  const getHomeworkStatus = (homeworkNumber: number): 'uploaded' | null => {
+  const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
     // По номеру домашки обращаемся к соответствующей записи из массива mk_list
-    if (!mk_list[homeworkNumber - 1]) return null
+    if (!mk_list[homeworkNumber - 1]) return { status: null }
     
     const mkItem = mk_list[homeworkNumber - 1]
     const mkSubtitle = mkItem?.subtitle
-    if (!mkSubtitle) return null
+    if (!mkSubtitle) return { status: null }
     
     // Сверяем subtitle с hw_name в записи в БД
     // Нормализуем строки для более надежного сопоставления (убираем лишние пробелы)
@@ -148,9 +148,15 @@ const ProfilePageMember = () => {
     
     // Если у этой записи статус uploaded, возвращаем 'uploaded'
     if (homework && homework.status === 'uploaded') {
-      return 'uploaded'
+      return { status: 'uploaded' }
     }
-    return null
+    
+    // Если у этой записи статус reviewed, возвращаем 'reviewed' с баллом
+    if (homework && homework.status === 'reviewed') {
+      return { status: 'reviewed', mark: homework.mark }
+    }
+    
+    return { status: null }
   }
 
   const handleMkClick = (mk: Mk) => {
@@ -1668,13 +1674,17 @@ const loadTeamData = async (teamCode: string) => {
                     
                     {(() => {
                       const homeworkStatus = getHomeworkStatus(1)
-                      const isUploaded = homeworkStatus === 'uploaded'
+                      const isUploaded = homeworkStatus.status === 'uploaded'
+                      const isReviewed = homeworkStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
                       return (
-                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isUploaded ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
                           <span className="text-sm">Первое д/з</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">{homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? `${homeworkStatus.mark} баллов` : 'Оценено'}</span>
                             ) : (
                               <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
                                 Загрузить

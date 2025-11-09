@@ -1249,7 +1249,7 @@ app.get('/api/homeworks/by-team-code/:teamCode', async (req, res) => {
     
     client = await pool.connect();
     const result = await client.query(`
-      SELECT id, hw_name, file_url, status, team_code
+      SELECT id, hw_name, file_url, status, team_code, mark, comment
       FROM homeworks 
       WHERE team_code = $1
       ORDER BY id DESC
