@@ -30,11 +30,11 @@ const MethodPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Header />
       
       <div className="px-6 py-4">
-        <h1 className="text-2xl font-bold text-brand mb-4">Проверка домашних заданий</h1>
+        <h1 className="text-md font-bold text-brand mb-4 text-center">Проверка домашних заданий</h1>
         
         <div className="border-t border-brand pt-4">
           {loading ? (
@@ -47,7 +47,7 @@ const MethodPage = () => {
                 <thead>
                   <tr className="border-b border-brand">
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Код команды</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">№</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Названик</th>
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Оценить работу</th>
                   </tr>
                 </thead>

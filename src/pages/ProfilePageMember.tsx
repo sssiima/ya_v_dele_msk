@@ -1674,7 +1674,7 @@ const loadTeamData = async (teamCode: string) => {
                           <span className="text-sm">Первое д/з</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
-                              <span className="text-xs lg:text-sm italic text-brand">На проверке</span>
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : (
                               <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
                                 Загрузить
