@@ -1229,6 +1229,30 @@ app.post('/api/upload-homework', async (req, res) => {
   }
 });
 
+// GET /api/homeworks/by-team-code/:teamCode - получить домашние задания команды по коду команды
+app.get('/api/homeworks/by-team-code/:teamCode', async (req, res) => {
+  let client;
+  try {
+    const { teamCode } = req.params
+    const decodedTeamCode = decodeURIComponent(teamCode)
+    
+    client = await pool.connect();
+    const result = await client.query(`
+      SELECT id, hw_name, file_url, status, team_code, created_at
+      FROM homeworks 
+      WHERE team_code = $1
+      ORDER BY created_at DESC
+    `, [decodedTeamCode])
+    
+    res.json({ success: true, data: result.rows })
+  } catch (err) {
+    console.error('Error fetching team homeworks:', err)
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  } finally {
+    if (client) client.release();
+  }
+})
+
 // Обслуживание загруженных файлов
 app.use('/uploads', express.static('uploads'));
 

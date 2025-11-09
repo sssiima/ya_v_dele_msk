@@ -545,6 +545,24 @@ export const teamMembersApi = {
   }
 }
 
+// Интерфейс для домашнего задания
+export interface Homework {
+  id: number
+  hw_name: string
+  file_url: string
+  status: string
+  team_code: string
+  created_at: string
+}
+
+// API для получения домашних заданий команды
+export const homeworksApi = {
+  async getByTeamCode(teamCode: string): Promise<ApiResponse<Homework[]>> {
+    const response = await api.get(`/homeworks/by-team-code/${encodeURIComponent(teamCode)}`)
+    return response.data
+  }
+}
+
 export const fileUploadApi = {
   async uploadHomework(file: File, homeworkTitle: string, teamCode?: string): Promise<ApiResponse<UploadResponse>> { // Добавляем homeworkTitle параметр
     // Проверяем размер файла

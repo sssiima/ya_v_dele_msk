@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { membersApi, structureApi, teamsApi, vusesApi } from '@/services/api'
+import { membersApi, structureApi, teamsApi, vusesApi, homeworksApi, Homework } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
 import TeamPage from '@/components/TeamPage';
 import { useNavigate } from 'react-router-dom'
@@ -121,12 +121,28 @@ const ProfilePageMember = () => {
   const [selectedMk, setSelectedMk] = useState<Mk | null>(null);
 
   const [memberData, setMemberData] = useState<MemberData | null>(null)
+  const [teamHomeworks, setTeamHomeworks] = useState<Homework[]>([])
 
   const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
 
   const handleHomeworkClick = (homeworkNumber: number) => {
     setCurrentHomeworkView(homeworkNumber);
   };
+
+  // Функция для проверки статуса домашнего задания по номеру
+  const getHomeworkStatus = (homeworkNumber: number): 'uploaded' | null => {
+    if (!teamHomeworks.length || !mk_list[homeworkNumber - 1]) return null
+    
+    const mkSubtitle = mk_list[homeworkNumber - 1]?.subtitle
+    if (!mkSubtitle) return null
+    
+    // Ищем домашнее задание по названию (subtitle) и проверяем статус
+    const homework = teamHomeworks.find(hw => hw.hw_name === mkSubtitle)
+    if (homework && homework.status === 'uploaded') {
+      return 'uploaded'
+    }
+    return null
+  }
 
   const handleMkClick = (mk: Mk) => {
     if (!mk.disabled) {
@@ -795,6 +811,15 @@ MVP возможно реализовать до конца курса в так
         // Если у пользователя есть код команды, загружаем данные команды
         if (m.team_code) {
           await loadTeamData(m.team_code)
+          // Загружаем домашние задания команды
+          try {
+            const homeworksResult = await homeworksApi.getByTeamCode(m.team_code)
+            if (homeworksResult?.success && homeworksResult.data) {
+              setTeamHomeworks(homeworksResult.data)
+            }
+          } catch (error) {
+            console.error('Error loading team homeworks:', error)
+          }
         }
       } catch (error) {
         console.error('Error loading user data:', error)
@@ -1632,14 +1657,24 @@ const loadTeamData = async (teamCode: string) => {
                       </div>
                     </div> */}
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-brand text-white'>
-                      <span className="text-sm">Первое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
-                          Загрузить
-                        </button>
-                      </div>
-                    </div>
+                    {(() => {
+                      const homeworkStatus = getHomeworkStatus(1)
+                      const isUploaded = homeworkStatus === 'uploaded'
+                      return (
+                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isUploaded ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                          <span className="text-sm">Первое д/з</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic">На проверке</span>
+                            ) : (
+                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })()}
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Второе д/з</span>
@@ -1708,7 +1743,18 @@ const loadTeamData = async (teamCode: string) => {
           prezlink={mk_list[currentHomeworkView - 1]?.pres}
           templink={mk_list[currentHomeworkView - 1]?.template}
           teamCode={memberData?.team_code}
-          onSuccess={() => {
+          onSuccess={async () => {
+            // Обновляем список домашних заданий после успешной загрузки
+            if (memberData?.team_code) {
+              try {
+                const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
+                if (homeworksResult?.success && homeworksResult.data) {
+                  setTeamHomeworks(homeworksResult.data)
+                }
+              } catch (error) {
+                console.error('Error reloading team homeworks:', error)
+              }
+            }
             setCurrentHomeworkView(null); // Возвращаем к списку заданий
           }}
         />)}
@@ -1886,7 +1932,18 @@ const loadTeamData = async (teamCode: string) => {
           prezlink={selectedMk?.pres}
           templink={selectedMk?.template}
           teamCode={memberData?.team_code}
-          onSuccess={() => {
+          onSuccess={async () => {
+            // Обновляем список домашних заданий после успешной загрузки
+            if (memberData?.team_code) {
+              try {
+                const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
+                if (homeworksResult?.success && homeworksResult.data) {
+                  setTeamHomeworks(homeworksResult.data)
+                }
+              } catch (error) {
+                console.error('Error reloading team homeworks:', error)
+              }
+            }
             setShowHomework(false); // ⬅️ СКРЫВАЕМ КОМПОНЕНТ ЗАГРУЗКИ
             setSelectedMk(null);    // ⬅️ СБРАСЫВАЕМ ВЫБРАННЫЙ МК
           }}
