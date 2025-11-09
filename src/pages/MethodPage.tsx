@@ -8,6 +8,7 @@ interface TeamData {
   mentor: string
   coord?: string
   ro?: string
+  track?: string
 }
 
 const MethodPage = () => {
@@ -158,7 +159,7 @@ const MethodPage = () => {
                         <td className="py-2 px-1.5">
                           <button
                             onClick={() => handleEvaluate(homework)}
-                            className="px-2 py-1.5 bg-brand text-white rounded-full text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
+                            className="px-2 py-1.5 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
                           >
                             Оценить работу
                           </button>
@@ -190,7 +191,7 @@ const MethodPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Трек</label>
               <input
                 type="text"
-                value={teamData?.ro || ''}
+                value={teamData?.track || ''}
                 readOnly
                 className="w-full px-4 py-2 border border-brand rounded-full bg-white text-sm focus:outline-none"
               />
@@ -207,7 +208,7 @@ const MethodPage = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">№ работы</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Название работы</label>
               <input
                 type="text"
                 value={selectedHomework.hw_name || ''}
@@ -220,7 +221,7 @@ const MethodPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Файл задания</label>
               <button
                 onClick={handleOpenFile}
-                className="px-4 py-2 bg-brand text-white rounded-full text-sm font-medium hover:bg-brand/90 transition-colors"
+                className="px-4 py-2 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
               >
                 Открыть файл
               </button>
@@ -240,7 +241,7 @@ const MethodPage = () => {
               <div className="relative" ref={markSelectorRef}>
                 <button
                   onClick={() => setShowMarkSelector(!showMarkSelector)}
-                  className="px-4 py-2 border border-brand rounded-full bg-white text-brand text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className="px-3 py-2 border border-brand rounded-lg bg-white text-brand text-xs font-medium hover:bg-gray-50 transition-colors whitespace-nowrap"
                 >
                   Ввести балл {selectedMark !== null ? `(${selectedMark})` : ''}
                 </button>
@@ -272,7 +273,7 @@ const MethodPage = () => {
               <button
                 onClick={handleSave}
                 disabled={saving || selectedMark === null}
-                className="px-4 py-2 bg-brand text-white rounded-full text-sm font-medium hover:bg-brand/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {saving ? 'Сохранение...' : 'Отправить результат'}
               </button>
