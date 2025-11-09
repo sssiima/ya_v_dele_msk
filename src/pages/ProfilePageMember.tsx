@@ -131,13 +131,22 @@ const ProfilePageMember = () => {
 
   // Функция для проверки статуса домашнего задания по номеру
   const getHomeworkStatus = (homeworkNumber: number): 'uploaded' | null => {
-    if (!teamHomeworks.length || !mk_list[homeworkNumber - 1]) return null
+    // По номеру домашки обращаемся к соответствующей записи из массива mk_list
+    if (!mk_list[homeworkNumber - 1]) return null
     
-    const mkSubtitle = mk_list[homeworkNumber - 1]?.subtitle
+    const mkItem = mk_list[homeworkNumber - 1]
+    const mkSubtitle = mkItem?.subtitle
     if (!mkSubtitle) return null
     
-    // Ищем домашнее задание по названию (subtitle) и проверяем статус
-    const homework = teamHomeworks.find(hw => hw.hw_name === mkSubtitle)
+    // Сверяем subtitle с hw_name в записи в БД
+    // Нормализуем строки для более надежного сопоставления (убираем лишние пробелы)
+    const normalizedSubtitle = mkSubtitle.trim()
+    const homework = teamHomeworks.find(hw => {
+      const normalizedHwName = (hw.hw_name || '').trim()
+      return normalizedHwName === normalizedSubtitle
+    })
+    
+    // Если у этой записи статус uploaded, возвращаем 'uploaded'
     if (homework && homework.status === 'uploaded') {
       return 'uploaded'
     }
