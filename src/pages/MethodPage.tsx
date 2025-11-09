@@ -42,33 +42,33 @@ const MethodPage = () => {
           ) : homeworks.length === 0 ? (
             <div className="text-center py-8 text-gray-500">Нет домашних заданий на проверке</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div>
+              <table className="w-full table-fixed">
                 <thead>
                   <tr className="border-b border-brand">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Код команды</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Названик</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-700">Оценить работу</th>
+                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-2/5">Код команды</th>
+                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-2/5">Название</th>
+                    <th className="text-left py-2 px-2 text-xs font-medium text-gray-700 w-1/5">Оценить работу</th>
                   </tr>
                 </thead>
                 <tbody>
                   {homeworks.map((homework) => (
                     <tr key={homework.id} className="border-b border-gray-100">
-                      <td className="py-3 px-4">
+                      <td className="py-2 px-2">
                         <input
                           type="text"
                           value={homework.team_code || ''}
                           readOnly
-                          className="w-full px-3 py-2 border border-brand rounded-full bg-white text-sm focus:outline-none"
+                          className="w-full px-2 py-1.5 border border-brand rounded-full bg-white text-xs focus:outline-none"
                         />
                       </td>
-                      <td className="py-3 px-4">
-                        <span className="text-brand font-medium">{homework.hw_name}</span>
+                      <td className="py-2 px-2">
+                        <span className="text-brand font-medium text-xs break-words">{homework.hw_name}</span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2 px-2">
                         <button
                           onClick={() => handleEvaluate(homework)}
-                          className="px-4 py-2 bg-brand text-white rounded-full text-sm font-medium hover:bg-brand/90 transition-colors"
+                          className="px-3 py-1.5 bg-brand text-white rounded-full text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
                         >
                           Оценить работу
                         </button>
