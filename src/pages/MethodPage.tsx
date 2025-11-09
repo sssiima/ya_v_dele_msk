@@ -237,6 +237,8 @@ const MethodPage = () => {
               />
             </div>
             
+            <div className="border-t border-brand pt-4"></div>
+            
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-3 relative">
                 <div className="relative" ref={markSelectorRef}>
