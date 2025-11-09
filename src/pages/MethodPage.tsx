@@ -47,8 +47,8 @@ const MethodPage = () => {
                 <thead>
                   <tr className="border-b border-brand">
                     <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '30%' }}>Код команды</th>
-                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '48%' }}>Название</th>
-                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '22%' }}>Оценить работу</th>
+                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '47%' }}>Название</th>
+                    <th className="text-left py-2 px-1.5 text-xs font-medium text-gray-700" style={{ width: '23%' }}>Оценить</th>
                   </tr>
                 </thead>
                 <tbody>
