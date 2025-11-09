@@ -237,7 +237,7 @@ const MethodPage = () => {
               />
             </div>
             
-            <div className="border-t border-brand pt-8"></div>
+            <div className="border-t border-brand pt-2"></div>
             
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-3 relative">

@@ -1684,7 +1684,15 @@ const loadTeamData = async (teamCode: string) => {
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
-                              <span className="text-xs lg:text-sm text-brand">{homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? `${homeworkStatus.mark} баллов` : 'Оценено'}</span>
+                              <span className="text-xs lg:text-sm text-brand">
+                                {homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{homeworkStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
                             ) : (
                               <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
                                 Загрузить
