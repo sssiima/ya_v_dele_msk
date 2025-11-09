@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fileUploadApi, homeworksApi, teamsApi, structureApi, Homework } from '@/services/api';
+import { fileUploadApi, homeworksApi, teamsApi, Homework } from '@/services/api';
 
 interface HomeworkLoadProps {
   title?: string;
@@ -31,8 +31,6 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   // Состояния для статусов
   const [isMember, setIsMember] = useState(false);
   const [isStructure, setIsStructure] = useState(false);
-  const [userRole, setUserRole] = useState<string>('');
-  const [userFullName, setUserFullName] = useState<string>('');
   const [memberTeamCode, setMemberTeamCode] = useState<string | null>(null);
   const [memberHomeworkStatus, setMemberHomeworkStatus] = useState<{ status: 'uploaded' | 'reviewed' | null, mark?: number } | null>(null);
   const [structureTeams, setStructureTeams] = useState<any[]>([]);
@@ -95,9 +93,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
           const structure = resp?.data;
           
           if (structure) {
-            setUserRole(structure.pos || '');
             const fullName = `${structure.last_name || ''} ${structure.first_name || ''}`.trim();
-            setUserFullName(fullName);
             
             // Загружаем команды в зависимости от роли
             let teams: any[] = [];
