@@ -548,8 +548,6 @@ const getDownloadLink = (url: string) => {
         // Загружаем команды пользователя и подчиненных после загрузки списков
         await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim(), item.pos || '', subordinates);
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to load structure profile', e)
         // При ошибке загрузки перенаправляем на авторизацию
         localStorage.removeItem('structure_ctid')
         navigate('/auth')
@@ -583,7 +581,6 @@ const getDownloadLink = (url: string) => {
     try {
       const allStructure = await structureApi.getAll()
       const allPeople = allStructure?.data || []
-      console.log('All structure data') // Отладочная информация
       
       // Нормализация ФИО к нижнему регистру без лишних пробелов
       const normalizeName = (fullName: string) => fullName.trim().toLowerCase().replace(/\s+/g, ' ')
@@ -620,7 +617,6 @@ const getDownloadLink = (url: string) => {
         
         // РО видит наставников своего округа (по полю ro)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.ro))
-        console.log('RO mentors') // Отладочная информация
         setMentors(mentorPeople)
       } else if (role === 'координатор') {
         // Координатор видит старших наставников своего кураторства (по полю coord)
@@ -629,14 +625,12 @@ const getDownloadLink = (url: string) => {
         
         // Координатор видит наставников, которые прикреплены к нему (по полю coord)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.coord))
-        console.log('Coordinator mentors') // Отладочная информация
         setMentors(mentorPeople)
         
         setCoordinators([]) // Координаторы не видят других координаторов
       } else if (role === 'старший наставник') {
         // Старший наставник видит наставников своей группы (по полю high_mentor)
         mentorPeople = allPeople.filter(person => person.pos === 'наставник' && fieldMatchesUser(person.high_mentor))
-        console.log('Senior mentor mentors') // Отладочная информация
         setMentors(mentorPeople)
         
         setCoordinators([])
@@ -654,7 +648,6 @@ const getDownloadLink = (url: string) => {
         mentors: mentorPeople
       }
     } catch (e) {
-      console.error('Failed to load role lists:', e)
       return {
         coordinators: [],
         seniorMentors: [],
@@ -686,7 +679,6 @@ const getDownloadLink = (url: string) => {
               const seniorTeams = seniorTeamsResult?.data || []
               allTeams = [...allTeams, ...seniorTeams]
             } catch (e) {
-              console.error(`Failed to load teams for senior mentor ${seniorMentorName}:`, e)
             }
           }
         }
@@ -700,7 +692,6 @@ const getDownloadLink = (url: string) => {
               const mentorTeams = mentorTeamsResult?.data || []
               allTeams = [...allTeams, ...mentorTeams]
             } catch (e) {
-              console.error(`Failed to load teams for mentor ${mentorName}:`, e)
             }
           }
         }
@@ -721,14 +712,12 @@ const getDownloadLink = (url: string) => {
             const membersResult = await teamMembersApi.getByTeamCode(team.code)
             membersData[team.code] = membersResult?.data || []
           } catch (e) {
-            console.error(`Failed to load members for team ${team.code}:`, e)
             membersData[team.code] = []
           }
         }
       }
       setTeamMembers(membersData)
     } catch (e) {
-      console.error('Failed to load user teams:', e)
     }
   }
 
@@ -812,7 +801,7 @@ const getDownloadLink = (url: string) => {
                       const mentorTeams = mentorTeamsResult?.data || [];
                       teams = [...teams, ...mentorTeams];
                     } catch (e) {
-                      console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+;
                     }
                   }
                 }
@@ -828,7 +817,7 @@ const getDownloadLink = (url: string) => {
                       const mentorTeams = mentorTeamsResult?.data || [];
                       teams = [...teams, ...mentorTeams];
                     } catch (e) {
-                      console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+;
                     }
                   }
                 }
@@ -847,7 +836,7 @@ const getDownloadLink = (url: string) => {
                     const mentorTeams = mentorTeamsResult?.data || [];
                     teams = [...teams, ...mentorTeams];
                   } catch (e) {
-                    console.error(`Failed to load teams for mentor ${mentorName}:`, e);
+;
                   }
                 }
               }
@@ -871,7 +860,6 @@ const getDownloadLink = (url: string) => {
                     homeworksMap[team.code] = homeworksResult.data;
                   }
                 } catch (e) {
-                  console.error(`Failed to load homeworks for team ${team.code}:`, e);
                 }
               }
             }
@@ -879,7 +867,6 @@ const getDownloadLink = (url: string) => {
           }
         }
       } catch (error) {
-        console.error('Error loading structure teams:', error);
       }
     }
   };
@@ -952,8 +939,6 @@ const getDownloadLink = (url: string) => {
           localStorage.setItem('structure_ctid', result.data.ctid)
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to save structure profile', e)
       }
     }
     void save()
@@ -1419,7 +1404,6 @@ const getDownloadLink = (url: string) => {
                                 await structureApi.archiveById(person.id)
                                 await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
                               } catch (e) {
-                                console.error('Archive structure user failed', e)
                               }
                             }}>
                               <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1454,7 +1438,6 @@ const getDownloadLink = (url: string) => {
                                 await structureApi.archiveById(person.id)
                                 await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
                               } catch (e) {
-                                console.error('Archive structure user failed', e)
                               }
                             }}>
                               <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1483,9 +1466,7 @@ const getDownloadLink = (url: string) => {
                             {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                               <button title='Архивировать' onClick={async () => {
                                 try {
-                                  console.log('Mentor data') // Отладочная информация
                                   if (!person.ctid) {
-                                    console.warn('Mentor has no ctid:', person)
                                     alert('Ошибка: у наставника отсутствует ctid')
                                     return
                                   }
@@ -1496,7 +1477,6 @@ const getDownloadLink = (url: string) => {
                                   // Обновляем списки после архивации
                                   await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
                                 } catch (e) {
-                                  console.error('Archive structure user failed', e)
                                 }
                               }}>
                                 <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1575,7 +1555,6 @@ const getDownloadLink = (url: string) => {
                                               const updated = await teamMembersApi.getByTeamCode(team.code)
                                               setTeamMembers(prev => ({ ...prev, [team.code]: updated?.data || [] }))
                                             } catch (e) {
-                                              console.error('Archive member failed', e)
                                             }
                                           }}>
                                             <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1679,7 +1658,6 @@ const getDownloadLink = (url: string) => {
                                 await structureApi.archiveById(person.id)
                                 await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
                               } catch (e) {
-                                console.error('Archive structure user failed', e)
                               }
                             }}>
                               <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1705,9 +1683,7 @@ const getDownloadLink = (url: string) => {
                           {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
-                                console.log('Mentor data (desktop)') // Отладочная информация
                                 if (!person.ctid) {
-                                  console.warn('Mentor has no ctid (desktop):', person)
                                   alert('Ошибка: у наставника отсутствует ctid')
                                   return
                                 }
@@ -1718,7 +1694,6 @@ const getDownloadLink = (url: string) => {
                                 // Обновляем списки после архивации
                                 await loadRoleLists(userRole, `${lastname} ${firstname}`.trim())
                               } catch (e) {
-                                console.error('Archive structure user failed', e)
                               }
                             }}>
                               <img src='/images/archive.png' alt='bin' className='w-3 h-3' />
@@ -1796,7 +1771,6 @@ const getDownloadLink = (url: string) => {
                                               const updated = await teamMembersApi.getByTeamCode(team.code)
                                               setTeamMembers(prev => ({ ...prev, [team.code]: updated?.data || [] }))
                                             } catch (e) {
-                                              console.error('Archive member failed', e)
                                             }
                                           }}>
                                             <img src='/images/archive.png' alt='bin' className='w-3 h-3' />

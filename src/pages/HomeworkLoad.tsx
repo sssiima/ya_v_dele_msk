@@ -42,10 +42,6 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // Логируем teamCode при монтировании компонента для отладки
-  React.useEffect(() => {
-    console.log('HomeworkLoad mounted with teamCode:', teamCode);
-  }, [teamCode]);
 
   const extractFileId = (url: string) => {
     if (!url) return '';
@@ -81,11 +77,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   
     setUploading(true);
     try {
-      // Проверяем и логируем teamCode перед отправкой
-      console.log('Uploading homework with teamCode:', teamCode);
       const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', teamCode);
-      
-      console.log('Upload result:', result);
       
       if (result.success && result.data) {
         alert('Файл успешно загружен и сохранен в базе!');
@@ -101,7 +93,6 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
         throw new Error(result.message || 'Ошибка загрузки файла');
       }
     } catch (error) {
-      console.error('Upload error:', error);
       alert('Ошибка при загрузке файла: ' + (error as Error).message);
     } finally {
       setUploading(false);

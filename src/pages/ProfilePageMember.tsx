@@ -180,7 +180,6 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         throw new Error(result.message || 'Ошибка загрузки файла');
       }
     } catch (error) {
-      console.error('Upload error:', error);
       alert('Ошибка при загрузке файла: ' + (error as Error).message);
     } finally {
       setUploading(false);
@@ -462,7 +461,6 @@ const ProfilePageMember = () => {
             }
           }
         } catch (error) {
-          console.error('Error loading homework status:', error);
           setMkHomeworkStatus({ status: null });
         }
       } else if (structureCtid) {
@@ -498,7 +496,6 @@ const ProfilePageMember = () => {
                         const mentorTeams = mentorTeamsResult?.data || [];
                         teams = [...teams, ...mentorTeams];
                       } catch (e) {
-                        console.error(`Failed to load teams for mentor ${mentorName}:`, e);
                       }
                     }
                   }
@@ -514,7 +511,6 @@ const ProfilePageMember = () => {
                         const mentorTeams = mentorTeamsResult?.data || [];
                         teams = [...teams, ...mentorTeams];
                       } catch (e) {
-                        console.error(`Failed to load teams for mentor ${mentorName}:`, e);
                       }
                     }
                   }
@@ -533,7 +529,6 @@ const ProfilePageMember = () => {
                       const mentorTeams = mentorTeamsResult?.data || [];
                       teams = [...teams, ...mentorTeams];
                     } catch (e) {
-                      console.error(`Failed to load teams for mentor ${mentorName}:`, e);
                     }
                   }
                 }
@@ -557,7 +552,6 @@ const ProfilePageMember = () => {
                       homeworksMap[team.code] = homeworksResult.data;
                     }
                   } catch (e) {
-                    console.error(`Failed to load homeworks for team ${team.code}:`, e);
                   }
                 }
               }
@@ -565,7 +559,6 @@ const ProfilePageMember = () => {
             }
           }
         } catch (error) {
-          console.error('Error loading structure teams:', error);
         }
       }
     }
@@ -1072,7 +1065,6 @@ MVP возможно реализовать до конца курса в так
         gender: tempGender,
       })
     } catch (e) {
-      console.error('Failed to save profile:', e)
       // опционально: показать уведомление об ошибке/вернуть старые значения
     }
   }
@@ -1127,7 +1119,6 @@ MVP возможно реализовать до конца курса в так
           setFilteredVuses(response.data)
         }
       } catch (error) {
-        console.error('Error fetching VUSes:', error)
       }
     }
     fetchVuses()
@@ -1189,11 +1180,9 @@ MVP возможно реализовать до конца курса в так
               setTeamHomeworks(homeworksResult.data)
             }
           } catch (error) {
-            console.error('Error loading team homeworks:', error)
           }
         }
       } catch (error) {
-        console.error('Error loading user data:', error)
       }
     }
 
@@ -1274,7 +1263,6 @@ const loadCoordRo = async (mentorFullName: string): Promise<{ coordinator: strin
     };
 
   } catch (error) {
-    console.error('Error loading coordinator and district manager:', error);
     return {
       coordinator: 'Координатор не назначен',
       districtManager: 'Руководитель округа не назначен'
@@ -1292,7 +1280,6 @@ const loadTeamData = async (teamCode: string) => {
         teamTrack = teamResp.data.track
       }
     } catch (error) {
-      console.error('Error loading team track:', error)
     }
     
     // Загрузка всех участников команды
@@ -1334,7 +1321,6 @@ const loadTeamData = async (teamCode: string) => {
       isEditingProjectDescription: false,
     })
   } catch (error) {
-    console.error('Error loading team data:', error)
   }
 }
 
@@ -1791,7 +1777,6 @@ const loadTeamData = async (teamCode: string) => {
               setTeamData({ ...teamData, teamName: newName })
               setIsEditingTeamNameOnly(false)
             } catch (e) {
-              console.error('Failed to rename team:', e)
             }
           }}>Сохранить</button>
           <button className='text-xs hover:underline' onClick={() => setIsEditingTeamNameOnly(false)}>Отмена</button>
@@ -1885,7 +1870,6 @@ const loadTeamData = async (teamCode: string) => {
                         // Обновляем данные команды, чтобы получить обновленный трек
                         await loadTeamData(memberData.team_code)
                       } catch (error) {
-                        console.error('Error reloading team homeworks:', error)
                       }
                     }
                     setShowWorkshopHomework(false); // Возвращаем к списку заданий
@@ -2014,7 +1998,6 @@ const loadTeamData = async (teamCode: string) => {
                                 setTeamData({ ...teamData, teamName: newName })
                                 setIsEditingTeamData(false)
                               } catch (e) {
-                                console.error('Failed to rename team:', e)
                               }
                             }}
                           >
@@ -2229,7 +2212,6 @@ const loadTeamData = async (teamCode: string) => {
                   }
                 }
               } catch (error) {
-                console.error('Error reloading team homeworks:', error)
               }
             }
             setCurrentHomeworkView(null); // Возвращаем к списку заданий
@@ -2508,7 +2490,6 @@ const loadTeamData = async (teamCode: string) => {
                   setTeamHomeworks(homeworksResult.data)
                 }
               } catch (error) {
-                console.error('Error reloading team homeworks:', error)
               }
             }
             setShowHomework(false); // ⬅️ СКРЫВАЕМ КОМПОНЕНТ ЗАГРУЗКИ

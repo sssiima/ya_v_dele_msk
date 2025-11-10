@@ -61,7 +61,6 @@ const ResetPage = () => {
           setEmailError(null)
         }
       } catch (error) {
-        console.error('Ошибка проверки email:', error)
         setEmailError('Ошибка проверки пользователя')
       } finally {
         setCheckingEmail(false)
@@ -111,7 +110,6 @@ const ResetPage = () => {
         setEmailError('Ошибка проверки данных')
       }
     } catch (error: any) {
-      console.error('Ошибка при проверке данных:', error)
       setEmailError(error.message || 'Ошибка при проверке данных')
     } finally {
       setSubmitting(false)

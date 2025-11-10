@@ -326,7 +326,6 @@ export const mentorsApi = {
       })
       return { success: true, data: unique }
     } catch (error) {
-      console.warn('Mentors API failed, using fallback data:', error)
       // Заглушка будет добавлена позже
       return {
         success: true,
@@ -378,7 +377,6 @@ export const membersApi = {
 
       return await response.json();
     } catch (error) {
-      console.error('Error creating member:', error);
       throw error;
     }
   },
@@ -391,7 +389,6 @@ export const membersApi = {
       }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching members:', error);
       throw error;
     }
   }
@@ -624,8 +621,6 @@ export const fileUploadApi = {
       reader.onerror = error => reject(new Error('Ошибка чтения файла: ' + error));
     });
 
-    console.log('File converted to base64, sending to server...');
-    console.log('Preparing payload with teamCode:', teamCode, 'Type:', typeof teamCode);
 
     const payload = {
       file: base64File,
@@ -637,7 +632,6 @@ export const fileUploadApi = {
       timestamp: new Date().toISOString()
     };
     
-    console.log('Payload teamCode:', payload.teamCode);
 
     const response = await fetch(`${API_BASE_URL}/upload-homework`, {
       method: 'POST',

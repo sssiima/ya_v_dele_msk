@@ -31,7 +31,6 @@ const MethodPage = () => {
           setHomeworks(result.data)
         }
       } catch (error) {
-        console.error('Error loading uploaded homeworks:', error)
       } finally {
         setLoading(false)
       }
@@ -71,7 +70,6 @@ const MethodPage = () => {
           setTeamData(result.data)
         }
       } catch (error) {
-        console.error('Error loading team data:', error)
       }
     }
   }
@@ -104,7 +102,6 @@ const MethodPage = () => {
         setTeamData(null)
       }
     } catch (error) {
-      console.error('Error saving review:', error)
       alert('Ошибка при сохранении результата')
     } finally {
       setSaving(false)

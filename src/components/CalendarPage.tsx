@@ -87,7 +87,6 @@ const CalendarPage = () => {
                   setTeamName(member.team_name || '');
                 }
               } catch (error) {
-                console.error('Error loading team name:', error);
                 // Используем team_name из данных участника как fallback
                 if (member.team_name) {
                   setTeamName(member.team_name);
@@ -107,7 +106,6 @@ const CalendarPage = () => {
                   setHasWorkshopHomework(false);
                 }
               } catch (error) {
-                console.error('Error checking workshop homework:', error);
                 setHasWorkshopHomework(false);
               }
             } else {
@@ -115,7 +113,6 @@ const CalendarPage = () => {
             }
           }
         } catch (error) {
-          console.error('Error loading member data:', error);
         }
       } else if (structureCtid) {
         setIsMember(false);
@@ -133,7 +130,6 @@ const CalendarPage = () => {
             setUserPos(structure.pos || '');
           }
         } catch (error) {
-          console.error('Error loading structure data:', error);
         }
       } else {
         // Если пользователь не авторизован, сбрасываем состояние
@@ -242,7 +238,6 @@ const CalendarPage = () => {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
       }
     } catch (error) {
-      console.error('Error submitting registration:', error);
       alert('Ошибка при отправке заявки. Попробуйте еще раз.');
     } finally {
       setSubmitting(false);
