@@ -1379,9 +1379,9 @@ app.post('/api/mero-reg', async (req, res) => {
 
     client = await pool.connect();
 
-    // Вставка данных в таблицу mero_reg
+    // Вставка данных в таблицу mero-reg (имя таблицы с дефисом нужно заключать в кавычки)
     const query = `
-      INSERT INTO mero_reg (
+      INSERT INTO "mero-reg" (
         mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, date
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id
