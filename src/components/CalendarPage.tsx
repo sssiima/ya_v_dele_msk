@@ -325,7 +325,7 @@ const CalendarPage = () => {
                         type="submit"
                         className="w-full text-white font-bold py-2 px-6 rounded-full transition-colors mt-6"
                       >
-                        <h2 className="uppercase">Отправить заявку</h2>
+                        <h2 className="uppercase text-white">Отправить заявку</h2>
                       </button>
                     </form>
                   </div>
