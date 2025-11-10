@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { membersApi, structureApi, teamsApi, meroRegApi } from '@/services/api';
+import { membersApi, structureApi, teamsApi, meroRegApi, homeworksApi } from '@/services/api';
 
 interface Event {
   id: number;
@@ -31,6 +31,7 @@ const CalendarPage = () => {
   const [userPos, setUserPos] = useState('');
   const [userTeamCode, setUserTeamCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [hasWorkshopHomework, setHasWorkshopHomework] = useState<boolean | null>(null);
   
   const availableDays = ['15 ноября 16:00-17:30',
     '15 ноября 17:45-19:15',
@@ -78,6 +79,25 @@ const CalendarPage = () => {
                   setTeamName(member.team_name);
                 }
               }
+              
+              // Проверяем наличие домашнего задания "Промежуточный ВШ"
+              try {
+                const homeworksResp = await homeworksApi.getByTeamCode(member.team_code);
+                if (homeworksResp?.success && homeworksResp.data) {
+                  const hasHomework = homeworksResp.data.some((hw: any) => {
+                    const normalizedHwName = (hw.hw_name || '').trim();
+                    return normalizedHwName === 'Промежуточный ВШ';
+                  });
+                  setHasWorkshopHomework(hasHomework);
+                } else {
+                  setHasWorkshopHomework(false);
+                }
+              } catch (error) {
+                console.error('Error checking workshop homework:', error);
+                setHasWorkshopHomework(false);
+              }
+            } else {
+              setHasWorkshopHomework(false);
             }
           }
         } catch (error) {
@@ -85,6 +105,7 @@ const CalendarPage = () => {
         }
       } else if (structureCtid) {
         setIsMember(false);
+        setHasWorkshopHomework(null); // Для структуры проверка не нужна
         try {
           // Загружаем данные структуры
           const structureResp = await structureApi.getByCtid(structureCtid);
@@ -100,6 +121,9 @@ const CalendarPage = () => {
         } catch (error) {
           console.error('Error loading structure data:', error);
         }
+      } else {
+        // Если пользователь не авторизован, сбрасываем состояние
+        setHasWorkshopHomework(null);
       }
     };
     
@@ -253,6 +277,8 @@ const CalendarPage = () => {
 
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
+    // Сбрасываем состояние проверки домашнего задания при смене события
+    setHasWorkshopHomework(null);
   };
 
   const handleBackToEvents = () => {
@@ -328,8 +354,15 @@ const CalendarPage = () => {
 
                 <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
                 <div className='flex items-center justify-center'>
-                  <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">        
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">
+                    {/* Для участников: проверяем наличие домашнего задания */}
+                    {isMember ? (
+                      hasWorkshopHomework === false ? (
+                        <p className="text-gray-400 text-center">
+                          Регистрация будет доступна после загрузки презентации в ДЗ "Промежуточный ВШ"
+                        </p>
+                      ) : hasWorkshopHomework === true ? (
+                        <form onSubmit={handleSubmit} className="space-y-4">
                       <div>
                         <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
                         <input 
@@ -437,7 +470,75 @@ const CalendarPage = () => {
                       >
                         <h2 className="uppercase text-white">{submitting ? 'Отправка...' : 'Отправить заявку'}</h2>
                       </button>
-                    </form>
+                        </form>
+                      ) : (
+                        <p className="text-gray-400 text-center">Загрузка...</p>
+                      )
+                    ) : (
+                      // Для структуры форма всегда доступна
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
+                          <input 
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Имя</label>
+                          <input 
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
+                          <input 
+                            value={patronymic}
+                            onChange={(e) => setPatronymic(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Паспортные данные</label>
+                          <input 
+                            value={passportData}
+                            onChange={(e) => setPassportData(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+
+                        <div className="flex items-start">
+                          <input 
+                            type="checkbox"
+                            id="confirm-participation"
+                            checked={confirmParticipation}
+                            onChange={(e) => setConfirmParticipation(e.target.checked)}
+                            className="mr-3 mt-1"
+                            required
+                          />
+                          <label htmlFor="confirm-participation" className="text-xs text-white italic">
+                            Нажимая на кнопку, вы подтверждаете свое участие
+                          </label>
+                        </div>
+
+                        <button 
+                          type="submit"
+                          disabled={submitting}
+                          className="w-full text-white font-bold py-2 px-6 rounded-full transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <h2 className="uppercase text-white">{submitting ? 'Отправка...' : 'Отправить заявку'}</h2>
+                        </button>
+                      </form>
+                    )}
                   </div>
                 </div>
               </>
