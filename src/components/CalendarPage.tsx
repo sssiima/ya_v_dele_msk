@@ -25,8 +25,13 @@ const CalendarPage = () => {
   const [confirmParticipation, setConfirmParticipation] = useState(false);
   const daySelectorRef = useRef<HTMLDivElement>(null);
   
-  const availableDays = ['15 ноября', '18 ноября'];
-  
+  const availableDays = ['15 ноября 16:00-17:30',
+    '15 ноября 17:45-19:15',
+    '15 ноября 19:30-21:00',
+    '18 ноября 16:30-17:30',
+    '18 ноября 18:15-19:45',
+    '18 ноября 20:00-21:30'
+  ];
   // Определяем, является ли пользователь участником
   useEffect(() => {
     const memberId = localStorage.getItem('member_id');
