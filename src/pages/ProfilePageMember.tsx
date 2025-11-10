@@ -189,8 +189,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
 
   return (
     <div className="py-4">
-      <div className="flex flex-col items-center">
-        <div className="w-full max-w-2xl">
+      <div className="w-full">
         {/* Кнопка назад */}
         <button 
           onClick={() => {
@@ -299,7 +298,6 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         >
           {uploading ? 'Загрузка...' : 'Отправить'}
         </button>
-        </div>
       </div>
     </div>
   );
@@ -2096,7 +2094,7 @@ const loadTeamData = async (teamCode: string) => {
                       const isWhiteBg = isUploaded || isReviewed
                       return (
                         <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
-                          <span className="text-sm">Промежуточный ВШ</span>
+                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
