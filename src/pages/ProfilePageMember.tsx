@@ -2335,7 +2335,7 @@ const loadTeamData = async (teamCode: string) => {
                       const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
                       const deadline = hwNumber ? getDeadline(hwNumber) : null;
                       return deadline ? (
-                        <div className="mb-4 p-3 border border-brand rounded-lg bg-gray-50">
+                        <div className="mb-4 mt-4 p-3 border border-brand rounded-lg bg-gray-50">
                           <p className="text-sm font-semibold text-black mb-1">
                             ДЗ {hwNumber}
                           </p>
