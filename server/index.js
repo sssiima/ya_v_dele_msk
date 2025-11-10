@@ -1352,6 +1352,76 @@ app.get('/api/check-cloudinary', async (req, res) => {
   }
 });
 
+// POST /api/mero-reg - регистрация на мероприятие
+app.post('/api/mero-reg', async (req, res) => {
+  let client;
+  try {
+    const {
+      mero,
+      last_name,
+      first_name,
+      patronymic,
+      email,
+      team_code,
+      pos,
+      passport,
+      team_name,
+      date
+    } = req.body;
+
+    // Проверка обязательных полей
+    if (!mero || !last_name || !first_name || !email || !pos || !passport) {
+      return res.status(400).json({
+        success: false,
+        message: 'Не все обязательные поля заполнены'
+      });
+    }
+
+    client = await pool.connect();
+
+    // Вставка данных в таблицу mero_reg
+    const query = `
+      INSERT INTO mero_reg (
+        mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, date
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING id
+    `;
+
+    // Преобразуем date в строку, если это массив
+    const dateValue = Array.isArray(date) ? date.join(', ') : (date || null);
+
+    const values = [
+      mero,
+      last_name,
+      first_name,
+      patronymic || null,
+      email,
+      team_code || null,
+      pos,
+      passport,
+      team_name || null,
+      dateValue
+    ];
+
+    const result = await client.query(query, values);
+
+    res.status(201).json({
+      success: true,
+      message: 'Регистрация на мероприятие успешно сохранена',
+      data: { id: result.rows[0].id }
+    });
+  } catch (error) {
+    console.error('Error saving event registration:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при сохранении регистрации',
+      error: error.message
+    });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   // server started

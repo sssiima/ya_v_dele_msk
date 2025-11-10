@@ -546,6 +546,27 @@ export const teamMembersApi = {
   }
 }
 
+// API для регистрации на мероприятия
+export interface MeroRegData {
+  mero: string
+  last_name: string
+  first_name: string
+  patronymic?: string | null
+  email: string
+  team_code?: string | null
+  pos: string
+  passport: string
+  team_name?: string | null
+  date?: string | null
+}
+
+export const meroRegApi = {
+  async register(data: MeroRegData): Promise<ApiResponse<{ id: number }>> {
+    const response = await api.post('/mero-reg', data)
+    return response.data
+  }
+}
+
 // Интерфейс для домашнего задания
 export interface Homework {
   id: number

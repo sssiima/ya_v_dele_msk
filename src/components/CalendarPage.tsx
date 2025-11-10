@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { membersApi, structureApi, teamsApi, meroRegApi } from '@/services/api';
 
 interface Event {
   id: number;
@@ -25,6 +26,12 @@ const CalendarPage = () => {
   const [confirmParticipation, setConfirmParticipation] = useState(false);
   const daySelectorRef = useRef<HTMLDivElement>(null);
   
+  // Данные пользователя для отправки
+  const [userEmail, setUserEmail] = useState('');
+  const [userPos, setUserPos] = useState('');
+  const [userTeamCode, setUserTeamCode] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  
   const availableDays = ['15 ноября 16:00-17:30',
     '15 ноября 17:45-19:15',
     '15 ноября 19:30-21:00',
@@ -32,11 +39,75 @@ const CalendarPage = () => {
     '18 ноября 18:15-19:45',
     '18 ноября 20:00-21:30'
   ];
-  // Определяем, является ли пользователь участником
+  // Определяем, является ли пользователь участником и загружаем данные
   useEffect(() => {
-    const memberId = localStorage.getItem('member_id');
-    setIsMember(!!memberId);
-  }, []);
+    const loadUserData = async () => {
+      const memberId = localStorage.getItem('member_id');
+      const structureCtid = localStorage.getItem('structure_ctid');
+      
+      if (memberId) {
+        setIsMember(true);
+        try {
+          // Загружаем данные участника
+          const memberResp = await membersApi.getById(Number(memberId));
+          const member = memberResp?.data;
+          
+          if (member) {
+            setLastName(member.last_name || 'отсутствует');
+            setFirstName(member.first_name || 'отсутствует');
+            setPatronymic(member.patronymic || 'отсутствует');
+            setUserEmail(member.username || '');
+            // Для участников pos = role (captain или member)
+            setUserPos(member.role || 'member');
+            setUserTeamCode(member.team_code || null);
+            
+            // Загружаем название команды
+            if (member.team_code) {
+              try {
+                const teamResp = await teamsApi.getByCode(member.team_code);
+                if (teamResp?.success && teamResp.data) {
+                  setTeamName(teamResp.data.name || '');
+                } else if (member.team_name) {
+                  // Если не удалось получить через API, используем team_name из данных участника
+                  setTeamName(member.team_name || '');
+                }
+              } catch (error) {
+                console.error('Error loading team name:', error);
+                // Используем team_name из данных участника как fallback
+                if (member.team_name) {
+                  setTeamName(member.team_name);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading member data:', error);
+        }
+      } else if (structureCtid) {
+        setIsMember(false);
+        try {
+          // Загружаем данные структуры
+          const structureResp = await structureApi.getByCtid(structureCtid);
+          const structure = structureResp?.data;
+          
+          if (structure) {
+            setLastName(structure.last_name || 'отсутствует');
+            setFirstName(structure.first_name || 'отсутствует');
+            setPatronymic(structure.patronymic || 'отсутствует');
+            setUserEmail(structure.username || '');
+            setUserPos(structure.pos || '');
+          }
+        } catch (error) {
+          console.error('Error loading structure data:', error);
+        }
+      }
+    };
+    
+    // Загружаем данные только если открыта форма регистрации (промежуточный воркшоп)
+    if (selectedEvent?.id === 3) {
+      loadUserData();
+    }
+  }, [selectedEvent]);
   
   // Обработка клика вне селектора дней
   useEffect(() => {
@@ -61,19 +132,52 @@ const CalendarPage = () => {
     );
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика отправки формы
-    console.log({
-      lastName,
-      firstName,
-      patronymic,
-      teamName: isMember ? teamName : undefined,
-      passportData,
-      selectedDays: isMember ? selectedDays : undefined,
-      confirmParticipation
-    });
-    alert('Заявка отправлена!');
+    
+    if (!confirmParticipation) {
+      alert('Пожалуйста, подтвердите свое участие');
+      return;
+    }
+    
+    if (isMember && selectedDays.length === 0) {
+      alert('Пожалуйста, выберите день и волну для выступления');
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      const registrationData = {
+        mero: 'Промежуточный воркшоп',
+        last_name: lastName,
+        first_name: firstName,
+        patronymic: patronymic || null,
+        email: userEmail,
+        team_code: isMember ? userTeamCode : null,
+        pos: userPos,
+        passport: passportData,
+        team_name: isMember ? teamName : null,
+        date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null
+      };
+      
+      const result = await meroRegApi.register(registrationData);
+      
+      if (result?.success) {
+        alert('Заявка успешно отправлена!');
+        // Очищаем форму
+        setPassportData('');
+        setSelectedDays([]);
+        setConfirmParticipation(false);
+      } else {
+        throw new Error(result?.message || 'Ошибка при отправке заявки');
+      }
+    } catch (error) {
+      console.error('Error submitting registration:', error);
+      alert('Ошибка при отправке заявки. Попробуйте еще раз.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Моковые данные для событий
@@ -292,7 +396,7 @@ const CalendarPage = () => {
                               : 'Выберите дни'}
                           </button>
                           {showDaySelector && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                               {availableDays.map((day) => (
                                 <label
                                   key={day}
@@ -328,9 +432,10 @@ const CalendarPage = () => {
 
                       <button 
                         type="submit"
-                        className="w-full text-white font-bold py-2 px-6 rounded-full transition-colors mt-6"
+                        disabled={submitting}
+                        className="w-full text-white font-bold py-2 px-6 rounded-full transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <h2 className="uppercase text-white">Отправить заявку</h2>
+                        <h2 className="uppercase text-white">{submitting ? 'Отправка...' : 'Отправить заявку'}</h2>
                       </button>
                     </form>
                   </div>
