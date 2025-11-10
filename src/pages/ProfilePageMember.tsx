@@ -189,7 +189,8 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
 
   return (
     <div className="py-4">
-      <div className="w-full">
+      <div className="w-full lg:flex lg:justify-center lg:items-center">
+        <div className="w-full">
         {/* Кнопка назад */}
         <button 
           onClick={() => {
@@ -298,6 +299,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         >
           {uploading ? 'Загрузка...' : 'Отправить'}
         </button>
+        </div>
       </div>
     </div>
   );
@@ -2111,7 +2113,7 @@ const loadTeamData = async (teamCode: string) => {
                             ) : (
                               <button 
                                 onClick={handleWorkshopHomeworkClick}
-                                className="rounded-xl bg-brand text-white italic text-xs py-1"
+                                className="rounded-xl bg-brand text-white italic text-xs lg:text-sm py-1"
                               >
                                 Загрузить
                               </button>
