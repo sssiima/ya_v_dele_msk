@@ -188,9 +188,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
   };
 
   return (
-    <div className="py-4">
-      <div className="w-full lg:flex lg:justify-center lg:items-center">
-        <div className="w-full">
+    <div className="py-4 w-full">
         {/* Кнопка назад */}
         <button 
           onClick={() => {
@@ -299,8 +297,6 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         >
           {uploading ? 'Загрузка...' : 'Отправить'}
         </button>
-        </div>
-      </div>
     </div>
   );
 };
@@ -1876,9 +1872,46 @@ const loadTeamData = async (teamCode: string) => {
           </div>
         )}
         {sect==='myteam' && (
+          <>
+          {showWorkshopHomework ? (
+            <div className="w-full lg:flex lg:justify-center">
+              <div className="w-full">
+                <WorkshopHomeworkLoad
+                  teamCode={memberData?.team_code}
+                  onSuccess={async () => {
+                    // Обновляем список домашних заданий после успешной загрузки
+                    if (memberData?.team_code) {
+                      try {
+                        const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
+                        if (homeworksResult?.success && homeworksResult.data) {
+                          setTeamHomeworks(homeworksResult.data)
+                        }
+                        
+                        // Обновляем данные участника
+                        const memberId = localStorage.getItem('member_id')
+                        if (memberId) {
+                          const memberResp = await membersApi.getById(Number(memberId))
+                          const updatedMember = memberResp?.data
+                          if (updatedMember) {
+                            setMemberData(updatedMember)
+                          }
+                        }
+                        
+                        // Обновляем данные команды, чтобы получить обновленный трек
+                        await loadTeamData(memberData.team_code)
+                      } catch (error) {
+                        console.error('Error reloading team homeworks:', error)
+                      }
+                    }
+                    setShowWorkshopHomework(false); // Возвращаем к списку заданий
+                  }}
+                />
+              </div>
+            </div>
+          ) : (
           <div className="lg:flex lg:gap-6">
             {/* Левая колонка - информация о команде */}
-            {!currentHomeworkView && !showWorkshopHomework && (
+            {!currentHomeworkView && (
               <>
               <div className='baseinfo flex flex-col items-start mt-6 lg:flex-1'>
               <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
@@ -2217,40 +2250,9 @@ const loadTeamData = async (teamCode: string) => {
           }}
         />)}
         
-        {/* Компонент загрузки домашнего задания для промежуточного воркшопа */}
-        {showWorkshopHomework && (
-          <WorkshopHomeworkLoad
-            teamCode={memberData?.team_code}
-            onSuccess={async () => {
-              // Обновляем список домашних заданий после успешной загрузки
-              if (memberData?.team_code) {
-                try {
-                  const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
-                  if (homeworksResult?.success && homeworksResult.data) {
-                    setTeamHomeworks(homeworksResult.data)
-                  }
-                  
-                  // Обновляем данные участника
-                  const memberId = localStorage.getItem('member_id')
-                  if (memberId) {
-                    const memberResp = await membersApi.getById(Number(memberId))
-                    const updatedMember = memberResp?.data
-                    if (updatedMember) {
-                      setMemberData(updatedMember)
-                    }
-                  }
-                  
-                  // Обновляем данные команды, чтобы получить обновленный трек
-                  await loadTeamData(memberData.team_code)
-                } catch (error) {
-                  console.error('Error reloading team homeworks:', error)
-                }
-              }
-              setShowWorkshopHomework(false); // Возвращаем к списку заданий
-            }}
-          />
-        )}
           </div>
+          )}
+          </>
         )}
         {sect==='calendar' && (
           <CalendarPage />
