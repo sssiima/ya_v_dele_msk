@@ -2087,16 +2087,6 @@ const loadTeamData = async (teamCode: string) => {
                       )
                     })()}
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Второе д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
-                    
                     {(() => {
                       const workshopStatus = getWorkshopHomeworkStatus()
                       const isUploaded = workshopStatus.status === 'uploaded'
@@ -2130,6 +2120,16 @@ const loadTeamData = async (teamCode: string) => {
                         </div>
                       )
                     })()}
+                    
+                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
+                      <span className="text-sm text-black">Второе д/з</span>
+                      <div className="flex items-center gap-2">
+                        <button className="rounded flex items-center justify-center">
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
+                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
+                      </div>
+                    </div>
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Третье д/з</span>

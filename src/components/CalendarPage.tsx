@@ -253,21 +253,8 @@ const CalendarPage = () => {
     // }
   ];
 
-  const partnerEvents: Event[] = [
-    {
-      id: 1,
-      title: 'Форум YouLead',
-      date: '8-9 ноября',
-      image: 'images/youlead.jpeg',
-      description: '',
-      location: '',
-      time: ''
-    }
-  ];
-
   const calendarEvents = [
     // { id: 2, title: 'Открытие', date: '7 ноября' },
-    { id: 3, title: 'Форум YouLead', date: '8-9 ноября' },
     { id: 4, title: 'Промежуточный воркшоп', date: '15 и 18 ноября' },
     { id: 5, title: '«Прожарка от Сбера»', date: '4 декабря' },
     { id: 6, title: 'Финальный воркшоп', date: '6-7 декабря' },
@@ -560,27 +547,6 @@ const CalendarPage = () => {
             <div key={event.id} className="flex flex-col items-center cursor-pointer">
               <img src={event.image}
                 className="rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity object-cover"
-                onClick={() => handleEventClick(event)}
-              ></img>
-              <div className="flex-1">
-                <p className="text-brand font-semibold text-xs mt-2 lg:text-sm">{event.title}</p>
-                <p className="text-black font-semibold text-xs mt-1 lg:text-sm">{event.date}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-
-      {/* События партнеров */}
-      <div>
-        <h2 className="my-2 mb-4 normal-case">События партнеров</h2>
-        <div className="flex flex-row justify-center gap-4 lg:gap-8">
-          {partnerEvents.map((event) => (
-            <div key={event.id} className="flex flex-col items-center cursor-pointer">
-              <img src={event.image}
-                className="bg-[#D9D9D9] rounded-lg w-36 h-20 lg:w-60 lg:h-40 hover:opacity-80 transition-opacity object-cover"
                 onClick={() => handleEventClick(event)}
               ></img>
               <div className="flex-1">

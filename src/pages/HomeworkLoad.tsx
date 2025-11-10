@@ -125,7 +125,9 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
               </p>
             </div>
             <a href={prezlink ? getDownloadLink(prezlink) : ''} download className='text-brand underline text-sm font-semibold block'>Презентация</a>
-            <a href={templink ? getDownloadLink(templink): ''} download className='text-brand underline text-sm font-semibold block'>Шаблон для выполнения д/з</a>
+            {templink && templink.includes('drive.google.com') && (
+              <a href={getDownloadLink(templink)} download className='text-brand underline text-sm font-semibold block'>Шаблон для выполнения д/з</a>
+            )}
           </div>
 
           <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
