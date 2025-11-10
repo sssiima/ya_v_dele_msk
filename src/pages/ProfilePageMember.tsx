@@ -260,7 +260,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         </div>
 
         {/* Выбор трека */}
-        <div className="mb-4 relative" ref={trackSelectorRef}>
+        <div className="mb-48 relative" ref={trackSelectorRef}>
           <label className="block text-sm font-semibold text-black mb-2">Трек</label>
           <button
             type="button"
