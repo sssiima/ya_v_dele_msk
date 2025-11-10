@@ -359,6 +359,25 @@ const ProfilePageMember = () => {
     setShowWorkshopHomework(true);
   };
 
+  // Функция для получения номера д/з по индексу мастер-класса
+  const getHomeworkNumberByMkIndex = (mkIndex: number): number | null => {
+    // Первые два мастер-класса (индексы 0 и 1) не имеют д/з
+    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
+    if (mkIndex < 2) return null;
+    return mkIndex - 1; // Индекс 2 -> ДЗ 1, индекс 3 -> ДЗ 2, и т.д.
+  };
+
+  // Функция для получения дедлайна по номеру д/з
+  const getDeadline = (hwNumber: number): string | null => {
+    const deadlines: { [key: number]: string } = {
+      1: '17 ноября 2025',
+      2: '24 ноября 2025',
+      3: '1 декабря 2025',
+      4: '8 декабря 2025'
+    };
+    return deadlines[hwNumber] || null;
+  };
+
   // Функция для проверки статуса домашнего задания по номеру
   const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
     // По номеру домашки обращаемся к соответствующей записи из массива mk_list
@@ -2179,6 +2198,7 @@ const loadTeamData = async (teamCode: string) => {
           prezlink={mk_list[currentHomeworkView - 1]?.pres}
           templink={mk_list[currentHomeworkView - 1]?.template}
           teamCode={memberData?.team_code}
+          homeworkNumber={getHomeworkNumberByMkIndex(currentHomeworkView - 1) || undefined}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
             if (memberData?.team_code) {
@@ -2308,6 +2328,23 @@ const loadTeamData = async (teamCode: string) => {
                           <p className='text-xs'>{selectedMk.description}</p>
                         </div>
                     </div>
+                    
+                    {/* Дедлайн */}
+                    {memberData?.team_code && selectedMk.tz && (() => {
+                      const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk.title && mk.subtitle === selectedMk.subtitle);
+                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
+                      const deadline = hwNumber ? getDeadline(hwNumber) : null;
+                      return deadline ? (
+                        <div className="mb-4 p-3 border border-brand rounded-lg bg-gray-50">
+                          <p className="text-sm font-semibold text-black mb-1">
+                            ДЗ {hwNumber}
+                          </p>
+                          <p className="text-xs text-gray-700">
+                            закрывается {deadline}
+                          </p>
+                        </div>
+                      ) : null;
+                    })()}
                     
                     {/* Отображение статуса или кнопки для участника */}
                     {memberData?.team_code && selectedMk.tz && (
@@ -2458,6 +2495,10 @@ const loadTeamData = async (teamCode: string) => {
           prezlink={selectedMk?.pres}
           templink={selectedMk?.template}
           teamCode={memberData?.team_code}
+          homeworkNumber={(() => {
+            const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk?.title && mk.subtitle === selectedMk?.subtitle);
+            return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+          })()}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
             if (memberData?.team_code) {

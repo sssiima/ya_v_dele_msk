@@ -14,6 +14,7 @@ interface Event {
 const CalendarPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isMember, setIsMember] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   // Состояния формы
   const [lastName, setLastName] = useState('');
@@ -147,6 +148,15 @@ const CalendarPage = () => {
   }, [selectedEvent]);
   
   // Обработка клика вне селекторов
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (daySelectorRef.current && !daySelectorRef.current.contains(event.target as Node)) {
@@ -328,7 +338,11 @@ const CalendarPage = () => {
             <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedEvent.title}</h2>
             
             <div className='w-full lg:px-8'>
-              <img src={selectedEvent.image} className="rounded-lg h-48 mb-6 object-cover w-full"></img>
+              <img 
+                src={selectedEvent.image} 
+                className="rounded-lg h-48 mb-6 object-cover w-full"
+                style={selectedEvent.id === 4 && isDesktop ? { objectPosition: 'center top 33%' } : undefined}
+              ></img>
             </div>
 
             <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />

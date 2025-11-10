@@ -11,6 +11,7 @@ interface HomeworkLoadProps {
   templink?: string;
   teamCode?: string;
   onSuccess?: () => void;
+  homeworkNumber?: number;
 }
 
 const HomeworkLoad: React.FC<HomeworkLoadProps> = ({ 
@@ -21,8 +22,21 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   prezlink, 
   templink,
   teamCode,
-  onSuccess
+  onSuccess,
+  homeworkNumber
 }) => {
+  const getDeadline = (hwNumber?: number): string | null => {
+    if (!hwNumber) return null;
+    const deadlines: { [key: number]: string } = {
+      1: '17 ноября 2025',
+      2: '24 ноября 2025',
+      3: '1 декабря 2025',
+      4: '8 декабря 2025'
+    };
+    return deadlines[hwNumber] || null;
+  };
+
+  const deadline = getDeadline(homeworkNumber);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +162,18 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
           </div>
 
           <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
+
+          {/* Дедлайн */}
+          {deadline && (
+            <div className="mb-4 p-3 border border-brand rounded-lg bg-gray-50">
+              <p className="text-sm font-semibold text-black mb-1">
+                ДЗ {homeworkNumber}
+              </p>
+              <p className="text-xs text-gray-700">
+                закрывается {deadline}
+              </p>
+            </div>
+          )}
 
           {/* Информация о выбранном файле */}
           {selectedFile && (
