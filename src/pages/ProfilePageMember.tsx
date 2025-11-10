@@ -350,7 +350,9 @@ const ProfilePageMember = () => {
   const [teamsHomeworksForMk, setTeamsHomeworksForMk] = useState<{[teamCode: string]: Homework[]}>({});
 
   const handleHomeworkClick = (homeworkNumber: number) => {
-    setCurrentHomeworkView(homeworkNumber);
+    // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
+    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
+    setCurrentHomeworkView(homeworkNumber + 2);
   };
   
   const handleWorkshopHomeworkClick = () => {
@@ -360,9 +362,12 @@ const ProfilePageMember = () => {
   // Функция для проверки статуса домашнего задания по номеру
   const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
     // По номеру домашки обращаемся к соответствующей записи из массива mk_list
-    if (!mk_list[homeworkNumber - 1]) return { status: null }
+    // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
+    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
+    const mkIndex = homeworkNumber + 1
+    if (!mk_list[mkIndex]) return { status: null }
     
-    const mkItem = mk_list[homeworkNumber - 1]
+    const mkItem = mk_list[mkIndex]
     const mkSubtitle = mkItem?.subtitle
     if (!mkSubtitle) return { status: null }
     
@@ -563,76 +568,23 @@ const ProfilePageMember = () => {
 
   
     const mk_list = [
-//       { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png',
-//         pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link',
-//         description: 'Всем привет! Вот и пришло время для первого домашнего задания. Сегодня мы попробуем развить предпринимательское мышление через выявление реальных проблем в нашей повседневной жизни, подумаем над их решениями и сгенерируем собственные.',
-//         disabled: true,
-//         criteria: 'https://drive.google.com/file/d/1grBNXxTPi6L51dKFD9lpeIlijmZxYHOX/view?usp=drive_link',
-//         tz: 'https://drive.google.com/file/d/1MscbGCIqvg3PwjE4Osft6HCoWLqqwnmD/view?usp=drive_link',
-//         template: '',
-//         fulldesc: `Критерии оценки домашнего задания No 1:
-// «Проблемы, идея, решение»
-// Оцениваем каждое предложенное решение.
-
-// 1. Качество выявления проблемы
-// ➜ Проблема существует в реальной жизни и подтверждена фотографией (не
-// выдумана)
-// ➜ Проблема актуальна для значительного числа людей, а не является узко
-// личной
-// ➜ Проблема имеет социальную или экономическую значимость
-
-// 2. Анализ существующего решения
-// ➜ Найдено реально существующее решение (подтверждено фото или
-// описанием)
-// ➜ Решение действительно связано с выявленной проблемой
-// ➜ Выбрано наиболее распространенное или типичное решение
-
-// 3. Качество предложенного решения
-// ➜ Решение действительно устраняет выявленные недостатки
-// существующего подхода
-// ➜ Объяснено, как именно решение работает
-// ➜ Описаны конкретные преимущества для пользователей
-// ➜ Решение имеет измеримую ценность
-
-// 4. Дополнительный балл можно получить за инновационность и
-// нестандартность решения.` },
-//       { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png',
-//         pres: 'https://drive.google.com/file/d/1ET9n5nxgyf5KzRSqwBqRIb2v0aWFx84D/view?usp=drive_link',
-//         description: 'Пришло время учиться анализировать целевую аудиторию и проводить кастдевы. Сегодня вас ждут два увлекательных задания. Погнали!',
-//         disabled: true,
-//         criteria: '',
-//         tz: 'https://drive.google.com/file/d/1yTiCgu36x2qyrL0DuXVqryWHSmT5iKE1/view?usp=drive_link',
-//         template: '',
-//         fulldesc: `Критерии оценки домашнего задания No 2: «Customer development. ЦА»
-// Оцениваем задания по отдельности
-
-// Задание 1: Проведение customer development и монтаж видео
-
-// 1. Качество вопросов опроса
-// Вопросы должны быть релевантными, раскрывать потребности, боли и
-// ожидания целевой аудитории по проекту.
-
-// 2. Креативность и юмор в подборе ответов для видео
-// В видео должны быть интересно и забавно смонтированные ответы,
-// отражающие уникальные инсайты или неожиданные реакции.
-
-// 3. Техническое исполнение видео
-// Качество монтажа, использование трендовой музыки, динамика и общий
-// визуальный эффект.
-
-// Задание 2: Анализ ЦА двух мест
-
-// 1. Качество фото
-// Фотографии должны быть чёткими, информативными, отражать реальную
-// обстановку и сопровождать описания.
-
-// 2. Качество и подробность описаний людей
-// Четкие, осмысленные описания с ключевыми характеристиками и деталями.
-
-// 3. Обоснованность и логичность гипотезы по ЦА
-// Гипотезы должны логично вытекать из наблюдений и описаний, учитывать
-// поведение и внешние признаки.`  },
-      { title: "Первый мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthirdopen.png',
+      { title: "Первый мастер-класс", subtitle: 'Проблема. Идея. Решение', image: '/images/mkfirst.png',
+        pres: 'https://drive.google.com/file/d/1dJd3mA8eFmKksPX5FQrkTO7XF0mlkOZN/view?usp=drive_link',
+        description: 'Всем привет! Вот и пришло время для первого домашнего задания. Сегодня мы попробуем развить предпринимательское мышление через выявление реальных проблем в нашей повседневной жизни, подумаем над их решениями и сгенерируем собственные.',
+        disabled: false,
+        criteria: '',
+        tz: '',
+        template: '',
+        fulldesc: '' },
+      { title: "Второй мастер-класс", subtitle: 'Customer development. ЦА.', image: '/images/mksecond.png',
+        pres: 'https://drive.google.com/file/d/1ET9n5nxgyf5KzRSqwBqRIb2v0aWFx84D/view?usp=drive_link',
+        description: 'Пришло время учиться анализировать целевую аудиторию и проводить кастдевы. Сегодня вас ждут два увлекательных задания. Погнали!',
+        disabled: false,
+        criteria: '',
+        tz: '',
+        template: '',
+        fulldesc: '' },
+      { title: "Третий мастер-класс", subtitle: 'MVP. HADI - циклы.', image: '/images/mkthirdopen.png',
         pres: 'https://drive.google.com/file/d/1KACuNbGwN4b2DXXe3eXNz9pyIhoRO7Nu/view?usp=drive_link',
         description: 'После мастер-класса вы сформировали представление о минимально жизнеспособном продукте (MVP), который каждый из вас будет готов представить на финальном воркшопе курса. Сегодня попробуем его визуально представить. Да, так тоже можно!',
         disabled: false,
@@ -648,7 +600,7 @@ MVP возможно реализовать до конца курса в так
 Промт чётко структурирован, содержит все необходимые параметры (описание проекта, ограничения по времени/ресурсам, требуемый функционал MVP), написан понятным языком.
 
 3. Соответствие MVP сути проекта MVP демонстрирует ключевую ценность проекта, показывает основную функцию или решает главную проблему целевой аудитории.`  },
-      { title: "Второй мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthlock.png',
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthlock.png',
         pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
         description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
         disabled: true, track: 'Базовый трек',
@@ -689,7 +641,7 @@ MVP возможно реализовать до конца курса в так
 6. Дополнительный балл за оригинальность и глубину проработки
 Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
 творческий подход к применению элементов.`  },
-      { title: "Третий мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthlock.png',
+      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthlock.png',
         pres: 'https://drive.google.com/file/d/1KZEn8Clb9KC1Lh4dR5GRtiI3YrU7CX_6/view?usp=drive_link',
         description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
         disabled: true, track: 'Базовый трек',
@@ -765,7 +717,7 @@ MVP возможно реализовать до конца курса в так
 Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
 оформлена аккуратно, содержит пояснения, цвета или группировки для
 наглядности. Присутствует краткий итог с ключевыми выводами.`  },
-      { title: "Четвертый мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthlock.png',
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthlock.png',
         pres: 'https://drive.google.com/file/d/1-ICPM2FI3bkJuMimfSe2SUr2w8OPrcOE/view?usp=drive_link',
         description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
         disabled: true, track: 'Базовый трек',
@@ -2142,7 +2094,7 @@ const loadTeamData = async (teamCode: string) => {
                       const isReviewed = workshopStatus.status === 'reviewed'
                       const isWhiteBg = isUploaded || isReviewed
                       return (
-                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                        <div className={`flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
                           <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
@@ -2220,7 +2172,7 @@ const loadTeamData = async (teamCode: string) => {
             )}
           
        {currentHomeworkView && ( <HomeworkLoad 
-          title={mk_list[currentHomeworkView - 1]?.subtitle || `Домашнее задание ${currentHomeworkView}`}
+          title={mk_list[currentHomeworkView - 1]?.subtitle || `Домашнее задание ${currentHomeworkView - 2}`}
           preview={mk_list[currentHomeworkView - 1]?.description}
           desclink={mk_list[currentHomeworkView - 1]?.tz}
           desc={mk_list[currentHomeworkView - 1]?.fulldesc}
@@ -2301,8 +2253,12 @@ const loadTeamData = async (teamCode: string) => {
                      </div>
 
                      <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
-                     <a href={getDownloadLink(selectedMk.criteria)} download className='text-brand italic hover:underline text-sm block'>Скачать критерии для выполнения д/з</a>
-                     <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
+                     {selectedMk.criteria && (
+                       <a href={getDownloadLink(selectedMk.criteria)} download className='text-brand italic hover:underline text-sm block'>Скачать критерии для выполнения д/з</a>
+                     )}
+                     {selectedMk.tz && (
+                       <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
+                     )}
           
          
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
@@ -2347,14 +2303,14 @@ const loadTeamData = async (teamCode: string) => {
                     
                     <div className="flex w-full flex-col">
                       <div className='w-full text-left'>
-                        <p className="text-md font-semibold text-black mb-2">Описание домашнего задания</p>
+                        <p className="text-md font-semibold text-black mb-2">{selectedMk.tz ? 'Описание домашнего задания' : 'Описание'}</p>
                         <div className='rounded-lg border border-brand p-2'>
                           <p className='text-xs'>{selectedMk.description}</p>
                         </div>
                     </div>
                     
                     {/* Отображение статуса или кнопки для участника */}
-                    {memberData?.team_code && (
+                    {memberData?.team_code && selectedMk.tz && (
                       <div className="flex w-full justify-center mt-4">
                         {mkHomeworkStatus !== null && (mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed') ? (
                           <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full ${
