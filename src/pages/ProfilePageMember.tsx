@@ -269,7 +269,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
             {selectedTrack || 'Выберите трек'}
           </button>
           {showTrackSelector && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg">
+            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {tracks.map((track) => (
                 <button
                   key={track}
@@ -2109,7 +2109,7 @@ const loadTeamData = async (teamCode: string) => {
                             ) : (
                               <button 
                                 onClick={handleWorkshopHomeworkClick}
-                                className="rounded-xl bg-brand hover:bg-teal-600 text-white font-bold text-xs px-4 py-1"
+                                className="rounded-xl bg-brand text-white italic text-xs py-1"
                               >
                                 Загрузить
                               </button>
