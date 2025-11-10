@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Event {
   id: number;
@@ -12,6 +12,64 @@ interface Event {
 
 const CalendarPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isMember, setIsMember] = useState(false);
+  
+  // Состояния формы
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [patronymic, setPatronymic] = useState('');
+  const [teamName, setTeamName] = useState('');
+  const [passportData, setPassportData] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [showDaySelector, setShowDaySelector] = useState(false);
+  const [confirmParticipation, setConfirmParticipation] = useState(false);
+  const daySelectorRef = useRef<HTMLDivElement>(null);
+  
+  const availableDays = ['15 ноября', '18 ноября'];
+  
+  // Определяем, является ли пользователь участником
+  useEffect(() => {
+    const memberId = localStorage.getItem('member_id');
+    setIsMember(!!memberId);
+  }, []);
+  
+  // Обработка клика вне селектора дней
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (daySelectorRef.current && !daySelectorRef.current.contains(event.target as Node)) {
+        setShowDaySelector(false);
+      }
+    };
+    if (showDaySelector) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDaySelector]);
+  
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev => 
+      prev.includes(day) 
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Здесь будет логика отправки формы
+    console.log({
+      lastName,
+      firstName,
+      patronymic,
+      teamName: isMember ? teamName : undefined,
+      passportData,
+      selectedDays: isMember ? selectedDays : undefined,
+      confirmParticipation
+    });
+    alert('Заявка отправлена!');
+  };
 
   // Моковые данные для событий
   const upcomingEvents: Event[] = [
@@ -162,10 +220,12 @@ const CalendarPage = () => {
                 <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
                 <div className='flex items-center justify-center'>
                   <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">        
-                    <form className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                       <div>
                         <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
                         <input 
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
                           className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                           required
                         />
@@ -174,6 +234,8 @@ const CalendarPage = () => {
                       <div>
                         <label className="block text-sm font-semibold text-white mb-2">Имя</label>
                         <input 
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
                           className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                           required
                         />
@@ -182,36 +244,88 @@ const CalendarPage = () => {
                       <div>
                         <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
                         <input 
+                          value={patronymic}
+                          onChange={(e) => setPatronymic(e.target.value)}
                           className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
 
+                      {/* Название команды - только для участников */}
+                      {isMember && (
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
+                          <input 
+                            value={teamName}
+                            onChange={(e) => setTeamName(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                      )}
+
                       <div>
-                        <label className="block text-sm font-semibold text-white mb-2">Электронная почта</label>
+                        <label className="block text-sm font-semibold text-white mb-2">Паспортные данные</label>
                         <input 
-                          type="email"
-                          required
+                          value={passportData}
+                          onChange={(e) => setPassportData(e.target.value)}
                           className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
                         />
                       </div>
+
+                      {/* Выбор дня и волны - только для участников */}
+                      {isMember && (
+                        <div className="relative" ref={daySelectorRef}>
+                          <label className="block text-sm font-semibold text-white mb-2">Выбери день и волну для выступления</label>
+                          <button
+                            type="button"
+                            onClick={() => setShowDaySelector(!showDaySelector)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {selectedDays.length > 0 
+                              ? selectedDays.join(', ') 
+                              : 'Выберите дни'}
+                          </button>
+                          {showDaySelector && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                              {availableDays.map((day) => (
+                                <label
+                                  key={day}
+                                  className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedDays.includes(day)}
+                                    onChange={() => toggleDay(day)}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-sm text-black">{day}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       <div className="flex items-start">
                         <input 
                           type="checkbox"
-                          id="privacy-policy"
-                          className="mr-3"
+                          id="confirm-participation"
+                          checked={confirmParticipation}
+                          onChange={(e) => setConfirmParticipation(e.target.checked)}
+                          className="mr-3 mt-1"
                           required
                         />
-                        <label htmlFor="privacy-policy" className="text-xs text-white italic">
+                        <label htmlFor="confirm-participation" className="text-xs text-white italic">
                           Нажимая на кнопку, вы подтверждаете свое участие
                         </label>
                       </div>
 
                       <button 
                         type="submit"
-                        className="w-full bg-brand font-bold py-2 px-6 rounded-full transition-colorsmt-6"
+                        className="w-full bg-white text-brand font-bold py-2 px-6 rounded-full hover:bg-gray-100 transition-colors mt-6"
                       >
-                        <h2 className="uppercase text-white">Отправить заявку</h2>
+                        <h2 className="uppercase">Отправить</h2>
                       </button>
                     </form>
                   </div>
