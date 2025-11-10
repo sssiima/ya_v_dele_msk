@@ -770,7 +770,14 @@ const getDownloadLink = (url: string) => {
   const handleMkClick = async (mk: Mk) => {
     setSelectedMk(mk);
     
-    // Загружаем команды и их статусы для структуры
+    // Загружаем команды и их статусы для структуры только для мастер-классов с д/з
+    // (у которых есть tz или fulldesc)
+    if (!mk.tz && !mk.fulldesc) {
+      setStructureTeamsForMk([]);
+      setTeamsHomeworksForMk({});
+      return;
+    }
+    
     const structureCtid = localStorage.getItem('structure_ctid');
     
     if (structureCtid) {
@@ -1886,56 +1893,63 @@ const getDownloadLink = (url: string) => {
                      </div>
 
                      <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
-                     <a href={getDownloadLink(selectedMk.method)} download className='text-brand italic hover:underline text-sm block'>Скачать методический материал</a>
+                     {selectedMk.method && (
+                       <a href={getDownloadLink(selectedMk.method)} download className='text-brand italic hover:underline text-sm block'>Скачать методический материал</a>
+                     )}
           
          
-                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                     
-                     <div className="flex w-full flex-col">
-                        <p className="text-lg font-semibold text-black mb-2">Критерии домашнего задания</p>
-                        <div className='rounded-lg border border-brand p-2'>
-                          <p className='text-xs whitespace-pre-line'>{selectedMk.fulldesc}</p>
+                     {/* Показываем разделы только для мастер-классов с д/з (у которых есть tz или fulldesc) */}
+                     {selectedMk.tz && selectedMk.fulldesc && (
+                       <>
+                         <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                         
+                         <div className="flex w-full flex-col">
+                            <p className="text-lg font-semibold text-black mb-2">Критерии домашнего задания</p>
+                            <div className='rounded-lg border border-brand p-2'>
+                              <p className='text-xs whitespace-pre-line'>{selectedMk.fulldesc}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
-                     
-                     {/* Отображение статусов для структуры */}
-                     {structureTeamsForMk.length > 0 && (
-                       <div className="mb-4">
-                         <p className="text-sm font-semibold text-gray-700 mb-2">Отслеживание выполнения</p>
-                         <div className="space-y-2">
-                           {structureTeamsForMk.map((team) => {
-                             const teamHomeworks = teamsHomeworksForMk[team.code] || [];
-                             const normalizedSubtitle = (selectedMk?.subtitle || '').trim();
-                             const homework = teamHomeworks.find(hw => {
-                               const normalizedHwName = (hw.hw_name || '').trim();
-                               return normalizedHwName === normalizedSubtitle;
-                             });
-                             
-                             return (
-                               <div key={team.code} className="flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-white">
-                                 <span className="text-sm text-black">{team.name || team.code}</span>
-                                 <div className="flex items-center gap-2">
-                                   {homework ? (
-                                     homework.status === 'uploaded' ? (
-                                       <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
-                                     ) : homework.status === 'reviewed' ? (
-                                       <span className="text-xs lg:text-sm text-brand">
-                                         <span className="font-bold">{homework.mark}</span> баллов
-                                       </span>
-                                     ) : (
-                                       <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
-                                     )
-                                   ) : (
-                                     <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
-                                   )}
-                                 </div>
-                               </div>
-                             );
-                           })}
-                         </div>
-                       </div>
+                        <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                         
+                         {/* Отображение статусов для структуры */}
+                         {structureTeamsForMk.length > 0 && (
+                           <div className="mb-4">
+                             <p className="text-sm font-semibold text-gray-700 mb-2">Отслеживание выполнения</p>
+                             <div className="space-y-2">
+                               {structureTeamsForMk.map((team) => {
+                                 const teamHomeworks = teamsHomeworksForMk[team.code] || [];
+                                 const normalizedSubtitle = (selectedMk?.subtitle || '').trim();
+                                 const homework = teamHomeworks.find(hw => {
+                                   const normalizedHwName = (hw.hw_name || '').trim();
+                                   return normalizedHwName === normalizedSubtitle;
+                                 });
+                                 
+                                 return (
+                                   <div key={team.code} className="flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-white">
+                                     <span className="text-sm text-black">{team.name || team.code}</span>
+                                     <div className="flex items-center gap-2">
+                                       {homework ? (
+                                         homework.status === 'uploaded' ? (
+                                           <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                                         ) : homework.status === 'reviewed' ? (
+                                           <span className="text-xs lg:text-sm text-brand">
+                                             <span className="font-bold">{homework.mark}</span> баллов
+                                           </span>
+                                         ) : (
+                                           <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
+                                         )
+                                       ) : (
+                                         <span className="text-xs lg:text-sm text-pink italic">Не выполнили</span>
+                                       )}
+                                     </div>
+                                   </div>
+                                 );
+                               })}
+                             </div>
+                           </div>
+                         )}
+                       </>
                      )}
 
                    </div>
