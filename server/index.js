@@ -1154,14 +1154,25 @@ app.post('/api/upload-homework', async (req, res) => {
   try {
     console.log('Upload homework request received');
     
-    const { file: base64File, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode } = req.body;
+    const { file: base64File, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode, track, fileSize } = req.body;
 
     console.log('Received teamCode:', teamCode, 'Type:', typeof teamCode);
+    console.log('Received track:', track);
+    console.log('Received fileSize:', fileSize);
 
     if (!base64File) {
       return res.status(400).json({
         success: false,
         message: 'Файл не предоставлен'
+      });
+    }
+
+    // Проверка размера файла (50MB для воркшопа, 10MB для обычных дз)
+    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (fileSize && fileSize > maxSize) {
+      return res.status(400).json({
+        success: false,
+        message: `Файл слишком большой. Максимальный размер: ${maxSize / 1024 / 1024}MB`
       });
     }
 
@@ -1185,26 +1196,64 @@ app.post('/api/upload-homework', async (req, res) => {
     // Сохраняем в существующую таблицу homeworks
     client = await pool.connect();
     
-    const insertQuery = `
-      INSERT INTO homeworks (hw_name, file_url, status, team_code)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id
-    `;
+    // Проверяем наличие поля track в таблице и добавляем его, если нужно
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='homeworks' AND column_name='track') THEN
+          ALTER TABLE homeworks ADD COLUMN track TEXT;
+        END IF;
+      END $$;
+    `);
+    
+    const insertQuery = track 
+      ? `INSERT INTO homeworks (hw_name, file_url, status, team_code, track)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id`
+      : `INSERT INTO homeworks (hw_name, file_url, status, team_code)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id`;
     
     // Проверяем, что teamCode не пустая строка
     const finalTeamCode = (teamCode && typeof teamCode === 'string' && teamCode.trim() !== '') ? teamCode.trim() : null;
-    console.log('Saving homework with teamCode:', finalTeamCode);
+    console.log('Saving homework with teamCode:', finalTeamCode, 'track:', track);
     
-    const insertResult = await client.query(insertQuery, [
-      homeworkTitle,           // hw_name
-      uploadResult.secure_url, // file_url  
-      'uploaded',              // status
-      finalTeamCode            // team_code (если есть и не пустая строка)
-    ]);
+    const insertValues = track 
+      ? [homeworkTitle, uploadResult.secure_url, 'uploaded', finalTeamCode, track]
+      : [homeworkTitle, uploadResult.secure_url, 'uploaded', finalTeamCode];
+    
+    const insertResult = await client.query(insertQuery, insertValues);
 
     const homeworkId = insertResult.rows[0].id;
 
     console.log('Homework saved to database with ID:', homeworkId);
+
+    // Если это промежуточный воркшоп и указан трек, обновляем track для всех участников команды
+    if (homeworkTitle === 'Промежуточный ВШ' && track && finalTeamCode) {
+      try {
+        // Проверяем наличие поля track в таблице members и добавляем его, если нужно
+        await client.query(`
+          DO $$
+          BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='members' AND column_name='track') THEN
+              ALTER TABLE members ADD COLUMN track TEXT;
+            END IF;
+          END $$;
+        `);
+
+        // Обновляем track для всех участников команды
+        const updateResult = await client.query(
+          `UPDATE members 
+           SET track = $1 
+           WHERE team_code = $2 AND COALESCE(archived, false) = false`,
+          [track, finalTeamCode]
+        );
+        console.log(`Updated track for ${updateResult.rowCount} members in team ${finalTeamCode}`);
+      } catch (updateError) {
+        console.error('Error updating track for team members:', updateError);
+        // Не прерываем выполнение, так как домашнее задание уже сохранено
+      }
+    }
 
     res.json({
       success: true,

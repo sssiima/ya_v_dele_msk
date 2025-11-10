@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { membersApi, structureApi, teamsApi, vusesApi, homeworksApi, Homework } from '@/services/api'
+import { membersApi, structureApi, teamsApi, vusesApi, homeworksApi, Homework, fileUploadApi } from '@/services/api'
 import CalendarPage from '@/components/CalendarPage';
 import TeamPage from '@/components/TeamPage';
 import { useNavigate } from 'react-router-dom'
@@ -95,7 +95,212 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
   </div>
 )
 
+// Компонент загрузки домашнего задания для промежуточного воркшопа
+interface WorkshopHomeworkLoadProps {
+  teamCode?: string;
+  onSuccess?: () => void;
+}
 
+const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({ 
+  teamCode,
+  onSuccess
+}) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState<string>('');
+  const [showTrackSelector, setShowTrackSelector] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const trackSelectorRef = useRef<HTMLDivElement>(null);
+
+  const tracks = ['Базовый', 'Социальный', 'Инновационный'];
+
+  // Обработка клика вне селектора трека
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (trackSelectorRef.current && !trackSelectorRef.current.contains(event.target as Node)) {
+        setShowTrackSelector(false);
+      }
+    };
+    if (showTrackSelector) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTrackSelector]);
+
+  const handleAttachFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type === 'application/pdf') {
+        // Проверка размера файла (50MB)
+        if (file.size > 50 * 1024 * 1024) {
+          alert('Файл слишком большой. Максимальный размер: 50MB');
+          return;
+        }
+        setSelectedFile(file);
+      } else {
+        alert('Пожалуйста, выберите файл в формате PDF');
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      alert('Пожалуйста, сначала выберите файл');
+      return;
+    }
+
+    if (!selectedTrack) {
+      alert('Пожалуйста, выберите трек');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Загружаем файл с треком
+      const result = await fileUploadApi.uploadHomework(
+        selectedFile, 
+        'Промежуточный ВШ', 
+        teamCode || undefined,
+        selectedTrack
+      );
+
+      if (result.success && result.data) {
+        alert('Презентация успешно загружена!');
+        if (onSuccess) {
+          onSuccess();
+        }
+      } else {
+        throw new Error(result.message || 'Ошибка загрузки файла');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Ошибка при загрузке файла: ' + (error as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="py-4">
+      <div className="">
+        {/* Кнопка назад */}
+        <button 
+          onClick={() => {
+            if (onSuccess) {
+              onSuccess();
+            }
+          }}
+          className="flex items-center text-brand mb-2 hover:underline"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Назад к заданиям
+        </button>
+
+        {/* Скрытый input для выбора файла */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          accept=".pdf,application/pdf"
+          style={{ display: 'none' }}
+        />
+
+        <h2 className="text-lg font-bold text-brand normal-case text-center mb-4">
+          Промежуточный воркшоп
+        </h2>
+
+        <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+
+        {/* Описание критериев */}
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-black mb-2">Описание критериев:</p>
+          <div className="border border-brand rounded-2xl p-4">
+            <ol className="list-decimal list-inside space-y-2 text-sm text-black">
+              <li>Формулировка проблемы</li>
+              <li>Описание решения и идеи проекта</li>
+              <li>Актуальность проблемы</li>
+              <li>Портрет целевой аудитории</li>
+              <li>УТП</li>
+              <li>MVP</li>
+              <li>Дизайн</li>
+            </ol>
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+
+        {/* Кнопка загрузки презентации */}
+        <div className="mb-4">
+          <button 
+            onClick={handleAttachFile}
+            className='w-full rounded-xl bg-white hover:bg-gray-200 text-brand font-bold text-xs border border-brand p-3'
+          >
+            {selectedFile ? 'Изменить файл' : 'Загрузить презентацию'}
+          </button>
+          {selectedFile && (
+            <div className="mt-2 p-2 border border-green-500 rounded-lg bg-green-50">
+              <p className="text-xs text-green-700">
+                Выбран файл: <strong>{selectedFile.name}</strong> 
+                ({Math.round(selectedFile.size / 1024 / 1024 * 100) / 100} MB)
+              </p>
+            </div>
+          )}
+          <p className='italic text-xs mt-2 text-gray-600'>
+            *Принимается файл в формате PDF до 50MB
+          </p>
+        </div>
+
+        {/* Выбор трека */}
+        <div className="mb-4 relative" ref={trackSelectorRef}>
+          <label className="block text-sm font-semibold text-black mb-2">Трек</label>
+          <button
+            type="button"
+            onClick={() => setShowTrackSelector(!showTrackSelector)}
+            className="w-full px-4 py-2 border border-brand rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {selectedTrack || 'Выберите трек'}
+          </button>
+          {showTrackSelector && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg">
+              {tracks.map((track) => (
+                <button
+                  key={track}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTrack(track);
+                    setShowTrackSelector(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                    selectedTrack === track ? 'bg-brand text-white' : 'text-black'
+                  }`}
+                >
+                  {track}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Кнопка отправить */}
+        <button 
+          onClick={handleSubmit}
+          disabled={uploading || !selectedFile || !selectedTrack}
+          className='w-full rounded-xl bg-brand hover:bg-teal-600 text-white font-bold text-sm p-3 disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          {uploading ? 'Загрузка...' : 'Отправить'}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const ProfilePageMember = () => {
   const navigate = useNavigate()
@@ -124,6 +329,7 @@ const ProfilePageMember = () => {
   const [teamHomeworks, setTeamHomeworks] = useState<Homework[]>([])
 
   const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
+  const [showWorkshopHomework, setShowWorkshopHomework] = useState(false);
   
   // Состояния для статусов мастер-классов
   const [mkHomeworkStatus, setMkHomeworkStatus] = useState<{ status: 'uploaded' | 'reviewed' | null, mark?: number } | null>(null);
@@ -132,6 +338,10 @@ const ProfilePageMember = () => {
 
   const handleHomeworkClick = (homeworkNumber: number) => {
     setCurrentHomeworkView(homeworkNumber);
+  };
+  
+  const handleWorkshopHomeworkClick = () => {
+    setShowWorkshopHomework(true);
   };
 
   // Функция для проверки статуса домашнего задания по номеру
@@ -157,6 +367,24 @@ const ProfilePageMember = () => {
     }
     
     // Если у этой записи статус reviewed, возвращаем 'reviewed' с баллом
+    if (homework && homework.status === 'reviewed') {
+      return { status: 'reviewed', mark: homework.mark }
+    }
+    
+    return { status: null }
+  }
+  
+  // Функция для проверки статуса промежуточного воркшопа
+  const getWorkshopHomeworkStatus = (): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
+    const homework = teamHomeworks.find(hw => {
+      const normalizedHwName = (hw.hw_name || '').trim()
+      return normalizedHwName === 'Промежуточный ВШ'
+    })
+    
+    if (homework && homework.status === 'uploaded') {
+      return { status: 'uploaded' }
+    }
+    
     if (homework && homework.status === 'reviewed') {
       return { status: 'reviewed', mark: homework.mark }
     }
@@ -1636,7 +1864,7 @@ const loadTeamData = async (teamCode: string) => {
         {sect==='myteam' && (
           <div className="lg:flex lg:gap-6">
             {/* Левая колонка - информация о команде */}
-            {!currentHomeworkView && (
+            {!currentHomeworkView && !showWorkshopHomework && (
               <>
               <div className='baseinfo flex flex-col items-start mt-6 lg:flex-1'>
               <div className='flex flex-col lg:flex-row lg:items-start lg:gap-6 w-full'>
@@ -1857,15 +2085,39 @@ const loadTeamData = async (teamCode: string) => {
                       </div>
                     </div>
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Промежуточный ВШ</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const workshopStatus = getWorkshopHomeworkStatus()
+                      const isUploaded = workshopStatus.status === 'uploaded'
+                      const isReviewed = workshopStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
+                      return (
+                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                          <span className="text-sm">Промежуточный ВШ</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                {workshopStatus.mark !== null && workshopStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{workshopStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
+                            ) : (
+                              <button 
+                                onClick={handleWorkshopHomeworkClick}
+                                className="rounded-xl bg-brand hover:bg-teal-600 text-white font-bold text-xs px-4 py-1"
+                              >
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })()}
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Третье д/з</span>
@@ -1950,6 +2202,27 @@ const loadTeamData = async (teamCode: string) => {
             setCurrentHomeworkView(null); // Возвращаем к списку заданий
           }}
         />)}
+        
+        {/* Компонент загрузки домашнего задания для промежуточного воркшопа */}
+        {showWorkshopHomework && (
+          <WorkshopHomeworkLoad
+            teamCode={memberData?.team_code}
+            onSuccess={async () => {
+              // Обновляем список домашних заданий после успешной загрузки
+              if (memberData?.team_code) {
+                try {
+                  const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
+                  if (homeworksResult?.success && homeworksResult.data) {
+                    setTeamHomeworks(homeworksResult.data)
+                  }
+                } catch (error) {
+                  console.error('Error reloading team homeworks:', error)
+                }
+              }
+              setShowWorkshopHomework(false); // Возвращаем к списку заданий
+            }}
+          />
+        )}
           </div>
         )}
         {sect==='calendar' && (
@@ -2076,7 +2349,7 @@ const loadTeamData = async (teamCode: string) => {
                </div>
           )}
           
-          { !selectedMk && !showHomework && (<div>
+          { !selectedMk && !showHomework && !showWorkshopHomework && (<div>
           <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
     
           <div className="relative">
