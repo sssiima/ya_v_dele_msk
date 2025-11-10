@@ -1434,7 +1434,8 @@ app.post('/api/mero-reg', async (req, res) => {
       pos,
       passport,
       team_name,
-      date
+      date,
+      comment
     } = req.body;
 
     // Проверка обязательных полей
@@ -1450,8 +1451,8 @@ app.post('/api/mero-reg', async (req, res) => {
     // Вставка данных в таблицу mero-reg (имя таблицы с дефисом нужно заключать в кавычки)
     const query = `
       INSERT INTO "mero-reg" (
-        mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, date
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, date, comment
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING id
     `;
 
@@ -1468,7 +1469,8 @@ app.post('/api/mero-reg', async (req, res) => {
       pos,
       passport,
       team_name || null,
-      dateValue
+      dateValue,
+      comment || null
     ];
 
     const result = await client.query(query, values);

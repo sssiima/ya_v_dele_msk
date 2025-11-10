@@ -256,6 +256,20 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
           <p className='italic text-xs mt-2 text-gray-600'>
             *Принимается файл в формате PDF до 50MB
           </p>
+          
+          {/* Информация о названиях презентаций */}
+          <div className="mt-3 p-3 border border-brand rounded-lg bg-gray-50">
+            <p className="text-xs font-semibold text-black mb-2">Пример названий презентаций:</p>
+            <p className="text-xs text-black mb-2">
+              <span className="font-semibold">Название презентации:</span> название проекта без сокращений
+            </p>
+            <p className="text-xs text-black mb-2">
+              Например: <span className="font-bold text-brand">Чистые улочки</span>
+            </p>
+            <p className="text-xs text-black">
+              Как НЕ подходит: <span className="text-pink">Чистые улочки ИТОГ</span>, <span className="italic text-pink">Чист. улочки (2)</span>
+            </p>
+          </div>
         </div>
 
         {/* Выбор трека */}

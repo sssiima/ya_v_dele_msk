@@ -558,6 +558,7 @@ export interface MeroRegData {
   passport: string
   team_name?: string | null
   date?: string | null
+  comment?: string | null
 }
 
 export const meroRegApi = {

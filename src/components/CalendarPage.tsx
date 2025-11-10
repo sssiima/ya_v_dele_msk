@@ -23,8 +23,21 @@ const CalendarPage = () => {
   const [passportData, setPassportData] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [showDaySelector, setShowDaySelector] = useState(false);
+  const [selectedSpheres, setSelectedSpheres] = useState<string[]>([]);
+  const [showSphereSelector, setShowSphereSelector] = useState(false);
   const [confirmParticipation, setConfirmParticipation] = useState(false);
   const daySelectorRef = useRef<HTMLDivElement>(null);
+  const sphereSelectorRef = useRef<HTMLDivElement>(null);
+  
+  const spheres = [
+    'Медицинские проекты',
+    'Спортивные проекты',
+    'Робототехнические проекты',
+    'Городские проекты',
+    'Образовательные проекты',
+    'Творческие проекты',
+    'Ни одна сфера не подходит'
+  ];
   
   // Данные пользователя для отправки
   const [userEmail, setUserEmail] = useState('');
@@ -133,20 +146,23 @@ const CalendarPage = () => {
     }
   }, [selectedEvent]);
   
-  // Обработка клика вне селектора дней
+  // Обработка клика вне селекторов
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (daySelectorRef.current && !daySelectorRef.current.contains(event.target as Node)) {
         setShowDaySelector(false);
       }
+      if (sphereSelectorRef.current && !sphereSelectorRef.current.contains(event.target as Node)) {
+        setShowSphereSelector(false);
+      }
     };
-    if (showDaySelector) {
+    if (showDaySelector || showSphereSelector) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showDaySelector]);
+  }, [showDaySelector, showSphereSelector]);
   
   const toggleDay = (day: string) => {
     setSelectedDays(prev => 
@@ -154,6 +170,23 @@ const CalendarPage = () => {
         ? prev.filter(d => d !== day)
         : [...prev, day]
     );
+  };
+
+  const handleSphereToggle = (sphere: string) => {
+    if (sphere === 'Ни одна сфера не подходит') {
+      // Если выбрана эта опция, очищаем все остальные
+      setSelectedSpheres(['Ни одна сфера не подходит']);
+    } else {
+      // Убираем "Ни одна сфера не подходит" если она была выбрана
+      const newSpheres = selectedSpheres.filter(s => s !== 'Ни одна сфера не подходит');
+      
+      // Переключаем выбранную сферу
+      if (newSpheres.includes(sphere)) {
+        setSelectedSpheres(newSpheres.filter(s => s !== sphere));
+      } else {
+        setSelectedSpheres([...newSpheres, sphere]);
+      }
+    }
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -182,7 +215,8 @@ const CalendarPage = () => {
         pos: userPos,
         passport: passportData,
         team_name: isMember ? teamName : null,
-        date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null
+        date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null,
+        comment: selectedSpheres.length > 0 ? selectedSpheres.join(', ') : null
       };
       
       const result = await meroRegApi.register(registrationData);
@@ -192,6 +226,7 @@ const CalendarPage = () => {
         // Очищаем форму
         setPassportData('');
         setSelectedDays([]);
+        setSelectedSpheres([]);
         setConfirmParticipation(false);
       } else {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
@@ -397,9 +432,42 @@ const CalendarPage = () => {
                         <input 
                           value={passportData}
                           onChange={(e) => setPassportData(e.target.value)}
+                          placeholder="Номер и серия"
                           className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                           required
                         />
+                      </div>
+
+                      {/* Выбор сфер */}
+                      <div className="relative" ref={sphereSelectorRef}>
+                        <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
+                        <button
+                          type="button"
+                          onClick={() => setShowSphereSelector(!showSphereSelector)}
+                          className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          {selectedSpheres.length > 0 
+                            ? selectedSpheres.join(', ') 
+                            : 'Выберите сферы'}
+                        </button>
+                        {showSphereSelector && (
+                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                            {spheres.map((sphere) => (
+                              <label
+                                key={sphere}
+                                className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={selectedSpheres.includes(sphere)}
+                                  onChange={() => handleSphereToggle(sphere)}
+                                  className="mr-2"
+                                />
+                                <span className="text-sm text-black">{sphere}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Выбор дня и волны - только для участников */}
@@ -498,9 +566,42 @@ const CalendarPage = () => {
                           <input 
                             value={passportData}
                             onChange={(e) => setPassportData(e.target.value)}
+                            placeholder="Номер и серия"
                             className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                           />
+                        </div>
+
+                        {/* Выбор сфер */}
+                        <div className="relative" ref={sphereSelectorRef}>
+                          <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
+                          <button
+                            type="button"
+                            onClick={() => setShowSphereSelector(!showSphereSelector)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {selectedSpheres.length > 0 
+                              ? selectedSpheres.join(', ') 
+                              : 'Выберите сферы'}
+                          </button>
+                          {showSphereSelector && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                              {spheres.map((sphere) => (
+                                <label
+                                  key={sphere}
+                                  className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedSpheres.includes(sphere)}
+                                    onChange={() => handleSphereToggle(sphere)}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-sm text-black">{sphere}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex items-start">
