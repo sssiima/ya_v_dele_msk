@@ -154,65 +154,70 @@ const CalendarPage = () => {
               </div>
             </div>
 
-            {/* <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
+            {/* Форма регистрации только для промежуточного воркшопа */}
+            {selectedEvent.id === 3 && (
+              <>
+                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
 
-            <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
-            <div className='flex items-center justify-center'>
-              <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">        
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
-                    <input 
-                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
+                <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
+                <div className='flex items-center justify-center'>
+                  <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">        
+                    <form className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
+                        <input 
+                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-white mb-2">Имя</label>
+                        <input 
+                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
+                        <input 
+                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-white mb-2">Электронная почта</label>
+                        <input 
+                          type="email"
+                          required
+                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div className="flex items-start">
+                        <input 
+                          type="checkbox"
+                          id="privacy-policy"
+                          className="mr-3"
+                          required
+                        />
+                        <label htmlFor="privacy-policy" className="text-xs text-white italic">
+                          Нажимая на кнопку, вы подтверждаете свое участие
+                        </label>
+                      </div>
+
+                      <button 
+                        type="submit"
+                        className="w-full bg-brand font-bold py-2 px-6 rounded-full transition-colorsmt-6"
+                      >
+                        <h2 className="uppercase text-white">Отправить заявку</h2>
+                      </button>
+                    </form>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-white mb-2">Имя</label>
-                    <input 
-                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
-                    <input 
-                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-white mb-2">Электронная почта</label>
-                    <input 
-                      type="email"
-                      required
-                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div className="flex items-start">
-                    <input 
-                      type="checkbox"
-                      id="privacy-policy"
-                      className="mr-3"
-                      required
-                    />
-                    <label htmlFor="privacy-policy" className="text-xs text-white italic">
-                      Нажимая на кнопку, вы подтверждаете свое участие
-                    </label>
-                  </div>
-
-                  <button 
-                    type="submit"
-                    className="w-full bg-brand font-bold py-2 px-6 rounded-full transition-colorsmt-6"
-                  >
-                    <h2 className="uppercase text-white">Отправить заявку</h2>
-                  </button>
-                </form>
-              </div>
-            </div> */}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
