@@ -66,7 +66,8 @@ interface MemberData {
   team_code: string;
   role: string;
   team_name: string;
-  mentor: string; 
+  mentor: string;
+  track?: string;
 }
 
 const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subtitle?: string, image?: string, link?: string, disabled?: boolean }) => (
@@ -269,7 +270,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
             {selectedTrack || 'Выберите трек'}
           </button>
           {showTrackSelector && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ maxHeight: '192px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
               {tracks.map((track) => (
                 <button
                   key={track}
@@ -1300,6 +1301,17 @@ const loadCoordRo = async (mentorFullName: string): Promise<{ coordinator: strin
 // Функция загрузки данных команды
 const loadTeamData = async (teamCode: string) => {
   try {
+    // Загрузка данных команды из таблицы teams
+    let teamTrack = 'Будет доступен после 1 Воркшопа'
+    try {
+      const teamResp = await teamsApi.getByCode(teamCode)
+      if (teamResp?.success && teamResp.data?.track) {
+        teamTrack = teamResp.data.track
+      }
+    } catch (error) {
+      console.error('Error loading team track:', error)
+    }
+    
     // Загрузка всех участников команды
     const membersResp = await membersApi.getAll()
     const allMembers: MemberData[] = membersResp?.data || []
@@ -1327,7 +1339,7 @@ const loadTeamData = async (teamCode: string) => {
 
     setTeamData({
       teamName: captain?.team_name || 'Название команды не указано',
-      track: 'Будет доступен после 1 Воркшопа',
+      track: teamTrack,
       teamCode: teamCode,
       mentor: mentorName,
       coordinator: coordinator,
@@ -1521,19 +1533,19 @@ const loadTeamData = async (teamCode: string) => {
                           <p><strong>Ссылка на ВКонтакте</strong></p>
                           <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
-                        <div className='flex flex-row gap-2 mb-2'>
-                          <div className='flex-1'>
-                            <p><strong>Дата рождения</strong></p>
-                            <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                          </div>
-                          <div className='flex-1'>
-                            <p><strong>Пол</strong></p>
-                            <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
-                             readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                          </div>
+                      <div className='flex flex-row gap-2 mb-2'>
+                        <div className='flex-1'>
+                          <p><strong>Дата рождения</strong></p>
+                          <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
-                        
-                        <div className='w-full flex flex-col items-center lg:hidden'>
+                        <div className='flex-1'>
+                          <p><strong>Пол</strong></p>
+                          <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
+                           readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        </div>
+                      </div>
+                      
+                      <div className='w-full flex flex-col items-center lg:hidden'>
                           <button onClick={() => setIsProfileExpanded(false)}>
                             <img 
                               src='images/arrow.png' 
@@ -2215,6 +2227,19 @@ const loadTeamData = async (teamCode: string) => {
                   if (homeworksResult?.success && homeworksResult.data) {
                     setTeamHomeworks(homeworksResult.data)
                   }
+                  
+                  // Обновляем данные участника
+                  const memberId = localStorage.getItem('member_id')
+                  if (memberId) {
+                    const memberResp = await membersApi.getById(Number(memberId))
+                    const updatedMember = memberResp?.data
+                    if (updatedMember) {
+                      setMemberData(updatedMember)
+                    }
+                  }
+                  
+                  // Обновляем данные команды, чтобы получить обновленный трек
+                  await loadTeamData(memberData.team_code)
                 } catch (error) {
                   console.error('Error reloading team homeworks:', error)
                 }
