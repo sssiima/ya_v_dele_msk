@@ -1381,7 +1381,7 @@ const getDownloadLink = (url: string) => {
                       {coordinators.map((person, index) => (
                         <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
-                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
                           {userRole === 'руководитель округа' && isTeamsEditMode && (
@@ -1416,7 +1416,7 @@ const getDownloadLink = (url: string) => {
                       {seniorMentors.map((person, index) => (
                         <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
-                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
                           {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
@@ -1452,7 +1452,7 @@ const getDownloadLink = (url: string) => {
                         {mentors.map((person, index) => (
                           <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                             <div className='flex flex-row gap-4 items-center'>
-                              <p className="text-brand text-xs">{index + 1}</p>
+                              <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                               <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                             </div>
                             {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
@@ -1531,7 +1531,7 @@ const getDownloadLink = (url: string) => {
                                   {members.map((member, memberIndex) => (
                                     <div key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
                                       <div className='flex flex-row items-center gap-4'>
-                                        <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                        <p className="text-brand text-xs w-6 text-right">{memberIndex + 1}</p>
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
@@ -1625,7 +1625,7 @@ const getDownloadLink = (url: string) => {
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-6'>
                       {coordinators.map((person, index) => (
                         <button key={person.id || index} className='w-full flex flex-row gap-4 m-3 mb-1 mt-1'>
-                          <p className="text-brand text-xs">{index + 1}</p>
+                          <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                           <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                         </button>
                       ))}
@@ -1641,7 +1641,7 @@ const getDownloadLink = (url: string) => {
                       {seniorMentors.map((person, index) => (
                         <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
-                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
                           {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
@@ -1674,7 +1674,7 @@ const getDownloadLink = (url: string) => {
                       {mentors.map((person, index) => (
                         <div key={person.id || index} className='w-full flex flex-row justify-between items-center m-3 mb-1 mt-1 pr-6'>
                           <div className='flex flex-row gap-4 items-center'>
-                            <p className="text-brand text-xs">{index + 1}</p>
+                            <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
                           {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
@@ -1753,7 +1753,7 @@ const getDownloadLink = (url: string) => {
                                   {members.map((member, memberIndex) => (
                                     <div key={member.id || memberIndex} className='w-full flex flex-row gap-4 px-4 mb-1 items-center justify-between'>
                                       <div className='flex flex-row items-center gap-4'>
-                                        <p className="text-brand text-xs">{memberIndex + 1}</p>
+                                        <p className="text-brand text-xs w-6 text-right">{memberIndex + 1}</p>
                                         <p className="italic text-xs">{`${member.last_name || ''} ${member.first_name || ''} ${member.patronymic || ''}`.trim()}</p>
                                       </div>
                                       <div className='flex items-center gap-3'>
