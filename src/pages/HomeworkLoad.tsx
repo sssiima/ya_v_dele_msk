@@ -97,6 +97,23 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   return (
     <div className="py-4">
       <div className="">
+        {/* Кнопка назад */}
+        <button 
+          onClick={() => {
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              navigate('/profile-member');
+            }
+          }}
+          className="flex items-center text-brand mb-2 hover:underline"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Назад к заданиям
+        </button>
+
         {/* Скрытый input для выбора файла */}
         <input
           type="file"

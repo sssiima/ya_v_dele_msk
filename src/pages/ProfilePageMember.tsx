@@ -189,7 +189,8 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
 
   return (
     <div className="py-4">
-      <div className="">
+      <div className="flex flex-col items-center">
+        <div className="w-full max-w-2xl">
         {/* Кнопка назад */}
         <button 
           onClick={() => {
@@ -298,6 +299,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         >
           {uploading ? 'Загрузка...' : 'Отправить'}
         </button>
+        </div>
       </div>
     </div>
   );
