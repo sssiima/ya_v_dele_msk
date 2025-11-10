@@ -222,7 +222,7 @@ const CalendarPage = () => {
       image: 'images/vsh.jpeg',
       description: 'Время подвести итоги и скорректировать курс. Команды представят первые результаты и получат обратную связь от экспертов, чтобы двигаться дальше ещё увереннее.',
       location: 'РЭУ им.Плеханова',
-      time: 'уточняется',
+      time: 'Выберите удобное',
     },
     {
       id: 4,
@@ -358,7 +358,7 @@ const CalendarPage = () => {
                     {/* Для участников: проверяем наличие домашнего задания */}
                     {isMember ? (
                       hasWorkshopHomework === false ? (
-                        <p className="text-gray-400 text-center">
+                        <p className="text-white text-center">
                           Регистрация будет доступна после загрузки презентации в ДЗ "Промежуточный ВШ"
                         </p>
                       ) : hasWorkshopHomework === true ? (

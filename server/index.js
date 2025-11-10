@@ -1228,7 +1228,7 @@ app.post('/api/upload-homework', async (req, res) => {
 
     console.log('Homework saved to database with ID:', homeworkId);
 
-    // Если это промежуточный воркшоп и указан трек, обновляем track для всех участников команды
+    // Если это промежуточный воркшоп и указан трек, обновляем track для всех участников команды и для команды
     if (homeworkTitle === 'Промежуточный ВШ' && track && finalTeamCode) {
       try {
         // Проверяем наличие поля track в таблице members и добавляем его, если нужно
@@ -1241,16 +1241,35 @@ app.post('/api/upload-homework', async (req, res) => {
           END $$;
         `);
 
+        // Проверяем наличие поля track в таблице teams и добавляем его, если нужно
+        await client.query(`
+          DO $$
+          BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='teams' AND column_name='track') THEN
+              ALTER TABLE teams ADD COLUMN track TEXT;
+            END IF;
+          END $$;
+        `);
+
         // Обновляем track для всех участников команды
-        const updateResult = await client.query(
+        const updateMembersResult = await client.query(
           `UPDATE members 
            SET track = $1 
            WHERE team_code = $2 AND COALESCE(archived, false) = false`,
           [track, finalTeamCode]
         );
-        console.log(`Updated track for ${updateResult.rowCount} members in team ${finalTeamCode}`);
+        console.log(`Updated track for ${updateMembersResult.rowCount} members in team ${finalTeamCode}`);
+
+        // Обновляем track для команды
+        const updateTeamsResult = await client.query(
+          `UPDATE teams 
+           SET track = $1 
+           WHERE code = $2`,
+          [track, finalTeamCode]
+        );
+        console.log(`Updated track for team ${finalTeamCode}: ${updateTeamsResult.rowCount} row(s) affected`);
       } catch (updateError) {
-        console.error('Error updating track for team members:', updateError);
+        console.error('Error updating track for team members and team:', updateError);
         // Не прерываем выполнение, так как домашнее задание уже сохранено
       }
     }
