@@ -27,6 +27,7 @@ const CalendarPage = () => {
   const [showDaySelector, setShowDaySelector] = useState(false);
   const [selectedSpheres, setSelectedSpheres] = useState<string[]>([]);
   const [showSphereSelector, setShowSphereSelector] = useState(false);
+  const [customSphere, setCustomSphere] = useState('');
   const [confirmParticipation, setConfirmParticipation] = useState(false);
   const daySelectorRef = useRef<HTMLDivElement>(null);
   const sphereSelectorRef = useRef<HTMLDivElement>(null);
@@ -183,7 +184,11 @@ const CalendarPage = () => {
     if (sphere === 'Ни одна сфера не подходит') {
       // Если выбрана эта опция, очищаем все остальные
       setSelectedSpheres(['Ни одна сфера не подходит']);
+      setCustomSphere(''); // Очищаем поле ввода при выборе
     } else {
+      // Проверяем, была ли выбрана "Ни одна сфера не подходит" до изменения
+      const hadNoSphereOption = selectedSpheres.includes('Ни одна сфера не подходит');
+      
       // Убираем "Ни одна сфера не подходит" если она была выбрана
       const newSpheres = selectedSpheres.filter(s => s !== 'Ни одна сфера не подходит');
       
@@ -192,6 +197,11 @@ const CalendarPage = () => {
         setSelectedSpheres(newSpheres.filter(s => s !== sphere));
       } else {
         setSelectedSpheres([...newSpheres, sphere]);
+      }
+      
+      // Если убрали "Ни одна сфера не подходит", очищаем поле ввода
+      if (hadNoSphereOption) {
+        setCustomSphere('');
       }
     }
   };
@@ -230,7 +240,11 @@ const CalendarPage = () => {
         passport: passportData,
         team_name: isMember ? teamName : null,
         date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null,
-        comment: isMember && selectedSpheres.length > 0 ? selectedSpheres.join(', ') : null
+        comment: isMember && selectedSpheres.length > 0 
+          ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim() 
+              ? customSphere.trim() 
+              : selectedSpheres.join(', '))
+          : null
       };
       
       const result = await meroRegApi.register(registrationData);
@@ -241,6 +255,7 @@ const CalendarPage = () => {
         setPassportData('');
         setSelectedDays([]);
         setSelectedSpheres([]);
+        setCustomSphere('');
         setConfirmParticipation(false);
       } else {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
@@ -465,7 +480,9 @@ const CalendarPage = () => {
                             className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
                             {selectedSpheres.length > 0 
-                              ? selectedSpheres.join(', ') 
+                              ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim()
+                                  ? customSphere.trim()
+                                  : selectedSpheres.join(', '))
                               : 'Выберите сферы'}
                           </button>
                           {showSphereSelector && (
@@ -484,6 +501,19 @@ const CalendarPage = () => {
                                   <span className="text-sm text-black">{sphere}</span>
                                 </label>
                               ))}
+                            </div>
+                          )}
+                          {/* Поле для ввода своей сферы, если выбрано "Ни одна сфера не подходит" */}
+                          {selectedSpheres.includes('Ни одна сфера не подходит') && (
+                            <div className="mt-3">
+                              <label className="block text-sm font-semibold text-white mb-2">Укажите вашу сферу:</label>
+                              <input
+                                type="text"
+                                value={customSphere}
+                                onChange={(e) => setCustomSphere(e.target.value)}
+                                placeholder="Введите название сферы"
+                                className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
                             </div>
                           )}
                         </div>
@@ -601,7 +631,9 @@ const CalendarPage = () => {
                               className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               {selectedSpheres.length > 0 
-                                ? selectedSpheres.join(', ') 
+                                ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim()
+                                    ? customSphere.trim()
+                                    : selectedSpheres.join(', '))
                                 : 'Выберите сферы'}
                             </button>
                             {showSphereSelector && (
@@ -620,6 +652,19 @@ const CalendarPage = () => {
                                     <span className="text-sm text-black">{sphere}</span>
                                   </label>
                                 ))}
+                              </div>
+                            )}
+                            {/* Поле для ввода своей сферы, если выбрано "Ни одна сфера не подходит" */}
+                            {selectedSpheres.includes('Ни одна сфера не подходит') && (
+                              <div className="mt-3">
+                                <label className="block text-sm font-semibold text-white mb-2">Укажите вашу сферу:</label>
+                                <input
+                                  type="text"
+                                  value={customSphere}
+                                  onChange={(e) => setCustomSphere(e.target.value)}
+                                  placeholder="Введите название сферы"
+                                  className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                               </div>
                             )}
                           </div>
