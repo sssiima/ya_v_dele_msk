@@ -542,10 +542,8 @@ const getDownloadLink = (url: string) => {
         setDistrictManager(item.ro || 'не указан');
         
         // Загружаем списки после получения роли
-        // Для руководителя округа используем полное ФИО (с отчеством, если есть)
-        const currentUserFullName = item.pos === 'руководитель округа' 
-          ? `${item.last_name || ''} ${item.first_name || ''} ${item.patronymic || ''}`.trim().replace(/\s+/g, ' ')
-          : `${item.last_name || ''} ${item.first_name || ''}`.trim()
+        // Для руководителя округа используем формат "Фамилия Имя" (без отчества), так как ro хранится в этом формате
+        const currentUserFullName = `${item.last_name || ''} ${item.first_name || ''}`.trim()
         const subordinates = await loadRoleLists(item.pos || '', currentUserFullName);
         
         // Загружаем команды пользователя и подчиненных после загрузки списков
