@@ -594,29 +594,20 @@ export const homeworksApi = {
 
 export const fileUploadApi = {
   async uploadHomework(file: File, homeworkTitle: string, teamCode?: string, track?: string): Promise<ApiResponse<UploadResponse>> {
-    // Проверяем размер файла (25MB для воркшопа, 10MB для обычных дз)
-    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+    // Проверяем размер файла (10MB для всех)
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      throw new Error(`Файл слишком большой. Максимальный размер: ${maxSize / 1024 / 1024}MB`);
+      throw new Error(`Файл слишком большой. Максимальный размер: 10MB`);
     }
 
-    // Нормализуем teamCode: конвертируем в строку, убираем пробелы, проверяем на пустоту
-    let normalizedTeamCode: string | undefined = undefined;
-    if (teamCode !== null && teamCode !== undefined) {
-      const teamCodeStr = String(teamCode).trim();
-      if (teamCodeStr !== '' && teamCodeStr !== 'null' && teamCodeStr !== 'undefined') {
-        normalizedTeamCode = teamCodeStr;
-      }
-    }
-
-    // Для всех файлов используем base64 загрузку через сервер
-    // Сервер будет использовать Buffer и upload_stream для эффективной загрузки больших файлов
+    // Конвертируем файл в base64
     const base64File = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
         try {
           const result = reader.result as string;
+          // Убираем data:application/pdf;base64, префикс
           const base64Data = result.split(',')[1];
           if (!base64Data) {
             reject(new Error('Ошибка конвертации файла'));
@@ -629,6 +620,15 @@ export const fileUploadApi = {
       };
       reader.onerror = error => reject(new Error('Ошибка чтения файла: ' + error));
     });
+
+    // Нормализуем teamCode: конвертируем в строку, убираем пробелы, проверяем на пустоту
+    let normalizedTeamCode: string | undefined = undefined;
+    if (teamCode !== null && teamCode !== undefined) {
+      const teamCodeStr = String(teamCode).trim();
+      if (teamCodeStr !== '' && teamCodeStr !== 'null' && teamCodeStr !== 'undefined') {
+        normalizedTeamCode = teamCodeStr;
+      }
+    }
 
     const payload = {
       file: base64File,
