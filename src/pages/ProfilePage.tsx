@@ -1647,6 +1647,9 @@ const getDownloadLink = (url: string) => {
 
                 <div>
                   <p><strong className='text-sm'>Количество участников: <span className="text-brand">{getTotalParticipantsCount()}</span></strong></p>
+                  {(userRole === 'РО' || userRole === 'координатор') && (
+                    <p><strong className='text-sm'>Количество команд: <span className="text-brand">{teams.length}</span></strong></p>
+                  )}
                 </div>
                 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto mt-2 mb-2" />
@@ -1865,6 +1868,9 @@ const getDownloadLink = (url: string) => {
 
                 <div>
                   <p><strong className='text-sm'>Количество участников: <span className="text-brand">{getTotalParticipantsCount()}</span></strong></p>
+                  {(userRole === 'РО' || userRole === 'координатор') && (
+                    <p><strong className='text-sm'>Количество команд: <span className="text-brand">{teams.length}</span></strong></p>
+                  )}
                 </div>
                 
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto" />
