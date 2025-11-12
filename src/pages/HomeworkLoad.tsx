@@ -40,6 +40,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastUploadTimeRef = useRef<number>(0);
   const navigate = useNavigate();
 
 
@@ -70,6 +71,13 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   };
 
   const handleUpload = async () => {
+    // Проверка задержки между нажатиями (500 мс)
+    const now = Date.now();
+    if (now - lastUploadTimeRef.current < 500) {
+      return;
+    }
+    lastUploadTimeRef.current = now;
+
     if (!selectedFile) {
       alert('Пожалуйста, сначала выберите файл');
       return;

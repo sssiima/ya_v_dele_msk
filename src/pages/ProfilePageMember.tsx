@@ -112,6 +112,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
   const [showTrackSelector, setShowTrackSelector] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const trackSelectorRef = useRef<HTMLDivElement>(null);
+  const lastSubmitTimeRef = useRef<number>(0);
 
   const tracks = ['Базовый', 'Социальный', 'Инновационный'];
 
@@ -151,6 +152,13 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
   };
 
   const handleSubmit = async () => {
+    // Проверка задержки между нажатиями (500 мс)
+    const now = Date.now();
+    if (now - lastSubmitTimeRef.current < 500) {
+      return;
+    }
+    lastSubmitTimeRef.current = now;
+
     if (!selectedFile) {
       alert('Пожалуйста, сначала выберите файл');
       return;

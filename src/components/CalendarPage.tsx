@@ -15,6 +15,7 @@ const CalendarPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isMember, setIsMember] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const lastSubmitTimeRef = useRef<number>(0);
   
   // Состояния формы
   const [lastName, setLastName] = useState('');
@@ -198,6 +199,13 @@ const CalendarPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Проверка задержки между нажатиями (500 мс)
+    const now = Date.now();
+    if (now - lastSubmitTimeRef.current < 500) {
+      return;
+    }
+    lastSubmitTimeRef.current = now;
+    
     if (!confirmParticipation) {
       alert('Пожалуйста, подтвердите свое участие');
       return;
@@ -222,7 +230,7 @@ const CalendarPage = () => {
         passport: passportData,
         team_name: isMember ? teamName : null,
         date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null,
-        comment: selectedSpheres.length > 0 ? selectedSpheres.join(', ') : null
+        comment: isMember && selectedSpheres.length > 0 ? selectedSpheres.join(', ') : null
       };
       
       const result = await meroRegApi.register(registrationData);
@@ -447,37 +455,39 @@ const CalendarPage = () => {
                         />
                       </div>
 
-                      {/* Выбор сфер */}
-                      <div className="relative" ref={sphereSelectorRef}>
-                        <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
-                        <button
-                          type="button"
-                          onClick={() => setShowSphereSelector(!showSphereSelector)}
-                          className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {selectedSpheres.length > 0 
-                            ? selectedSpheres.join(', ') 
-                            : 'Выберите сферы'}
-                        </button>
-                        {showSphereSelector && (
-                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                            {spheres.map((sphere) => (
-                              <label
-                                key={sphere}
-                                className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={selectedSpheres.includes(sphere)}
-                                  onChange={() => handleSphereToggle(sphere)}
-                                  className="mr-2"
-                                />
-                                <span className="text-sm text-black">{sphere}</span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {/* Выбор сфер - только для участников */}
+                      {isMember && (
+                        <div className="relative" ref={sphereSelectorRef}>
+                          <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
+                          <button
+                            type="button"
+                            onClick={() => setShowSphereSelector(!showSphereSelector)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {selectedSpheres.length > 0 
+                              ? selectedSpheres.join(', ') 
+                              : 'Выберите сферы'}
+                          </button>
+                          {showSphereSelector && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                              {spheres.map((sphere) => (
+                                <label
+                                  key={sphere}
+                                  className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedSpheres.includes(sphere)}
+                                    onChange={() => handleSphereToggle(sphere)}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-sm text-black">{sphere}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Выбор дня и волны - только для участников */}
                       {isMember && (
@@ -581,37 +591,39 @@ const CalendarPage = () => {
                           />
                         </div>
 
-                        {/* Выбор сфер */}
-                        <div className="relative" ref={sphereSelectorRef}>
-                          <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
-                          <button
-                            type="button"
-                            onClick={() => setShowSphereSelector(!showSphereSelector)}
-                            className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            {selectedSpheres.length > 0 
-                              ? selectedSpheres.join(', ') 
-                              : 'Выберите сферы'}
-                          </button>
-                          {showSphereSelector && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                              {spheres.map((sphere) => (
-                                <label
-                                  key={sphere}
-                                  className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedSpheres.includes(sphere)}
-                                    onChange={() => handleSphereToggle(sphere)}
-                                    className="mr-2"
-                                  />
-                                  <span className="text-sm text-black">{sphere}</span>
-                                </label>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        {/* Выбор сфер - только для участников */}
+                        {isMember && (
+                          <div className="relative" ref={sphereSelectorRef}>
+                            <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
+                            <button
+                              type="button"
+                              onClick={() => setShowSphereSelector(!showSphereSelector)}
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              {selectedSpheres.length > 0 
+                                ? selectedSpheres.join(', ') 
+                                : 'Выберите сферы'}
+                            </button>
+                            {showSphereSelector && (
+                              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                {spheres.map((sphere) => (
+                                  <label
+                                    key={sphere}
+                                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedSpheres.includes(sphere)}
+                                      onChange={() => handleSphereToggle(sphere)}
+                                      className="mr-2"
+                                    />
+                                    <span className="text-sm text-black">{sphere}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <div className="flex items-start">
                           <input 
