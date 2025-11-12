@@ -164,18 +164,26 @@ const MethodPage = () => {
                 <div className="text-center py-4 text-gray-500 text-xs">Нет команд</div>
               ) : (
                 <div className="space-y-2">
-                  <div className="grid grid-cols-4 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
+                  <div className="grid grid-cols-5 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
                     <div>Код команды</div>
                     <div>Название команды</div>
                     <div>Наставник</div>
                     <div>Трек</div>
+                    <div></div>
                   </div>
                   {allTeams.map((team, index) => (
-                    <div key={team.code || index} className="grid grid-cols-4 gap-2 py-2 border-b border-gray-100 text-xs">
+                    <div key={team.code || index} className="grid grid-cols-5 gap-2 py-2 border-b border-gray-100 text-xs items-center">
                       <div className="text-gray-700">{team.code || '-'}</div>
                       <div className="text-gray-700">{team.name || '-'}</div>
                       <div className="text-gray-700">{team.mentor || '-'}</div>
                       <div className="text-gray-700">{team.track || 'Не выбран'}</div>
+                      <div>
+                        <button
+                          className="px-2 py-1 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
+                        >
+                          Назначить трек
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
