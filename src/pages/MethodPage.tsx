@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { homeworksApi, Homework, teamsApi } from '@/services/api'
 import Header from '@/components/Header'
 
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : 'https://api-production-2fd7.up.railway.app/api')
+
 interface TeamData {
   code: string
   name: string
@@ -30,10 +33,14 @@ const MethodPage = () => {
   const [showTrackFilter, setShowTrackFilter] = useState(false)
   const [selectedHomeworkNames, setSelectedHomeworkNames] = useState<string[]>([])
   const [showHomeworkNameFilter, setShowHomeworkNameFilter] = useState(false)
+  const [selectedTeamForTrack, setSelectedTeamForTrack] = useState<TeamData | null>(null)
+  const [selectedTrackValue, setSelectedTrackValue] = useState<string>('')
+  const [savingTrack, setSavingTrack] = useState(false)
   const homeworkNameFilterRef = useRef<HTMLDivElement>(null)
   const mentorFilterRef = useRef<HTMLDivElement>(null)
   const trackFilterRef = useRef<HTMLDivElement>(null)
   const markSelectorRef = useRef<HTMLDivElement>(null)
+  const trackSelectorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const loadHomeworks = async () => {
@@ -67,16 +74,20 @@ const MethodPage = () => {
       if (homeworkNameFilterRef.current && !homeworkNameFilterRef.current.contains(event.target as Node)) {
         setShowHomeworkNameFilter(false)
       }
+      if (trackSelectorRef.current && !trackSelectorRef.current.contains(event.target as Node)) {
+        setSelectedTeamForTrack(null)
+        setSelectedTrackValue('')
+      }
     }
 
-    if (showMarkSelector || showMentorFilter || showTrackFilter || showHomeworkNameFilter) {
+    if (showMarkSelector || showMentorFilter || showTrackFilter || showHomeworkNameFilter || selectedTeamForTrack) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showMarkSelector, showMentorFilter, showTrackFilter, showHomeworkNameFilter])
+  }, [showMarkSelector, showMentorFilter, showTrackFilter, showHomeworkNameFilter, selectedTeamForTrack])
 
   const handleEvaluate = async (homework: Homework) => {
     setSelectedHomework(homework)
@@ -208,6 +219,54 @@ const MethodPage = () => {
         ? prev.filter(h => h !== homeworkName)
         : [...prev, homeworkName]
     )
+  }
+
+  const handleAssignTrack = (team: TeamData) => {
+    setSelectedTeamForTrack(team)
+    setSelectedTrackValue(team.track || '')
+  }
+
+  const handleCancelTrackSelection = () => {
+    setSelectedTeamForTrack(null)
+    setSelectedTrackValue('')
+  }
+
+  const handleSaveTrack = async () => {
+    if (!selectedTeamForTrack || !selectedTeamForTrack.code || !selectedTrackValue) {
+      return
+    }
+
+    setSavingTrack(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/teams/${selectedTeamForTrack.code}/track`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ track: selectedTrackValue }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Ошибка при сохранении трека')
+      }
+
+      // Обновляем список команд
+      const updatedTeams = allTeams.map(team => 
+        team.code === selectedTeamForTrack.code 
+          ? { ...team, track: selectedTrackValue }
+          : team
+      )
+      setAllTeams(updatedTeams)
+
+      // Закрываем меню
+      setSelectedTeamForTrack(null)
+      setSelectedTrackValue('')
+    } catch (error: any) {
+      alert(`Ошибка при сохранении трека: ${error.message}`)
+    } finally {
+      setSavingTrack(false)
+    }
   }
 
   // Получаем уникальные названия домашних заданий
@@ -366,12 +425,51 @@ const MethodPage = () => {
                       <div className="text-gray-700">{team.name || '-'}</div>
                       <div className="text-gray-700">{team.mentor || '-'}</div>
                       <div className="text-gray-700">{team.track || 'Не выбран'}</div>
-                      <div>
+                      <div className="relative" ref={selectedTeamForTrack?.code === team.code ? trackSelectorRef : null}>
                         <button
+                          onClick={() => handleAssignTrack(team)}
                           className="px-2 py-1 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap"
                         >
                           Назначить трек
                         </button>
+                        {selectedTeamForTrack?.code === team.code && (
+                          <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 min-w-[200px]">
+                            <div className="mb-3">
+                              <label className="block text-xs font-medium text-gray-700 mb-2">Выберите трек:</label>
+                              <div className="space-y-2">
+                                {['Базовый', 'Социальный', 'Инновационный'].map((track) => (
+                                  <label key={track} className="flex items-center cursor-pointer">
+                                    <input
+                                      type="radio"
+                                      name="track"
+                                      value={track}
+                                      checked={selectedTrackValue === track}
+                                      onChange={(e) => setSelectedTrackValue(e.target.value)}
+                                      className="mr-2"
+                                    />
+                                    <span className="text-xs text-gray-700">{track}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleSaveTrack}
+                                disabled={savingTrack || !selectedTrackValue}
+                                className="flex-1 px-3 py-1 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {savingTrack ? 'Сохранение...' : 'Сохранить'}
+                              </button>
+                              <button
+                                onClick={handleCancelTrackSelection}
+                                disabled={savingTrack}
+                                className="flex-1 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Отменить
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

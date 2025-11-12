@@ -1016,6 +1016,82 @@ app.put('/api/structure/by-ctid/:ctid', async (req, res) => {
 })
 
 // API для команд
+// PUT /api/teams/:teamCode/track - обновить трек для команды во всех таблицах
+app.put('/api/teams/:teamCode/track', async (req, res) => {
+  let client;
+  try {
+    const { teamCode } = req.params;
+    const { track } = req.body;
+
+    if (!teamCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Код команды не указан'
+      });
+    }
+
+    if (!track) {
+      return res.status(400).json({
+        success: false,
+        message: 'Трек не указан'
+      });
+    }
+
+    client = await pool.connect();
+
+    // Обновляем трек в таблице teams
+    await client.query(`
+      UPDATE teams 
+      SET track = $1 
+      WHERE code = $2
+    `, [track, teamCode]);
+
+    // Обновляем трек в таблице members для всех участников команды
+    await client.query(`
+      UPDATE members 
+      SET track = $1 
+      WHERE team_code = $2 AND COALESCE(archived, false) = false
+    `, [track, teamCode]);
+
+    // Обновляем трек в таблице homeworks для всех домашних заданий команды
+    await client.query(`
+      UPDATE homeworks 
+      SET track = $1 
+      WHERE team_code = $2
+    `, [track, teamCode]);
+
+    // Обновляем трек в таблице mero-reg для всех регистраций команды
+    // Проверяем наличие колонки track в mero-reg и добавляем, если нужно
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mero-reg' AND column_name='track') THEN
+          ALTER TABLE "mero-reg" ADD COLUMN track TEXT;
+        END IF;
+      END $$;
+    `);
+    
+    await client.query(`
+      UPDATE "mero-reg" 
+      SET track = $1
+      WHERE team_code = $2
+    `, [track, teamCode]);
+
+    res.json({
+      success: true,
+      message: 'Трек успешно обновлен'
+    });
+  } catch (error) {
+    console.error('Error updating track:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при обновлении трека: ' + error.message
+    });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 // GET /api/teams - получить все команды
 app.get('/api/teams', async (req, res) => {
   try {
