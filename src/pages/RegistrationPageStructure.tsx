@@ -62,7 +62,8 @@ const RegistrationPageStructure = () => {
       return value !== undefined && value !== null && value !== ''
     })
     
-    return fieldsValid && selectedPhoto !== null
+    // Фото необязательно
+    return fieldsValid
   }
 
   const nextStep = () => {
@@ -93,10 +94,7 @@ const RegistrationPageStructure = () => {
         }
       })
       
-      // Show photo validation error if no photo selected
-      if (!selectedPhoto) {
-        setValue('photo', undefined as any, { shouldValidate: true })
-      }
+      // Фото необязательно, не показываем ошибку
     }
   }
 
@@ -137,24 +135,26 @@ const RegistrationPageStructure = () => {
     }
     
     try {
-      // Загружаем фото, если оно выбрано
+      // Загружаем фото, если оно выбрано (необязательно)
       let photoUrl = undefined
       if (selectedPhoto) {
-        const formData = new FormData()
-        formData.append('photo', selectedPhoto)
-        
-        const uploadResponse = await fetch(`${API_BASE_URL}/upload`, {
-          method: 'POST',
-          body: formData,
-        })
-        
-        if (!uploadResponse.ok) {
-          throw new Error('Ошибка загрузки фото')
+        try {
+          const formData = new FormData()
+          formData.append('photo', selectedPhoto)
+          
+          const uploadResponse = await fetch(`${API_BASE_URL}/upload`, {
+            method: 'POST',
+            body: formData,
+          })
+          
+          if (uploadResponse.ok) {
+            const uploadData = await uploadResponse.json()
+            photoUrl = uploadData.photoUrl
+          }
+          // Если загрузка не удалась, продолжаем регистрацию без фото
+        } catch (uploadError) {
+          // Игнорируем ошибку загрузки фото, продолжаем регистрацию
         }
-        
-        const uploadData = await uploadResponse.json()
-        photoUrl = uploadData.photoUrl
-        // uploaded
       }
       
       const payload = {
@@ -328,28 +328,18 @@ const RegistrationPageStructure = () => {
       </div>
 
       <div>
-        <label className="block text-s font-semibold text-white mb-2">Фото для кадровой карты *</label>
+        <label className="block text-s font-semibold text-white mb-2">Фото для кадровой карты</label>
         <div className="border-2 border-dashed border-gray-300 rounded-full p-4 text-center">
           <input 
             type="file"
             accept="image/*"
             className="hidden"
             id="photo-upload"
-            {...register('photo', { 
-              required: 'Фото обязательно',
-              validate: {
-                hasFile: () => selectedPhoto !== null || 'Фото обязательно',
-                lessThan2MB: files => 
-                  !files?.[0] || files[0].size <= 2 * 1024 * 1024 || 'Максимальный размер файла 2MB',
-                acceptedFormats: files => 
-                  !files?.[0] || ['image/jpeg', 'image/png'].includes(files[0].type) || 
-                  'Только JPEG и PNG форматы'
-              }
-            })}
+            {...register('photo')}
             onChange={handlePhotoChange}
           />
           <label htmlFor="photo-upload" className="cursor-pointer text-xs text-white">
-            Загрузи портретное фото 2х2 в формате PNG/JPEG не более 2 Мб
+            Загрузи фото (необязательно)
           </label>
         </div>
         {selectedPhoto && (
@@ -366,7 +356,6 @@ const RegistrationPageStructure = () => {
             </button>
           </div>
         )}
-        {errors.photo && <p className="text-red-300 text-xs mt-1">{errors.photo.message}</p>}
       </div>
 
       <div>

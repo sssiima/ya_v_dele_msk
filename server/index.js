@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const cors = require('cors')
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const router = express.Router();
 const { verifyConnection, pool } = require('./db')
@@ -19,6 +20,7 @@ const storage = multer.diskStorage({
   }
 });
 
+// Multer для загрузки PDF файлов
 const upload = multer({
   storage: storage,
   limits: {
@@ -31,6 +33,18 @@ const upload = multer({
     } else {
       cb(new Error('Разрешены только PDF файлы'), false);
     }
+  }
+});
+
+// Multer для загрузки фото (изображений) - принимаем любые изображения
+const uploadPhoto = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB лимит для фото (увеличен)
+  },
+  fileFilter: function (req, file, cb) {
+    // Принимаем любые изображения, если не изображение - тоже пропускаем
+    cb(null, true);
   }
 });
 
@@ -1147,6 +1161,58 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Endpoint для загрузки фото (для регистрации) - принимаем любые файлы
+app.post('/api/upload', uploadPhoto.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Файл не предоставлен'
+      });
+    }
+
+    // Загружаем в Cloudinary (принимаем любые файлы)
+    const uploadOptions = {
+      folder: 'photos',
+      overwrite: false,
+      access_mode: 'public'
+    };
+
+    // Если это изображение, используем resource_type: 'image', иначе 'raw'
+    if (req.file.mimetype.startsWith('image/')) {
+      uploadOptions.resource_type = 'image';
+    } else {
+      uploadOptions.resource_type = 'raw';
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(req.file.path, uploadOptions);
+
+    // Удаляем временный файл
+    fs.unlinkSync(req.file.path);
+
+    res.json({
+      success: true,
+      photoUrl: uploadResult.secure_url
+    });
+  } catch (error) {
+    console.error('Photo upload error:', error);
+    
+    // Удаляем временный файл в случае ошибки
+    if (req.file && req.file.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        // Игнорируем ошибку удаления
+      }
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке фото: ' + error.message
+    });
+  }
 });
 
 app.post('/api/upload-homework', async (req, res) => {
