@@ -630,7 +630,7 @@ export const fileUploadApi = {
       }
 
       // Формируем FormData для прямой загрузки в Cloudinary
-      // Важно: параметры должны быть в том же порядке и формате, что и при генерации подписи
+      // Порядок параметров не важен для FormData, но важно для подписи
       const formData = new FormData();
       formData.append('file', file);
       formData.append('api_key', signatureData.apiKey);
@@ -683,7 +683,7 @@ export const fileUploadApi = {
       
       return await response.json();
     } else {
-      // Для файлов до 10MB используем base64 загрузку
+      // Для файлов до 10MB используем base64 загрузку через сервер
       const base64File = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);

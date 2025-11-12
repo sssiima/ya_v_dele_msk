@@ -76,8 +76,8 @@ dotenv.config()
 
 const app = express()
 app.use('/images', express.static('public/images'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ limit: '30mb', extended: true }));
 
 // Обработчик для всех OPTIONS запросов - должен быть первым
 app.use((req, res, next) => {
@@ -1156,9 +1156,9 @@ app.post('/api/get-upload-signature', async (req, res) => {
     const timestamp = Math.round(new Date().getTime() / 1000);
     const publicId = `homework-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     
-    // Параметры должны быть отсортированы в алфавитном порядке для генерации подписи
+    // Для подписи Cloudinary параметры должны быть отсортированы в алфавитном порядке
     // Все значения должны быть строками
-    const params = {
+    const paramsToSign = {
       access_mode: 'public',
       folder: 'homeworks',
       overwrite: 'false',
@@ -1167,7 +1167,8 @@ app.post('/api/get-upload-signature', async (req, res) => {
       timestamp: timestamp.toString()
     };
     
-    const signature = cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET);
+    // Генерируем подпись - api_sign_request автоматически сортирует параметры
+    const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
     
     res.json({
       success: true,
@@ -1222,31 +1223,36 @@ app.post('/api/upload-homework', async (req, res) => {
         bytes: fileSize || 0
       };
     } else if (base64File) {
-      // Для файлов до 10MB используем base64 загрузку
-      if (fileSize && fileSize > 10 * 1024 * 1024) {
-        return res.status(400).json({
-          success: false,
-          message: 'Для файлов больше 10MB используйте прямую загрузку'
-        });
-      }
-      
+      // Для всех файлов используем base64 загрузку через сервер
+      // Cloudinary поддерживает до 100MB для raw файлов при загрузке через серверный API
       console.log('File received, uploading to Cloudinary via base64...');
       
       const uploadOptions = {
         resource_type: 'raw',
         folder: 'homeworks',
         format: 'pdf',
-        public_id: `homework-${Date.now()}`,
+        public_id: `homework-${Date.now()}-${Math.random().toString(36).substring(7)}`,
         overwrite: false,
         access_mode: 'public'
       };
       
-      uploadResult = await cloudinary.uploader.upload(
-        `data:application/pdf;base64,${base64File}`, 
-        uploadOptions
-      );
-      
-      console.log('Cloudinary upload successful:', uploadResult.secure_url);
+      try {
+        uploadResult = await cloudinary.uploader.upload(
+          `data:application/pdf;base64,${base64File}`, 
+          uploadOptions
+        );
+        console.log('Cloudinary upload successful:', uploadResult.secure_url);
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        // Если ошибка связана с размером файла, возвращаем понятное сообщение
+        if (uploadError.message && uploadError.message.includes('File size too large')) {
+          return res.status(400).json({
+            success: false,
+            message: 'Файл слишком большой. Максимальный размер: 25MB. Попробуйте сжать файл или разделить его на части.'
+          });
+        }
+        throw uploadError;
+      }
     } else {
       return res.status(400).json({
         success: false,
