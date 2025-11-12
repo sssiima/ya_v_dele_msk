@@ -23,6 +23,13 @@ const MethodPage = () => {
   const [showAllTeams, setShowAllTeams] = useState(false)
   const [allTeams, setAllTeams] = useState<TeamData[]>([])
   const [loadingTeams, setLoadingTeams] = useState(false)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [selectedMentors, setSelectedMentors] = useState<string[]>([])
+  const [selectedTracks, setSelectedTracks] = useState<string[]>([])
+  const [showMentorFilter, setShowMentorFilter] = useState(false)
+  const [showTrackFilter, setShowTrackFilter] = useState(false)
+  const mentorFilterRef = useRef<HTMLDivElement>(null)
+  const trackFilterRef = useRef<HTMLDivElement>(null)
   const markSelectorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,16 +55,22 @@ const MethodPage = () => {
       if (markSelectorRef.current && !markSelectorRef.current.contains(event.target as Node)) {
         setShowMarkSelector(false)
       }
+      if (mentorFilterRef.current && !mentorFilterRef.current.contains(event.target as Node)) {
+        setShowMentorFilter(false)
+      }
+      if (trackFilterRef.current && !trackFilterRef.current.contains(event.target as Node)) {
+        setShowTrackFilter(false)
+      }
     }
 
-    if (showMarkSelector) {
+    if (showMarkSelector || showMentorFilter || showTrackFilter) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showMarkSelector])
+  }, [showMarkSelector, showMentorFilter, showTrackFilter])
 
   const handleEvaluate = async (homework: Homework) => {
     setSelectedHomework(homework)
@@ -139,6 +152,50 @@ const MethodPage = () => {
     setShowAllTeams(!showAllTeams)
   }
 
+  // Получаем уникальные списки наставников и треков
+  const uniqueMentors = Array.from(new Set(allTeams.map(team => team.mentor).filter(Boolean))) as string[]
+  const uniqueTracks = Array.from(new Set(allTeams.map(team => team.track).filter(Boolean))) as string[]
+
+  // Фильтрация и сортировка команд
+  const filteredAndSortedTeams = allTeams
+    .filter(team => {
+      // Фильтр по наставнику
+      if (selectedMentors.length > 0 && team.mentor) {
+        if (!selectedMentors.includes(team.mentor)) return false
+      }
+      // Фильтр по треку
+      if (selectedTracks.length > 0) {
+        const teamTrack = team.track || 'Не выбран'
+        if (!selectedTracks.includes(teamTrack)) return false
+      }
+      return true
+    })
+    .sort((a, b) => {
+      const nameA = (a.name || '').toLowerCase()
+      const nameB = (b.name || '').toLowerCase()
+      if (sortOrder === 'asc') {
+        return nameA.localeCompare(nameB)
+      } else {
+        return nameB.localeCompare(nameA)
+      }
+    })
+
+  const handleMentorToggle = (mentor: string) => {
+    setSelectedMentors(prev => 
+      prev.includes(mentor) 
+        ? prev.filter(m => m !== mentor)
+        : [...prev, mentor]
+    )
+  }
+
+  const handleTrackToggle = (track: string) => {
+    setSelectedTracks(prev => 
+      prev.includes(track) 
+        ? prev.filter(t => t !== track)
+        : [...prev, track]
+    )
+  }
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -158,10 +215,109 @@ const MethodPage = () => {
           {showAllTeams && (
             <div className="mb-6 p-4 border border-brand rounded-lg bg-white">
               <h2 className="text-sm font-bold text-brand mb-4">Список всех команд</h2>
+              
+              {/* Фильтры и сортировка */}
+              {!loadingTeams && allTeams.length > 0 && (
+                <div className="mb-4 space-y-3">
+                  {/* Сортировка по названию */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-700">Сортировка по названию:</span>
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      {sortOrder === 'asc' ? '↑ По возрастанию' : '↓ По убыванию'}
+                    </button>
+                  </div>
+                  
+                  {/* Фильтр по наставнику */}
+                  <div className="relative" ref={mentorFilterRef}>
+                    <button
+                      onClick={() => setShowMentorFilter(!showMentorFilter)}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      Наставник {selectedMentors.length > 0 ? `(${selectedMentors.length})` : ''}
+                    </button>
+                    {showMentorFilter && (
+                      <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto min-w-[200px]">
+                        {uniqueMentors.map((mentor) => (
+                          <label
+                            key={mentor}
+                            className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedMentors.includes(mentor)}
+                              onChange={() => handleMentorToggle(mentor)}
+                              className="mr-2"
+                            />
+                            <span className="text-xs text-black">{mentor}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Фильтр по треку */}
+                  <div className="relative" ref={trackFilterRef}>
+                    <button
+                      onClick={() => setShowTrackFilter(!showTrackFilter)}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      Трек {selectedTracks.length > 0 ? `(${selectedTracks.length})` : ''}
+                    </button>
+                    {showTrackFilter && (
+                      <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto min-w-[200px]">
+                        <label
+                          className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedTracks.includes('Не выбран')}
+                            onChange={() => handleTrackToggle('Не выбран')}
+                            className="mr-2"
+                          />
+                          <span className="text-xs text-black">Не выбран</span>
+                        </label>
+                        {uniqueTracks.map((track) => (
+                          <label
+                            key={track}
+                            className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedTracks.includes(track)}
+                              onChange={() => handleTrackToggle(track)}
+                              className="mr-2"
+                            />
+                            <span className="text-xs text-black">{track}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Кнопка сброса фильтров */}
+                  {(selectedMentors.length > 0 || selectedTracks.length > 0) && (
+                    <button
+                      onClick={() => {
+                        setSelectedMentors([])
+                        setSelectedTracks([])
+                      }}
+                      className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-300 transition-colors"
+                    >
+                      Сбросить фильтры
+                    </button>
+                  )}
+                </div>
+              )}
+              
               {loadingTeams ? (
                 <div className="text-center py-4 text-gray-500 text-xs">Загрузка...</div>
               ) : allTeams.length === 0 ? (
                 <div className="text-center py-4 text-gray-500 text-xs">Нет команд</div>
+              ) : filteredAndSortedTeams.length === 0 ? (
+                <div className="text-center py-4 text-gray-500 text-xs">Нет команд, соответствующих фильтрам</div>
               ) : (
                 <div className="space-y-2">
                   <div className="grid grid-cols-5 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
@@ -171,7 +327,7 @@ const MethodPage = () => {
                     <div>Трек</div>
                     <div></div>
                   </div>
-                  {allTeams.map((team, index) => (
+                  {filteredAndSortedTeams.map((team, index) => (
                     <div key={team.code || index} className="grid grid-cols-5 gap-2 py-2 border-b border-gray-100 text-xs items-center">
                       <div className="text-gray-700">{team.code || '-'}</div>
                       <div className="text-gray-700">{team.name || '-'}</div>
