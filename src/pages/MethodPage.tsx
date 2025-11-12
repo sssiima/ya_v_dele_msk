@@ -20,6 +20,9 @@ const MethodPage = () => {
   const [selectedMark, setSelectedMark] = useState<number | null>(null)
   const [showMarkSelector, setShowMarkSelector] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showAllTeams, setShowAllTeams] = useState(false)
+  const [allTeams, setAllTeams] = useState<TeamData[]>([])
+  const [loadingTeams, setLoadingTeams] = useState(false)
   const markSelectorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -116,13 +119,67 @@ const MethodPage = () => {
     setTeamData(null)
   }
 
+  const handleShowAllTeams = async () => {
+    if (!showAllTeams) {
+      // Загружаем команды только при первом открытии
+      if (allTeams.length === 0) {
+        try {
+          setLoadingTeams(true)
+          const result = await teamsApi.getAll()
+          if (result?.success && result.data) {
+            setAllTeams(result.data)
+          }
+        } catch (error) {
+          // Ошибка загрузки команд - просто не показываем данные
+        } finally {
+          setLoadingTeams(false)
+        }
+      }
+    }
+    setShowAllTeams(!showAllTeams)
+  }
+
   return (
     <div className="min-h-screen">
       <Header />
       
       {!selectedHomework ? (
         <div className="px-6 py-4">
-          <h1 className="text-md font-bold text-brand mb-4 text-center">Проверка домашних заданий</h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-md font-bold text-brand text-center flex-1">Проверка домашних заданий</h1>
+            <button
+              onClick={handleShowAllTeams}
+              className="px-3 py-1.5 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors whitespace-nowrap ml-4"
+            >
+              {showAllTeams ? 'Скрыть команды' : 'Посмотреть все команды'}
+            </button>
+          </div>
+          
+          {showAllTeams && (
+            <div className="mb-6 p-4 border border-brand rounded-lg bg-white">
+              <h2 className="text-sm font-bold text-brand mb-4">Список всех команд</h2>
+              {loadingTeams ? (
+                <div className="text-center py-4 text-gray-500 text-xs">Загрузка...</div>
+              ) : allTeams.length === 0 ? (
+                <div className="text-center py-4 text-gray-500 text-xs">Нет команд</div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="grid grid-cols-3 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
+                    <div>Код команды</div>
+                    <div>Название команды</div>
+                    <div>Наставник</div>
+                  </div>
+                  {allTeams.map((team, index) => (
+                    <div key={team.code || index} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100 text-xs">
+                      <div className="text-gray-700">{team.code || '-'}</div>
+                      <div className="text-gray-700">{team.name || '-'}</div>
+                      <div className="text-gray-700">{team.mentor || '-'}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           
           <div className="border-t border-brand pt-4">
             {loading ? (
