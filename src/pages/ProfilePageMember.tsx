@@ -350,11 +350,49 @@ const ProfilePageMember = () => {
 
   const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
   const [showWorkshopHomework, setShowWorkshopHomework] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   // Состояния для статусов мастер-классов
   const [mkHomeworkStatus, setMkHomeworkStatus] = useState<{ status: 'uploaded' | 'reviewed' | null, mark?: number } | null>(null);
   const [structureTeamsForMk, setStructureTeamsForMk] = useState<any[]>([]);
   const [teamsHomeworksForMk, setTeamsHomeworksForMk] = useState<{[teamCode: string]: Homework[]}>({});
+  
+  // Состояние для всплывающего окна с комментарием
+  const [hoveredHomework, setHoveredHomework] = useState<{ number: number | 'workshop', comment: string } | null>(null);
+  const commentTooltipRef = useRef<HTMLDivElement>(null);
+
+  // Обработка клика вне всплывающего окна (для мобильных устройств)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      if (commentTooltipRef.current && !commentTooltipRef.current.contains(target)) {
+        // Проверяем, что клик не был на элементе домашнего задания
+        const homeworkElements = document.querySelectorAll('[data-homework-item]');
+        let clickedOnHomework = false;
+        homeworkElements.forEach(el => {
+          if (el.contains(target)) {
+            clickedOnHomework = true;
+          }
+        });
+        if (!clickedOnHomework) {
+          setHoveredHomework(null);
+        }
+      }
+    };
+    
+    if (hoveredHomework && !isDesktop) {
+      // Для мобильных устройств добавляем обработчик с небольшой задержкой
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+      }, 100);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [hoveredHomework, isDesktop]);
 
   const handleHomeworkClick = (homeworkNumber: number) => {
     // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
@@ -386,7 +424,7 @@ const ProfilePageMember = () => {
   };
 
   // Функция для проверки статуса домашнего задания по номеру
-  const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
+  const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number, comment?: string | null } => {
     // По номеру домашки обращаемся к соответствующей записи из массива mk_list
     // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
     // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
@@ -410,16 +448,16 @@ const ProfilePageMember = () => {
       return { status: 'uploaded' }
     }
     
-    // Если у этой записи статус reviewed, возвращаем 'reviewed' с баллом
+    // Если у этой записи статус reviewed, возвращаем 'reviewed' с баллом и комментарием
     if (homework && homework.status === 'reviewed') {
-      return { status: 'reviewed', mark: homework.mark }
+      return { status: 'reviewed', mark: homework.mark, comment: homework.comment || null }
     }
     
     return { status: null }
   }
   
   // Функция для проверки статуса промежуточного воркшопа
-  const getWorkshopHomeworkStatus = (): { status: 'uploaded' | 'reviewed' | null, mark?: number } => {
+  const getWorkshopHomeworkStatus = (): { status: 'uploaded' | 'reviewed' | null, mark?: number, comment?: string | null } => {
     const homework = teamHomeworks.find(hw => {
       const normalizedHwName = (hw.hw_name || '').trim()
       return normalizedHwName === 'Промежуточный ВШ'
@@ -430,7 +468,7 @@ const ProfilePageMember = () => {
     }
     
     if (homework && homework.status === 'reviewed') {
-      return { status: 'reviewed', mark: homework.mark }
+      return { status: 'reviewed', mark: homework.mark, comment: homework.comment || null }
     }
     
     return { status: null }
@@ -1196,6 +1234,16 @@ MVP возможно реализовать до конца курса в так
 
     loadUserData()
   }, [])
+
+  // Проверка размера экрана для определения десктопа
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   // Синхронизируем временные значения с исходными, когда данные загружаются (только если не в режиме редактирования)
   useEffect(() => {
@@ -2072,8 +2120,34 @@ const loadTeamData = async (teamCode: string) => {
                       const isUploaded = homeworkStatus.status === 'uploaded'
                       const isReviewed = homeworkStatus.status === 'reviewed'
                       const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && homeworkStatus.comment && homeworkStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 1
+                      
                       return (
-                        <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 1, comment: homeworkStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 1, comment: homeworkStatus.comment! });
+                              }
+                            }
+                          }}
+                        >
                           <span className="text-sm">Первое д/з</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
@@ -2094,6 +2168,16 @@ const loadTeamData = async (teamCode: string) => {
                               </button>
                             )}
                           </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
+                            </div>
+                          )}
                         </div>
                       )
                     })()}
@@ -2103,8 +2187,34 @@ const loadTeamData = async (teamCode: string) => {
                       const isUploaded = workshopStatus.status === 'uploaded'
                       const isReviewed = workshopStatus.status === 'reviewed'
                       const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && workshopStatus.comment && workshopStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 'workshop'
+                      
                       return (
-                        <div className={`flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}>
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 'workshop', comment: workshopStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 'workshop', comment: workshopStatus.comment! });
+                              }
+                            }
+                          }}
+                        >
                           <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
@@ -2128,6 +2238,16 @@ const loadTeamData = async (teamCode: string) => {
                               </button>
                             )}
                           </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{workshopStatus.comment}</p>
+                            </div>
+                          )}
                         </div>
                       )
                     })()}
