@@ -542,11 +542,15 @@ const getDownloadLink = (url: string) => {
         setDistrictManager(item.ro || 'не указан');
         
         // Загружаем списки после получения роли
-        const currentUserFullName = `${item.last_name || ''} ${item.first_name || ''}`.trim()
+        // Для руководителя округа используем полное ФИО (с отчеством, если есть)
+        const currentUserFullName = item.pos === 'руководитель округа' 
+          ? `${item.last_name || ''} ${item.first_name || ''} ${item.patronymic || ''}`.trim().replace(/\s+/g, ' ')
+          : `${item.last_name || ''} ${item.first_name || ''}`.trim()
         const subordinates = await loadRoleLists(item.pos || '', currentUserFullName);
         
         // Загружаем команды пользователя и подчиненных после загрузки списков
-        await loadUserTeams(`${item.last_name || ''} ${item.first_name || ''}`.trim(), item.pos || '', subordinates);
+        // Используем то же ФИО, что и для загрузки списков
+        await loadUserTeams(currentUserFullName, item.pos || '', subordinates);
       } catch (e) {
         // При ошибке загрузки перенаправляем на авторизацию
         localStorage.removeItem('structure_ctid')
@@ -598,7 +602,11 @@ const getDownloadLink = (url: string) => {
       // Проверка: строковое поле карточки человека (high_mentor/coord/ro) относится к текущему пользователю
       const fieldMatchesUser = (fieldValue?: string) => {
         if (!fieldValue) return false
-        return isSameFirstLast(fieldValue, currentUserFullName)
+        // Нормализуем оба значения для сравнения
+        const normalizedField = normalizeName(fieldValue)
+        const normalizedUser = normalizeName(currentUserFullName)
+        // Проверяем точное совпадение или совпадение по фамилии и имени
+        return normalizedField === normalizedUser || isSameFirstLast(fieldValue, currentUserFullName)
       }
       
       let coordPeople: any[] = []
@@ -657,7 +665,7 @@ const getDownloadLink = (url: string) => {
   }
 
   // Функция для загрузки команд пользователя и подчиненных
-  const loadUserTeams = async (userFullName: string, userRole: string, subordinates?: {seniorMentors: any[], mentors: any[]}) => {
+  const loadUserTeams = async (userFullName: string, userRole: string, subordinates?: {coordinators: any[], seniorMentors: any[], mentors: any[]}) => {
     try {
       if (!userFullName || userFullName === 'не указан') return
       
@@ -670,6 +678,21 @@ const getDownloadLink = (url: string) => {
       
       // Для РО и координаторов - получаем команды от подчиненных
       if ((userRole === 'руководитель округа' || userRole === 'координатор') && subordinates) {
+        // Для РО также получаем команды от координаторов
+        if (userRole === 'руководитель округа' && subordinates.coordinators) {
+          for (const coordinator of subordinates.coordinators) {
+            const coordinatorName = `${coordinator.last_name || ''} ${coordinator.first_name || ''}`.trim()
+            if (coordinatorName && coordinatorName !== 'не указан') {
+              try {
+                const coordinatorTeamsResult = await teamsApi.getByMentor(coordinatorName)
+                const coordinatorTeams = coordinatorTeamsResult?.data || []
+                allTeams = [...allTeams, ...coordinatorTeams]
+              } catch (e) {
+              }
+            }
+          }
+        }
+        
         // Получаем команды от старших наставников
         for (const seniorMentor of subordinates.seniorMentors) {
           const seniorMentorName = `${seniorMentor.last_name || ''} ${seniorMentor.first_name || ''}`.trim()
