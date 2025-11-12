@@ -1156,13 +1156,15 @@ app.post('/api/get-upload-signature', async (req, res) => {
     const timestamp = Math.round(new Date().getTime() / 1000);
     const publicId = `homework-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     
+    // Параметры должны быть отсортированы в алфавитном порядке для генерации подписи
+    // Все значения должны быть строками
     const params = {
-      timestamp: timestamp,
+      access_mode: 'public',
       folder: 'homeworks',
-      resource_type: 'raw',
+      overwrite: 'false',
       public_id: publicId,
-      overwrite: false,
-      access_mode: 'public'
+      resource_type: 'raw',
+      timestamp: timestamp.toString()
     };
     
     const signature = cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET);

@@ -630,16 +630,17 @@ export const fileUploadApi = {
       }
 
       // Формируем FormData для прямой загрузки в Cloudinary
+      // Важно: параметры должны быть в том же порядке и формате, что и при генерации подписи
       const formData = new FormData();
       formData.append('file', file);
       formData.append('api_key', signatureData.apiKey);
       formData.append('timestamp', signatureData.timestamp.toString());
       formData.append('signature', signatureData.signature);
-      formData.append('folder', 'homeworks');
-      formData.append('resource_type', 'raw');
-      formData.append('public_id', signatureData.publicId);
-      formData.append('overwrite', 'false');
       formData.append('access_mode', 'public');
+      formData.append('folder', 'homeworks');
+      formData.append('overwrite', 'false');
+      formData.append('public_id', signatureData.publicId);
+      formData.append('resource_type', 'raw');
 
       // Загружаем напрямую в Cloudinary
       const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/raw/upload`;
