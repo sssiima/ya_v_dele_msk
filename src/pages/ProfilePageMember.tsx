@@ -519,18 +519,18 @@ const ProfilePageMember = () => {
             const fullName = `${structure.last_name || ''} ${structure.first_name || ''}`.trim();
             let teams: any[] = [];
             
-            if (structure.pos === 'наставник' || structure.pos === 'старший наставник' || structure.pos === 'координатор' || structure.pos === 'руководитель округа') {
+            if (structure.pos === 'наставник' || structure.pos === 'старший наставник' || structure.pos === 'координатор' || structure.pos === 'РО') {
               // Получаем команды наставника
               const userTeamsResult = await teamsApi.getByMentor(fullName);
               const userTeams = userTeamsResult?.data || [];
               teams = [...userTeams];
               
               // Для координаторов и РО - получаем команды подчиненных
-              if ((structure.pos === 'координатор' || structure.pos === 'руководитель округа')) {
+              if ((structure.pos === 'координатор' || structure.pos === 'РО')) {
                 const allStructure = await structureApi.getAll();
                 const allPeople = allStructure?.data || [];
                 
-                if (structure.pos === 'руководитель округа') {
+                if (structure.pos === 'РО') {
                   const mentorPeople = allPeople.filter(person => 
                     person.pos === 'наставник' && person.ro === structure.ro
                   );

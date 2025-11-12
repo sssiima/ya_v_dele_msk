@@ -645,7 +645,7 @@ const getDownloadLink = (url: string) => {
       let mentorPeople: any[] = []
       
       // Загружаем списки в зависимости от роли
-      if (role === 'руководитель округа') {
+      if (role === 'РО') {
         // РО видит координаторов, у которых поле ro соответствует ФИО текущего пользователя
         coordPeople = allPeople.filter(person => person.pos === 'координатор' && fieldMatchesUser(person.ro))
         setCoordinators(coordPeople)
@@ -708,9 +708,9 @@ const getDownloadLink = (url: string) => {
       allTeams = [...userTeams]
       
       // Для РО и координаторов - получаем команды от подчиненных
-      if ((userRole === 'руководитель округа' || userRole === 'координатор') && subordinates) {
+      if ((userRole === 'РО' || userRole === 'координатор') && subordinates) {
         // Для РО также получаем команды от координаторов
-        if (userRole === 'руководитель округа' && subordinates.coordinators) {
+        if (userRole === 'РО' && subordinates.coordinators) {
           for (const coordinator of subordinates.coordinators) {
             const coordinatorName = `${coordinator.last_name || ''} ${coordinator.first_name || ''}`.trim()
             if (coordinatorName && coordinatorName !== 'не указан') {
@@ -832,18 +832,18 @@ const getDownloadLink = (url: string) => {
           const fullName = `${structure.last_name || ''} ${structure.first_name || ''}`.trim();
           let teams: any[] = [];
           
-          if (structure.pos === 'наставник' || structure.pos === 'старший наставник' || structure.pos === 'координатор' || structure.pos === 'руководитель округа') {
+          if (structure.pos === 'наставник' || structure.pos === 'старший наставник' || structure.pos === 'координатор' || structure.pos === 'РО') {
             // Получаем команды наставника
             const userTeamsResult = await teamsApi.getByMentor(fullName);
             const userTeams = userTeamsResult?.data || [];
             teams = [...userTeams];
             
             // Для координаторов и РО - получаем команды подчиненных
-            if ((structure.pos === 'координатор' || structure.pos === 'руководитель округа')) {
+            if ((structure.pos === 'координатор' || structure.pos === 'РО')) {
               const allStructure = await structureApi.getAll();
               const allPeople = allStructure?.data || [];
               
-              if (structure.pos === 'руководитель округа') {
+              if (structure.pos === 'РО') {
                 const mentorPeople = allPeople.filter(person => 
                   person.pos === 'наставник' && person.ro === structure.ro
                 );
@@ -1438,7 +1438,7 @@ const getDownloadLink = (url: string) => {
               {/* Для мобильных - списки идут после профиля */}
               <div className="lg:hidden">
                 {/* Координаторы - только для РО */}
-                {userRole === 'руководитель округа' && coordinators.length > 0 && (
+                {userRole === 'РО' && coordinators.length > 0 && (
                   <div className='leaders mb-4 text-sm'>
                     <p><strong>Координаторы:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
@@ -1448,7 +1448,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {userRole === 'руководитель округа' && isTeamsEditMode && (
+                          {userRole === 'РО' && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1470,7 +1470,7 @@ const getDownloadLink = (url: string) => {
                 )}
 
                 {/* Старшие наставники - для РО и координаторов */}
-                {(userRole === 'руководитель округа' || userRole === 'координатор') && seniorMentors.length > 0 && (
+                {(userRole === 'РО' || userRole === 'координатор') && seniorMentors.length > 0 && (
                   <>
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                     <div className='leaders mb-4 text-sm'>
@@ -1482,7 +1482,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
+                          {(userRole === 'РО' || userRole === 'координатор') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1505,7 +1505,7 @@ const getDownloadLink = (url: string) => {
                 )}
 
                 {/* Наставники - для РО, координаторов и старших наставников */}
-                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
+                {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
                   <>
                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
                     <div className='leaders mb-4 text-sm'>
@@ -1517,7 +1517,7 @@ const getDownloadLink = (url: string) => {
                               <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                               <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                             </div>
-                            {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
+                            {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                               <button title='Архивировать' onClick={async () => {
                                 try {
                                   if (!person.ctid) {
@@ -1597,7 +1597,7 @@ const getDownloadLink = (url: string) => {
                                         {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
-                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
+                                        {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                                           <button title='Архивировать' onClick={async () => {
                                             try {
                                               if (!member.id) return
@@ -1674,10 +1674,10 @@ const getDownloadLink = (url: string) => {
               {/* Для десктоп версии - списки в правой колонке */}
               <div className="hidden lg:block space-y-6">
                 {/* Координаторы - только для РО */}
-                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && (
+                {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && (
                <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 lg:hidden" />
             )}
-                {userRole === 'руководитель округа' && coordinators.length > 0 && (
+                {userRole === 'РО' && coordinators.length > 0 && (
                   <div className='leaders text-sm mt-4'>
                     <p><strong>Координаторы:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2 pr-6'>
@@ -1692,7 +1692,7 @@ const getDownloadLink = (url: string) => {
                 )}
 
                 {/* Старшие наставники - для РО и координаторов */}
-                {(userRole === 'руководитель округа' || userRole === 'координатор') && seniorMentors.length > 0 && (
+                {(userRole === 'РО' || userRole === 'координатор') && seniorMentors.length > 0 && (
                   <div className='leaders text-sm'>
                     <p><strong>Старшие наставники:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
@@ -1702,7 +1702,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор') && isTeamsEditMode && (
+                          {(userRole === 'РО' || userRole === 'координатор') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.id) return
@@ -1724,7 +1724,7 @@ const getDownloadLink = (url: string) => {
                 )}
 
                 {/* Наставники - для РО, координаторов и старших наставников */}
-                {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
+                {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && mentors.length > 0 && (
                   <div className='leaders text-sm'>
                     <p><strong>Наставники:</strong></p>
                     <div className='w-full px-1 py-3 border border-brand rounded-2xl bg-white items-center mt-2'>
@@ -1734,7 +1734,7 @@ const getDownloadLink = (url: string) => {
                             <p className="text-brand text-xs w-6 text-right">{index + 1}</p>
                             <p className="italic text-xs">{`${person.last_name || ''} ${person.first_name || ''} ${person.patronymic || ''}`.trim()}</p>
                           </div>
-                          {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
+                                        {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                             <button title='Архивировать' onClick={async () => {
                               try {
                                 if (!person.ctid) {
@@ -1814,7 +1814,7 @@ const getDownloadLink = (url: string) => {
                                         {member.role === 'captain' && (
                                           <div className="w-3 h-3" title="Капитан команды"><img src='images/star.png' alt='star' /></div>
                                         )}
-                                        {(userRole === 'руководитель округа' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
+                                        {(userRole === 'РО' || userRole === 'координатор' || userRole === 'старший наставник') && isTeamsEditMode && (
                                           <button title='Архивировать' onClick={async () => {
                                             try {
                                               if (!member.id) return
