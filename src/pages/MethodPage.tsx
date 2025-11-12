@@ -438,7 +438,14 @@ const MethodPage = () => {
                               <label className="block text-xs font-medium text-gray-700 mb-2">Выберите трек:</label>
                               <div className="space-y-2">
                                 {['Базовый', 'Социальный', 'Инновационный'].map((track) => (
-                                  <label key={track} className="flex items-center cursor-pointer">
+                                  <label 
+                                    key={track} 
+                                    className={`flex items-center cursor-pointer p-2 rounded-lg border-2 transition-colors ${
+                                      selectedTrackValue === track 
+                                        ? 'border-brand bg-brand/10' 
+                                        : 'border-transparent hover:border-gray-300'
+                                    }`}
+                                  >
                                     <input
                                       type="radio"
                                       name="track"
