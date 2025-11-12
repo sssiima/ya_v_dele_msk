@@ -1149,23 +1149,56 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Генерируем подписанный URL для прямой загрузки больших файлов
+app.post('/api/get-upload-signature', async (req, res) => {
+  try {
+    const { homeworkTitle } = req.body;
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const publicId = `homework-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    
+    const params = {
+      timestamp: timestamp,
+      folder: 'homeworks',
+      resource_type: 'raw',
+      public_id: publicId,
+      overwrite: false,
+      access_mode: 'public'
+    };
+    
+    const signature = cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET);
+    
+    res.json({
+      success: true,
+      signature: signature,
+      timestamp: timestamp,
+      publicId: publicId,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY
+    });
+  } catch (error) {
+    console.error('Error generating upload signature:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при генерации подписи для загрузки'
+    });
+  }
+});
+
 app.post('/api/upload-homework', async (req, res) => {
   let client;
   try {
     console.log('Upload homework request received');
     
-    const { file: base64File, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode, track, fileSize } = req.body;
+    // Поддерживаем два способа загрузки:
+    // 1. Через base64 (для файлов до 10MB)
+    // 2. Через fileUrl (для больших файлов, загруженных напрямую в Cloudinary)
+    const { file: base64File, fileUrl, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode, track, fileSize } = req.body;
 
     console.log('Received teamCode:', teamCode, 'Type:', typeof teamCode);
     console.log('Received track:', track);
     console.log('Received fileSize:', fileSize);
-
-    if (!base64File) {
-      return res.status(400).json({
-        success: false,
-        message: 'Файл не предоставлен'
-      });
-    }
+    console.log('Has base64File:', !!base64File);
+    console.log('Has fileUrl:', !!fileUrl);
 
     // Проверка размера файла (25MB для воркшопа, 10MB для обычных дз)
     const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
@@ -1176,26 +1209,48 @@ app.post('/api/upload-homework', async (req, res) => {
       });
     }
 
-    console.log('File received, uploading to Cloudinary...');
+    let uploadResult;
     
-    // Загружаем в Cloudinary
-    // Для raw файлов Cloudinary поддерживает до 100MB, но для base64 лучше использовать обычный upload
-    const uploadOptions = {
-      resource_type: 'raw',
-      folder: 'homeworks',
-      format: 'pdf',
-      public_id: `homework-${Date.now()}`,
-      overwrite: false,
-      access_mode: 'public'
-    };
-    
-    // Используем обычный upload - Cloudinary автоматически обрабатывает большие файлы
-    const uploadResult = await cloudinary.uploader.upload(
-      `data:application/pdf;base64,${base64File}`, 
-      uploadOptions
-    );
-
-    console.log('Cloudinary upload successful:', uploadResult.secure_url);
+    // Если файл уже загружен в Cloudinary (через прямую загрузку)
+    if (fileUrl) {
+      console.log('Using direct upload URL:', fileUrl);
+      uploadResult = {
+        secure_url: fileUrl,
+        public_id: fileUrl.split('/').pop().replace(/\.[^/.]+$/, ''),
+        bytes: fileSize || 0
+      };
+    } else if (base64File) {
+      // Для файлов до 10MB используем base64 загрузку
+      if (fileSize && fileSize > 10 * 1024 * 1024) {
+        return res.status(400).json({
+          success: false,
+          message: 'Для файлов больше 10MB используйте прямую загрузку'
+        });
+      }
+      
+      console.log('File received, uploading to Cloudinary via base64...');
+      
+      const uploadOptions = {
+        resource_type: 'raw',
+        folder: 'homeworks',
+        format: 'pdf',
+        public_id: `homework-${Date.now()}`,
+        overwrite: false,
+        access_mode: 'public'
+      };
+      
+      uploadResult = await cloudinary.uploader.upload(
+        `data:application/pdf;base64,${base64File}`, 
+        uploadOptions
+      );
+      
+      console.log('Cloudinary upload successful:', uploadResult.secure_url);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Файл не предоставлен'
+      });
+    }
 
     // Сохраняем в существующую таблицу homeworks
     client = await pool.connect();

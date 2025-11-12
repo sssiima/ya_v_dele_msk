@@ -593,34 +593,12 @@ export const homeworksApi = {
 }
 
 export const fileUploadApi = {
-  async uploadHomework(file: File, homeworkTitle: string, teamCode?: string, track?: string): Promise<ApiResponse<UploadResponse>> { // Добавляем homeworkTitle и track параметры
+  async uploadHomework(file: File, homeworkTitle: string, teamCode?: string, track?: string): Promise<ApiResponse<UploadResponse>> {
     // Проверяем размер файла (25MB для воркшопа, 10MB для обычных дз)
     const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new Error(`Файл слишком большой. Максимальный размер: ${maxSize / 1024 / 1024}MB`);
     }
-
-    // Конвертируем файл в base64
-    const base64File = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        try {
-          const result = reader.result as string;
-          // Убираем data:application/pdf;base64, префикс
-          const base64Data = result.split(',')[1];
-          if (!base64Data) {
-            reject(new Error('Ошибка конвертации файла'));
-            return;
-          }
-          resolve(base64Data);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = error => reject(new Error('Ошибка чтения файла: ' + error));
-    });
-
 
     // Нормализуем teamCode: конвертируем в строку, убираем пробелы, проверяем на пустоту
     let normalizedTeamCode: string | undefined = undefined;
@@ -631,30 +609,123 @@ export const fileUploadApi = {
       }
     }
 
-    const payload = {
-      file: base64File,
-      filename: file.name,
-      homeworkTitle: homeworkTitle,
-      teamCode: normalizedTeamCode,
-      track: track || undefined,
-      fileSize: file.size,
-      timestamp: new Date().toISOString()
-    };
-    
+    // Для файлов больше 10MB используем прямую загрузку в Cloudinary
+    if (file.size > 10 * 1024 * 1024) {
+      // Получаем подпись для загрузки
+      const signatureResponse = await fetch(`${API_BASE_URL}/get-upload-signature`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ homeworkTitle }),
+      });
 
-    const response = await fetch(`${API_BASE_URL}/upload-homework`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      if (!signatureResponse.ok) {
+        throw new Error('Ошибка при получении подписи для загрузки');
+      }
+
+      const signatureData = await signatureResponse.json();
+      if (!signatureData.success) {
+        throw new Error('Ошибка при получении подписи для загрузки');
+      }
+
+      // Формируем FormData для прямой загрузки в Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', signatureData.apiKey);
+      formData.append('timestamp', signatureData.timestamp.toString());
+      formData.append('signature', signatureData.signature);
+      formData.append('folder', 'homeworks');
+      formData.append('resource_type', 'raw');
+      formData.append('public_id', signatureData.publicId);
+      formData.append('overwrite', 'false');
+      formData.append('access_mode', 'public');
+
+      // Загружаем напрямую в Cloudinary
+      const cloudinaryUploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/raw/upload`;
+      const cloudinaryResponse = await fetch(cloudinaryUploadUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!cloudinaryResponse.ok) {
+        const errorText = await cloudinaryResponse.text();
+        throw new Error(`Ошибка загрузки в Cloudinary: ${errorText}`);
+      }
+
+      const cloudinaryData = await cloudinaryResponse.json();
+      const fileUrl = cloudinaryData.secure_url;
+
+      // Отправляем URL на сервер для сохранения в БД
+      const payload = {
+        fileUrl: fileUrl,
+        filename: file.name,
+        homeworkTitle: homeworkTitle,
+        teamCode: normalizedTeamCode,
+        track: track || undefined,
+        fileSize: file.size,
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch(`${API_BASE_URL}/upload-homework`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } else {
+      // Для файлов до 10MB используем base64 загрузку
+      const base64File = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          try {
+            const result = reader.result as string;
+            const base64Data = result.split(',')[1];
+            if (!base64Data) {
+              reject(new Error('Ошибка конвертации файла'));
+              return;
+            }
+            resolve(base64Data);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = error => reject(new Error('Ошибка чтения файла: ' + error));
+      });
+
+      const payload = {
+        file: base64File,
+        filename: file.name,
+        homeworkTitle: homeworkTitle,
+        teamCode: normalizedTeamCode,
+        track: track || undefined,
+        fileSize: file.size,
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch(`${API_BASE_URL}/upload-homework`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     }
-    
-    return await response.json();
   }
 };
