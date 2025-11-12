@@ -585,26 +585,59 @@ const getDownloadLink = (url: string) => {
       const allPeople = allStructure?.data || []
       
       // Нормализация ФИО к нижнему регистру без лишних пробелов
-      const normalizeName = (fullName: string) => fullName.trim().toLowerCase().replace(/\s+/g, ' ')
+      const normalizeName = (fullName: string) => {
+        if (!fullName) return ''
+        return fullName.trim().toLowerCase().replace(/\s+/g, ' ')
+      }
 
       // Проверка совпадения по имени и фамилии в любом порядке ("Фамилия Имя" или "Имя Фамилия")
       const isSameFirstLast = (a: string, b: string) => {
-        const aParts = normalizeName(a).split(' ')
-        const bParts = normalizeName(b).split(' ')
+        const aNormalized = normalizeName(a)
+        const bNormalized = normalizeName(b)
+        const aParts = aNormalized.split(' ').filter(p => p.length > 0)
+        const bParts = bNormalized.split(' ').filter(p => p.length > 0)
+        
+        // Если меньше двух частей, не можем сравнить
         if (aParts.length < 2 || bParts.length < 2) return false
+        
+        // Берем первые две части (фамилия и имя, игнорируя отчество если есть)
         const [a1, a2] = [aParts[0], aParts[1]]
         const [b1, b2] = [bParts[0], bParts[1]]
+        
+        // Проверяем совпадение в обоих порядках
         return (a1 === b1 && a2 === b2) || (a1 === b2 && a2 === b1)
       }
 
       // Проверка: строковое поле карточки человека (high_mentor/coord/ro) относится к текущему пользователю
       const fieldMatchesUser = (fieldValue?: string) => {
         if (!fieldValue) return false
-        // Нормализуем оба значения для сравнения
+        
+        // Нормализуем оба значения для сравнения (убираем лишние пробелы)
         const normalizedField = normalizeName(fieldValue)
         const normalizedUser = normalizeName(currentUserFullName)
-        // Проверяем точное совпадение или совпадение по фамилии и имени
-        return normalizedField === normalizedUser || isSameFirstLast(fieldValue, currentUserFullName)
+        
+        // Проверяем точное совпадение после нормализации
+        if (normalizedField === normalizedUser) return true
+        
+        // Проверяем совпадение по фамилии и имени в любом порядке
+        if (isSameFirstLast(fieldValue, currentUserFullName)) return true
+        
+        // Дополнительная проверка: если в поле есть отчество, сравниваем только первые два слова
+        const fieldParts = normalizedField.split(' ').filter(p => p.length > 0)
+        const userParts = normalizedUser.split(' ').filter(p => p.length > 0)
+        
+        if (fieldParts.length >= 2 && userParts.length >= 2) {
+          const fieldFirstTwo = `${fieldParts[0]} ${fieldParts[1]}`
+          const userFirstTwo = `${userParts[0]} ${userParts[1]}`
+          if (fieldFirstTwo === userFirstTwo) return true
+          
+          // Проверяем в обратном порядке
+          const fieldReversed = `${fieldParts[1]} ${fieldParts[0]}`
+          const userReversed = `${userParts[1]} ${userParts[0]}`
+          if (fieldFirstTwo === userReversed || fieldReversed === userFirstTwo) return true
+        }
+        
+        return false
       }
       
       let coordPeople: any[] = []
