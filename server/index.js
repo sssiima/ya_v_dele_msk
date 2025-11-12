@@ -1193,7 +1193,7 @@ app.post('/api/upload-homework', async (req, res) => {
     console.log('Upload homework request received');
     
     // Поддерживаем два способа загрузки:
-    // 1. Через base64 (для файлов до 10MB)
+    // 1. Через base64 (для всех файлов, используя Buffer для больших)
     // 2. Через fileUrl (для больших файлов, загруженных напрямую в Cloudinary)
     const { file: base64File, fileUrl, filename = `homework-${Date.now()}.pdf`, homeworkTitle, teamCode, track, fileSize } = req.body;
 
@@ -1223,9 +1223,11 @@ app.post('/api/upload-homework', async (req, res) => {
         bytes: fileSize || 0
       };
     } else if (base64File) {
-      // Для всех файлов используем base64 загрузку через сервер
-      // Cloudinary поддерживает до 100MB для raw файлов при загрузке через серверный API
-      console.log('File received, uploading to Cloudinary via base64...');
+      // Для всех файлов используем загрузку через Buffer
+      // Конвертируем base64 в Buffer для более эффективной загрузки
+      console.log('File received, uploading to Cloudinary via Buffer...');
+      
+      const fileBuffer = Buffer.from(base64File, 'base64');
       
       const uploadOptions = {
         resource_type: 'raw',
@@ -1233,14 +1235,29 @@ app.post('/api/upload-homework', async (req, res) => {
         format: 'pdf',
         public_id: `homework-${Date.now()}-${Math.random().toString(36).substring(7)}`,
         overwrite: false,
-        access_mode: 'public'
+        access_mode: 'public',
+        use_filename: false,
+        unique_filename: true
       };
       
       try {
-        uploadResult = await cloudinary.uploader.upload(
-          `data:application/pdf;base64,${base64File}`, 
-          uploadOptions
-        );
+        // Используем upload_stream для больших файлов
+        uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            uploadOptions,
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
+            }
+          );
+          
+          // Записываем Buffer в stream
+          uploadStream.end(fileBuffer);
+        });
+        
         console.log('Cloudinary upload successful:', uploadResult.secure_url);
       } catch (uploadError) {
         console.error('Cloudinary upload error:', uploadError);
