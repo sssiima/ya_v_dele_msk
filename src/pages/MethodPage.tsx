@@ -164,16 +164,18 @@ const MethodPage = () => {
                 <div className="text-center py-4 text-gray-500 text-xs">Нет команд</div>
               ) : (
                 <div className="space-y-2">
-                  <div className="grid grid-cols-3 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
+                  <div className="grid grid-cols-4 gap-2 pb-2 border-b border-gray-200 text-xs font-medium text-gray-700">
                     <div>Код команды</div>
                     <div>Название команды</div>
                     <div>Наставник</div>
+                    <div>Трек</div>
                   </div>
                   {allTeams.map((team, index) => (
-                    <div key={team.code || index} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-100 text-xs">
+                    <div key={team.code || index} className="grid grid-cols-4 gap-2 py-2 border-b border-gray-100 text-xs">
                       <div className="text-gray-700">{team.code || '-'}</div>
                       <div className="text-gray-700">{team.name || '-'}</div>
                       <div className="text-gray-700">{team.mentor || '-'}</div>
+                      <div className="text-gray-700">{team.track || 'Не выбран'}</div>
                     </div>
                   ))}
                 </div>
