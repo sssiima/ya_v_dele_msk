@@ -1462,6 +1462,23 @@ app.post('/api/mero-reg', async (req, res) => {
 
     client = await pool.connect();
 
+    // Проверяем, не зарегистрирован ли уже пользователь на это мероприятие по паспорту
+    // Удаляем все пробелы из паспорта для сравнения
+    const normalizedPassport = passport.replace(/\s+/g, '');
+    const checkQuery = `
+      SELECT id FROM "mero-reg"
+      WHERE mero = $1 
+        AND REPLACE(passport, ' ', '') = $2
+    `;
+    const checkResult = await client.query(checkQuery, [mero, normalizedPassport]);
+    
+    if (checkResult.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Вы уже зарегистрированы на это мероприятие'
+      });
+    }
+
     // Вставка данных в таблицу mero-reg (имя таблицы с дефисом нужно заключать в кавычки)
     const query = `
       INSERT INTO "mero-reg" (

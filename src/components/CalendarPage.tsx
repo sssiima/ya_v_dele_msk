@@ -260,8 +260,16 @@ const CalendarPage = () => {
       } else {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
       }
-    } catch (error) {
-      alert('Ошибка при отправке заявки. Попробуйте еще раз.');
+    } catch (error: any) {
+      // Показываем сообщение об ошибке от сервера или общее сообщение
+      // Axios выбрасывает исключение при статусе 400+, поэтому проверяем response.data
+      let errorMessage = 'Ошибка при отправке заявки. Попробуйте еще раз.';
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      alert(errorMessage);
     } finally {
       setSubmitting(false);
     }
