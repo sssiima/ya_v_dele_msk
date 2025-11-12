@@ -139,9 +139,10 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
     const file = event.target.files?.[0];
     if (file) {
       if (file.type === 'application/pdf') {
-        // Проверка размера файла (50MB)
-        if (file.size > 50 * 1024 * 1024) {
-          alert('Файл слишком большой. Максимальный размер: 50MB');
+        // Проверка размера файла (25MB для промежуточного ВШ)
+        const maxSize = 25 * 1024 * 1024; // 25MB
+        if (file.size > maxSize) {
+          alert(`Файл слишком большой. Максимальный размер: 25MB`);
           return;
         }
         setSelectedFile(file);
@@ -261,7 +262,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
             </div>
           )}
           <p className='italic text-xs mt-2 text-gray-600'>
-            *Принимается файл в формате PDF до 50MB
+            *Принимается файл в формате PDF до 25MB
           </p>
           
           {/* Информация о названиях презентаций */}

@@ -594,8 +594,8 @@ export const homeworksApi = {
 
 export const fileUploadApi = {
   async uploadHomework(file: File, homeworkTitle: string, teamCode?: string, track?: string): Promise<ApiResponse<UploadResponse>> { // Добавляем homeworkTitle и track параметры
-    // Проверяем размер файла (50MB для воркшопа, 10MB для обычных дз)
-    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    // Проверяем размер файла (25MB для воркшопа, 10MB для обычных дз)
+    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new Error(`Файл слишком большой. Максимальный размер: ${maxSize / 1024 / 1024}MB`);
     }

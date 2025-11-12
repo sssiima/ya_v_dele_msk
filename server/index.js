@@ -1167,8 +1167,8 @@ app.post('/api/upload-homework', async (req, res) => {
       });
     }
 
-    // Проверка размера файла (50MB для воркшопа, 10MB для обычных дз)
-    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    // Проверка размера файла (25MB для воркшопа, 10MB для обычных дз)
+    const maxSize = homeworkTitle === 'Промежуточный ВШ' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
     if (fileSize && fileSize > maxSize) {
       return res.status(400).json({
         success: false,
@@ -1179,16 +1179,20 @@ app.post('/api/upload-homework', async (req, res) => {
     console.log('File received, uploading to Cloudinary...');
     
     // Загружаем в Cloudinary
+    // Для raw файлов Cloudinary поддерживает до 100MB, но для base64 лучше использовать обычный upload
+    const uploadOptions = {
+      resource_type: 'raw',
+      folder: 'homeworks',
+      format: 'pdf',
+      public_id: `homework-${Date.now()}`,
+      overwrite: false,
+      access_mode: 'public'
+    };
+    
+    // Используем обычный upload - Cloudinary автоматически обрабатывает большие файлы
     const uploadResult = await cloudinary.uploader.upload(
       `data:application/pdf;base64,${base64File}`, 
-      {
-        resource_type: 'raw',
-        folder: 'homeworks',
-        format: 'pdf',
-        public_id: `homework-${Date.now()}`,
-        overwrite: false,
-        access_mode: 'public'
-      }
+      uploadOptions
     );
 
     console.log('Cloudinary upload successful:', uploadResult.secure_url);
