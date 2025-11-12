@@ -622,12 +622,21 @@ export const fileUploadApi = {
     });
 
 
+    // Нормализуем teamCode: конвертируем в строку, убираем пробелы, проверяем на пустоту
+    let normalizedTeamCode: string | undefined = undefined;
+    if (teamCode !== null && teamCode !== undefined) {
+      const teamCodeStr = String(teamCode).trim();
+      if (teamCodeStr !== '' && teamCodeStr !== 'null' && teamCodeStr !== 'undefined') {
+        normalizedTeamCode = teamCodeStr;
+      }
+    }
+
     const payload = {
       file: base64File,
       filename: file.name,
-      homeworkTitle: homeworkTitle, // ⬅️ ДОБАВЛЯЕМ homeworkTitle
-      teamCode: teamCode && teamCode.trim() !== '' ? teamCode.trim() : undefined, // Убираем пустые строки
-      track: track || undefined, // Добавляем трек
+      homeworkTitle: homeworkTitle,
+      teamCode: normalizedTeamCode,
+      track: track || undefined,
       fileSize: file.size,
       timestamp: new Date().toISOString()
     };

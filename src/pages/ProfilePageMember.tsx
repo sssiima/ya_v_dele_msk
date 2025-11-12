@@ -2180,7 +2180,7 @@ const loadTeamData = async (teamCode: string) => {
           desc={mk_list[currentHomeworkView - 1]?.fulldesc}
           prezlink={mk_list[currentHomeworkView - 1]?.pres}
           templink={mk_list[currentHomeworkView - 1]?.template}
-          teamCode={memberData?.team_code}
+          teamCode={memberData?.team_code ? String(memberData.team_code).trim() : undefined}
           homeworkNumber={getHomeworkNumberByMkIndex(currentHomeworkView - 1) || undefined}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
@@ -2476,7 +2476,7 @@ const loadTeamData = async (teamCode: string) => {
           desc={selectedMk?.fulldesc}
           prezlink={selectedMk?.pres}
           templink={selectedMk?.template}
-          teamCode={memberData?.team_code}
+          teamCode={memberData?.team_code ? String(memberData.team_code).trim() : undefined}
           homeworkNumber={(() => {
             const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk?.title && mk.subtitle === selectedMk?.subtitle);
             return getHomeworkNumberByMkIndex(mkIndex) || undefined;

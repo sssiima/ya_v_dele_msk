@@ -1214,9 +1214,23 @@ app.post('/api/upload-homework', async (req, res) => {
          VALUES ($1, $2, $3, $4)
          RETURNING id`;
     
-    // Проверяем, что teamCode не пустая строка
-    const finalTeamCode = (teamCode && typeof teamCode === 'string' && teamCode.trim() !== '') ? teamCode.trim() : null;
-    console.log('Saving homework with teamCode:', finalTeamCode, 'track:', track);
+    // Нормализуем teamCode: принимаем строку или число, убираем пробелы, проверяем на пустоту
+    let finalTeamCode = null;
+    if (teamCode !== null && teamCode !== undefined) {
+      const teamCodeStr = String(teamCode).trim();
+      if (teamCodeStr !== '' && teamCodeStr !== 'null' && teamCodeStr !== 'undefined') {
+        finalTeamCode = teamCodeStr;
+      }
+    }
+    console.log('Saving homework with teamCode:', finalTeamCode, 'track:', track, 'original teamCode:', teamCode, 'type:', typeof teamCode);
+    
+    // Проверяем, что teamCode обязателен для всех домашних заданий (кроме промежуточного воркшопа, если он без команды)
+    if (!finalTeamCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Код команды обязателен для загрузки домашнего задания. Убедитесь, что вы являетесь участником команды.'
+      });
+    }
     
     const insertValues = track 
       ? [homeworkTitle, uploadResult.secure_url, 'uploaded', finalTeamCode, track]

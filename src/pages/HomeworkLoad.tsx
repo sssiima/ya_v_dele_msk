@@ -74,10 +74,26 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
       alert('Пожалуйста, сначала выберите файл');
       return;
     }
+
+    // Проверяем наличие teamCode перед загрузкой
+    // teamCode может быть строкой или числом, нормализуем его
+    let normalizedTeamCode: string | undefined = undefined;
+    if (teamCode !== null && teamCode !== undefined) {
+      const teamCodeStr = String(teamCode).trim();
+      if (teamCodeStr !== '' && teamCodeStr !== 'null' && teamCodeStr !== 'undefined') {
+        normalizedTeamCode = teamCodeStr;
+      }
+    }
+    
+    if (!normalizedTeamCode) {
+      alert('Ошибка: не удалось определить код команды. Убедитесь, что вы являетесь участником команды. Если проблема сохраняется, обратитесь к администратору.');
+      setUploading(false);
+      return;
+    }
   
     setUploading(true);
     try {
-      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', teamCode);
+      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', normalizedTeamCode);
       
       if (result.success && result.data) {
         alert('Файл успешно загружен и сохранен в базе!');
