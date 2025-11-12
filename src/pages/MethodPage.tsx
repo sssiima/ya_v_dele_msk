@@ -28,6 +28,9 @@ const MethodPage = () => {
   const [selectedTracks, setSelectedTracks] = useState<string[]>([])
   const [showMentorFilter, setShowMentorFilter] = useState(false)
   const [showTrackFilter, setShowTrackFilter] = useState(false)
+  const [selectedHomeworkNames, setSelectedHomeworkNames] = useState<string[]>([])
+  const [showHomeworkNameFilter, setShowHomeworkNameFilter] = useState(false)
+  const homeworkNameFilterRef = useRef<HTMLDivElement>(null)
   const mentorFilterRef = useRef<HTMLDivElement>(null)
   const trackFilterRef = useRef<HTMLDivElement>(null)
   const markSelectorRef = useRef<HTMLDivElement>(null)
@@ -61,16 +64,19 @@ const MethodPage = () => {
       if (trackFilterRef.current && !trackFilterRef.current.contains(event.target as Node)) {
         setShowTrackFilter(false)
       }
+      if (homeworkNameFilterRef.current && !homeworkNameFilterRef.current.contains(event.target as Node)) {
+        setShowHomeworkNameFilter(false)
+      }
     }
 
-    if (showMarkSelector || showMentorFilter || showTrackFilter) {
+    if (showMarkSelector || showMentorFilter || showTrackFilter || showHomeworkNameFilter) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showMarkSelector, showMentorFilter, showTrackFilter])
+  }, [showMarkSelector, showMentorFilter, showTrackFilter, showHomeworkNameFilter])
 
   const handleEvaluate = async (homework: Homework) => {
     setSelectedHomework(homework)
@@ -195,6 +201,25 @@ const MethodPage = () => {
         : [...prev, track]
     )
   }
+
+  const handleHomeworkNameToggle = (homeworkName: string) => {
+    setSelectedHomeworkNames(prev => 
+      prev.includes(homeworkName) 
+        ? prev.filter(h => h !== homeworkName)
+        : [...prev, homeworkName]
+    )
+  }
+
+  // Получаем уникальные названия домашних заданий
+  const uniqueHomeworkNames = Array.from(new Set(homeworks.map(hw => hw.hw_name).filter(Boolean))) as string[]
+
+  // Фильтрация домашних заданий по названию
+  const filteredHomeworks = homeworks.filter(homework => {
+    if (selectedHomeworkNames.length > 0 && homework.hw_name) {
+      return selectedHomeworkNames.includes(homework.hw_name)
+    }
+    return true
+  })
 
   return (
     <div className="min-h-screen">
@@ -356,10 +381,56 @@ const MethodPage = () => {
           )}
           
           <div className="border-t border-brand pt-4">
+            {/* Фильтр по названию домашнего задания */}
+            {!loading && homeworks.length > 0 && (
+              <div className="mb-4">
+                <div className="relative inline-block" ref={homeworkNameFilterRef}>
+                  <button
+                    onClick={() => setShowHomeworkNameFilter(!showHomeworkNameFilter)}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      selectedHomeworkNames.length > 0
+                        ? 'bg-brand text-white hover:bg-brand/90'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Фильтр по названию {selectedHomeworkNames.length > 0 ? `(${selectedHomeworkNames.length})` : ''}
+                  </button>
+                  {showHomeworkNameFilter && (
+                    <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto min-w-[200px]">
+                      {uniqueHomeworkNames.map((homeworkName) => (
+                        <label
+                          key={homeworkName}
+                          className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedHomeworkNames.includes(homeworkName)}
+                            onChange={() => handleHomeworkNameToggle(homeworkName)}
+                            className="mr-2"
+                          />
+                          <span className="text-xs text-black">{homeworkName}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {selectedHomeworkNames.length > 0 && (
+                  <button
+                    onClick={() => setSelectedHomeworkNames([])}
+                    className="ml-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Сбросить фильтр
+                  </button>
+                )}
+              </div>
+            )}
+            
             {loading ? (
               <div className="text-center py-8 text-gray-500">Загрузка...</div>
             ) : homeworks.length === 0 ? (
               <div className="text-center py-8 text-gray-500">Нет домашних заданий на проверке</div>
+            ) : filteredHomeworks.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Нет домашних заданий, соответствующих фильтру</div>
             ) : (
               <div>
                 <table className="w-full table-fixed">
@@ -371,7 +442,7 @@ const MethodPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {homeworks.map((homework) => (
+                    {filteredHomeworks.map((homework) => (
                       <tr key={homework.id} className="border-b border-gray-100">
                         <td className="py-2 px-1.5">
                           <input
