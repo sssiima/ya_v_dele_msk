@@ -218,13 +218,13 @@ const MethodPage = () => {
               
               {/* Фильтры и сортировка */}
               {!loadingTeams && allTeams.length > 0 && (
-                <div className="mb-4 space-y-3">
+                <div className="mb-4 flex flex-wrap items-center gap-2">
                   {/* Сортировка по названию */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-700">Сортировка по названию:</span>
                     <button
                       onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                      className="px-3 py-1 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors"
                     >
                       {sortOrder === 'asc' ? '↑ По возрастанию' : '↓ По убыванию'}
                     </button>
@@ -234,7 +234,11 @@ const MethodPage = () => {
                   <div className="relative" ref={mentorFilterRef}>
                     <button
                       onClick={() => setShowMentorFilter(!showMentorFilter)}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                        selectedMentors.length > 0
+                          ? 'bg-brand text-white hover:bg-brand/90'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
                     >
                       Наставник {selectedMentors.length > 0 ? `(${selectedMentors.length})` : ''}
                     </button>
@@ -262,7 +266,11 @@ const MethodPage = () => {
                   <div className="relative" ref={trackFilterRef}>
                     <button
                       onClick={() => setShowTrackFilter(!showTrackFilter)}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                        selectedTracks.length > 0
+                          ? 'bg-brand text-white hover:bg-brand/90'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
                     >
                       Трек {selectedTracks.length > 0 ? `(${selectedTracks.length})` : ''}
                     </button>
