@@ -1604,19 +1604,11 @@ app.post('/api/mero-reg', async (req, res) => {
       });
     }
 
-    // Валидация паспортных данных: должны быть только цифры и пробелы, и ровно 10 цифр
-    const normalizedPassport = passport.replace(/\s+/g, '');
-    if (!/^\d+$/.test(normalizedPassport) || normalizedPassport.length !== 10) {
-      return res.status(400).json({
-        success: false,
-        message: 'Неверный формат паспортных данных'
-      });
-    }
-
     client = await pool.connect();
 
     // Проверяем, не зарегистрирован ли уже пользователь на это мероприятие по паспорту
-    // normalizedPassport уже вычислен выше при валидации
+    // Нормализуем паспорт для сравнения (убираем пробелы)
+    const normalizedPassport = passport.replace(/\s+/g, '');
     const checkQuery = `
       SELECT id FROM "mero-reg"
       WHERE mero = $1 
