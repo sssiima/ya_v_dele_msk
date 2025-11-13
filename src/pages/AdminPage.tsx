@@ -18,7 +18,7 @@ const AdminPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
             onClick={() => handleAction('change-member-team')}
-            className="bg-brand text-white px-6 py-4 rounded-lg font-medium hover:bg-brand/90 transition-colors text-left"
+            className="bg-red-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-red-600 transition-colors text-left"
           >
             <h3 className="text-lg font-semibold mb-2">Смена команды у участника</h3>
             <p className="text-sm opacity-90">Изменить команду участника</p>
@@ -50,7 +50,7 @@ const AdminPage = () => {
 
           <button
             onClick={() => handleAction('change-structure')}
-            className="bg-brand text-white px-6 py-4 rounded-lg font-medium hover:bg-brand/90 transition-colors text-left"
+            className="bg-red-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-red-600 transition-colors text-left"
           >
             <h3 className="text-lg font-semibold mb-2">Смена структуры</h3>
             <p className="text-sm opacity-90">Изменить данные пользователя структуры</p>
