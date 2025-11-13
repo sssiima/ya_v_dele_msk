@@ -25,6 +25,13 @@ const AdminPage = () => {
   const [newTeamCode, setNewTeamCode] = useState('')
   const [saving, setSaving] = useState(false)
 
+  // Состояния для удаления участника
+  const [deleteTeamCodeInput, setDeleteTeamCodeInput] = useState('')
+  const [deleteMembers, setDeleteMembers] = useState<Member[]>([])
+  const [loadingDeleteMembers, setLoadingDeleteMembers] = useState(false)
+  const [selectedMemberToDelete, setSelectedMemberToDelete] = useState<Member | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
   const handleAction = (action: string) => {
     setActiveAction(action)
     // Сбрасываем состояния при смене действия
@@ -33,6 +40,11 @@ const AdminPage = () => {
       setMembers([])
       setSelectedMember(null)
       setNewTeamCode('')
+    }
+    if (action !== 'delete-member') {
+      setDeleteTeamCodeInput('')
+      setDeleteMembers([])
+      setSelectedMemberToDelete(null)
     }
   }
 
@@ -117,6 +129,77 @@ const AdminPage = () => {
       alert(`Ошибка: ${error.message}`)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleLoadDeleteMembers = async () => {
+    if (!deleteTeamCodeInput.trim()) {
+      alert('Введите код команды')
+      return
+    }
+
+    setLoadingDeleteMembers(true)
+    try {
+      const result = await teamMembersApi.getByTeamCode(deleteTeamCodeInput.trim())
+      if (result?.success && result.data) {
+        setDeleteMembers(result.data)
+      } else {
+        setDeleteMembers([])
+        alert('Участники с таким кодом команды не найдены')
+      }
+    } catch (error: any) {
+      alert(`Ошибка при загрузке участников: ${error.message}`)
+      setDeleteMembers([])
+    } finally {
+      setLoadingDeleteMembers(false)
+    }
+  }
+
+  const handleSelectMemberToDelete = (member: Member) => {
+    setSelectedMemberToDelete(member)
+  }
+
+  const handleDeleteMember = async () => {
+    if (!selectedMemberToDelete) {
+      return
+    }
+
+    if (!confirm(`Вы уверены, что хотите удалить участника ${selectedMemberToDelete.last_name} ${selectedMemberToDelete.first_name} ${selectedMemberToDelete.patronymic || ''}?`)) {
+      return
+    }
+
+    setDeleting(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/members/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          last_name: selectedMemberToDelete.last_name,
+          first_name: selectedMemberToDelete.first_name,
+          patronymic: selectedMemberToDelete.patronymic || null,
+          team_code: selectedMemberToDelete.team_code
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Ошибка при удалении участника')
+      }
+
+      alert('Участник успешно удален')
+      
+      // Обновляем список участников
+      const updatedMembers = deleteMembers.filter(m => m.id !== selectedMemberToDelete.id)
+      setDeleteMembers(updatedMembers)
+      
+      // Сбрасываем выбранного участника
+      setSelectedMemberToDelete(null)
+    } catch (error: any) {
+      alert(`Ошибка: ${error.message}`)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -271,7 +354,100 @@ const AdminPage = () => {
           </div>
         )}
 
-        {activeAction && activeAction !== 'change-member-team' && (
+        {activeAction === 'delete-member' && (
+          <div className="mt-6 bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Удаление участника</h2>
+            
+            {/* Ввод кода команды */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Введите код команды для поиска участников:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={deleteTeamCodeInput}
+                  onChange={(e) => setDeleteTeamCodeInput(e.target.value)}
+                  placeholder="Код команды"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleLoadDeleteMembers()
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleLoadDeleteMembers}
+                  disabled={loadingDeleteMembers}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loadingDeleteMembers ? 'Загрузка...' : 'Найти участников'}
+                </button>
+              </div>
+            </div>
+
+            {/* Список участников */}
+            {deleteMembers.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Участники команды {deleteTeamCodeInput}:
+                </h3>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {deleteMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      onClick={() => handleSelectMemberToDelete(member)}
+                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                        selectedMemberToDelete?.id === member.id
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-300 hover:border-red-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <p className="font-medium text-gray-800">
+                        {member.last_name} {member.first_name} {member.patronymic || ''}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Команда: {member.team_code || 'не указана'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Кнопки удаления */}
+            {selectedMemberToDelete && (
+              <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Удалить участника: {selectedMemberToDelete.last_name} {selectedMemberToDelete.first_name} {selectedMemberToDelete.patronymic || ''}?
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Это действие нельзя отменить. Участник будет полностью удален из системы.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDeleteMember}
+                    disabled={deleting}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleting ? 'Удаление...' : 'Удалить'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedMemberToDelete(null)
+                    }}
+                    disabled={deleting}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Отменить
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeAction && activeAction !== 'change-member-team' && activeAction !== 'delete-member' && (
           <div className="mt-6 bg-gray-50 rounded-lg p-4">
             <p className="text-gray-600">
               Выбрано действие: <span className="font-semibold">{activeAction}</span>

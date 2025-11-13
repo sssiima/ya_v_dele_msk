@@ -1250,6 +1250,108 @@ app.put('/api/members/:id/change-team', async (req, res) => {
   }
 })
 
+// DELETE /api/members/delete - удалить участника по ФИО и коду команды
+app.delete('/api/members/delete', async (req, res) => {
+  let client;
+  try {
+    const { last_name, first_name, patronymic, team_code } = req.body
+
+    if (!last_name || !first_name || !team_code) {
+      return res.status(400).json({
+        success: false,
+        message: 'Не указаны обязательные поля: фамилия, имя, код команды'
+      })
+    }
+
+    client = await pool.connect()
+
+    // Сначала находим участника, чтобы проверить его роль
+    let findQuery = `
+      SELECT id, role FROM members 
+      WHERE last_name = $1 
+        AND first_name = $2 
+        AND team_code = $3
+    `
+    const findParams = [last_name, first_name, team_code]
+
+    // Если указано отчество, добавляем его в условие
+    if (patronymic) {
+      findQuery = findQuery.replace('AND team_code = $3', 'AND patronymic = $3 AND team_code = $4')
+      findParams.push(patronymic)
+    }
+
+    const findResult = await client.query(findQuery, findParams)
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Участник с указанными данными не найден'
+      })
+    }
+
+    const memberToDelete = findResult.rows[0]
+    const wasCaptain = memberToDelete.role === 'captain'
+
+    // Если удаляемый участник был капитаном, назначаем капитаном другого участника команды
+    if (wasCaptain) {
+      const otherMemberQuery = `
+        SELECT id FROM members 
+        WHERE team_code = $1 
+          AND id != $2
+          AND COALESCE(archived, false) = false
+        LIMIT 1
+      `
+      const otherMemberResult = await client.query(otherMemberQuery, [team_code, memberToDelete.id])
+
+      if (otherMemberResult.rows.length > 0) {
+        // Назначаем роль captain другому участнику
+        await client.query(`
+          UPDATE members 
+          SET role = 'captain' 
+          WHERE id = $1
+        `, [otherMemberResult.rows[0].id])
+      }
+    }
+
+    // Теперь удаляем участника
+    let deleteQuery = `
+      DELETE FROM members 
+      WHERE last_name = $1 
+        AND first_name = $2 
+        AND team_code = $3
+    `
+    const deleteParams = [last_name, first_name, team_code]
+
+    // Если указано отчество, добавляем его в условие
+    if (patronymic) {
+      deleteQuery = deleteQuery.replace('AND team_code = $3', 'AND patronymic = $3 AND team_code = $4')
+      deleteParams.push(patronymic)
+    }
+
+    const result = await client.query(deleteQuery, deleteParams)
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Участник с указанными данными не найден'
+      })
+    }
+
+    res.json({
+      success: true,
+      message: 'Участник успешно удален' + (wasCaptain ? '. Роль капитана передана другому участнику команды.' : '')
+    })
+  } catch (error) {
+    console.error('Error deleting member:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при удалении участника: ' + error.message
+    })
+  } finally {
+    if (client) client.release()
+  }
+})
+
 // GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
 app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   try {
