@@ -1212,6 +1212,44 @@ app.put('/api/members/:id/archive', async (req, res) => {
   }
 })
 
+// PUT /api/members/:id/change-team - изменить код команды и название команды у участника
+app.put('/api/members/:id/change-team', async (req, res) => {
+  let client;
+  try {
+    const { id } = req.params
+    const { team_code, team_name } = req.body
+
+    if (!team_code) {
+      return res.status(400).json({
+        success: false,
+        message: 'Код команды не указан'
+      })
+    }
+
+    client = await pool.connect()
+
+    // Обновляем код команды и название команды у участника
+    await client.query(`
+      UPDATE members 
+      SET team_code = $1, team_name = $2
+      WHERE id = $3
+    `, [team_code, team_name || null, id])
+
+    res.json({
+      success: true,
+      message: 'Команда участника успешно изменена'
+    })
+  } catch (error) {
+    console.error('Error changing member team:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при изменении команды участника: ' + error.message
+    })
+  } finally {
+    if (client) client.release()
+  }
+})
+
 // GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
 app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   try {
