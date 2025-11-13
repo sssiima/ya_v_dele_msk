@@ -1352,6 +1352,78 @@ app.delete('/api/members/delete', async (req, res) => {
   }
 })
 
+// DELETE /api/teams/delete - удалить команду и все связанные данные
+app.delete('/api/teams/delete', async (req, res) => {
+  let client;
+  try {
+    const { team_code } = req.body
+
+    if (!team_code) {
+      return res.status(400).json({
+        success: false,
+        message: 'Код команды не указан'
+      })
+    }
+
+    client = await pool.connect()
+
+    // Начинаем транзакцию
+    await client.query('BEGIN')
+
+    // Удаляем все регистрации на мероприятия с таким кодом команды
+    await client.query(`
+      DELETE FROM "mero-reg" 
+      WHERE team_code = $1
+    `, [team_code])
+
+    // Удаляем все домашние задания команды
+    await client.query(`
+      DELETE FROM homeworks 
+      WHERE team_code = $1
+    `, [team_code])
+
+    // Удаляем всех участников команды
+    await client.query(`
+      DELETE FROM members 
+      WHERE team_code = $1
+    `, [team_code])
+
+    // Удаляем саму команду
+    const deleteTeamResult = await client.query(`
+      DELETE FROM teams 
+      WHERE code = $1
+    `, [team_code])
+
+    if (deleteTeamResult.rowCount === 0) {
+      await client.query('ROLLBACK')
+      return res.status(404).json({
+        success: false,
+        message: 'Команда с указанным кодом не найдена'
+      })
+    }
+
+    // Подтверждаем транзакцию
+    await client.query('COMMIT')
+
+    res.json({
+      success: true,
+      message: 'Команда и все связанные данные успешно удалены'
+    })
+  } catch (error) {
+    // Откатываем транзакцию в случае ошибки
+    if (client) {
+      await client.query('ROLLBACK').catch(() => {})
+    }
+    console.error('Error deleting team:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при удалении команды: ' + error.message
+    })
+  } finally {
+    if (client) client.release()
+  }
+})
+
 // GET /api/members/by-team-code/:teamCode - получить участников команды по коду команды
 app.get('/api/members/by-team-code/:teamCode', async (req, res) => {
   try {
