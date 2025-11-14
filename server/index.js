@@ -1228,12 +1228,28 @@ app.put('/api/members/:id/change-team', async (req, res) => {
 
     client = await pool.connect()
 
-    // Обновляем код команды и название команды у участника
+    // Получаем наставника из новой команды
+    let mentor = null
+    try {
+      const teamResult = await client.query(`
+        SELECT mentor FROM teams 
+        WHERE code = $1
+        LIMIT 1
+      `, [team_code])
+      
+      if (teamResult.rows.length > 0 && teamResult.rows[0].mentor) {
+        mentor = teamResult.rows[0].mentor
+      }
+    } catch (e) {
+      // Если не удалось получить наставника, продолжаем без него
+    }
+
+    // Обновляем код команды, название команды и наставника у участника
     await client.query(`
       UPDATE members 
-      SET team_code = $1, team_name = $2
-      WHERE id = $3
-    `, [team_code, team_name || null, id])
+      SET team_code = $1, team_name = $2, mentor = $3
+      WHERE id = $4
+    `, [team_code, team_name || null, mentor, id])
 
     res.json({
       success: true,
