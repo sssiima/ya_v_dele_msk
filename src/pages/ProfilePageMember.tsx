@@ -2447,14 +2447,25 @@ const loadTeamData = async (teamCode: string) => {
             )}
           
        {currentHomeworkView && ( <HomeworkLoad 
-          title={mk_list[currentHomeworkView - 1]?.subtitle || `Домашнее задание ${currentHomeworkView - 2}`}
-          preview={mk_list[currentHomeworkView - 1]?.description}
-          desclink={mk_list[currentHomeworkView - 1]?.tz}
-          desc={mk_list[currentHomeworkView - 1]?.fulldesc}
-          prezlink={mk_list[currentHomeworkView - 1]?.pres}
-          templink={mk_list[currentHomeworkView - 1]?.template}
+          title={selectedMk?.subtitle || mk_list[currentHomeworkView - 1]?.subtitle || `Домашнее задание ${currentHomeworkView - 2}`}
+          preview={selectedMk?.description || mk_list[currentHomeworkView - 1]?.description}
+          desclink={selectedMk?.tz || mk_list[currentHomeworkView - 1]?.tz}
+          desc={selectedMk?.fulldesc || mk_list[currentHomeworkView - 1]?.fulldesc}
+          prezlink={selectedMk?.pres || mk_list[currentHomeworkView - 1]?.pres}
+          templink={selectedMk?.template || mk_list[currentHomeworkView - 1]?.template}
           teamCode={memberData?.team_code ? String(memberData.team_code).trim() : undefined}
-          homeworkNumber={getHomeworkNumberByMkIndex(currentHomeworkView - 1) || undefined}
+          homeworkNumber={(() => {
+            // Используем selectedMk для определения номера д/з, если он есть
+            if (selectedMk) {
+              const mkIndex = mk_list.findIndex(mk => 
+                mk.title === selectedMk.title && 
+                mk.subtitle === selectedMk.subtitle &&
+                mk.track === selectedMk.track
+              );
+              return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+            }
+            return getHomeworkNumberByMkIndex(currentHomeworkView - 1) || undefined;
+          })()}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
             if (memberData?.team_code) {
@@ -2586,7 +2597,12 @@ const loadTeamData = async (teamCode: string) => {
                     
                     {/* Дедлайн */}
                     {memberData?.team_code && selectedMk.tz && (() => {
-                      const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk.title && mk.subtitle === selectedMk.subtitle);
+                      // Используем track для точного поиска, так как есть несколько вариантов с одинаковым subtitle
+                      const mkIndex = mk_list.findIndex(mk => 
+                        mk.title === selectedMk.title && 
+                        mk.subtitle === selectedMk.subtitle &&
+                        mk.track === selectedMk.track
+                      );
                       const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
                       const deadline = hwNumber ? getDeadline(hwNumber) : null;
                       return deadline ? (
@@ -2604,7 +2620,12 @@ const loadTeamData = async (teamCode: string) => {
                     {/* Отображение статуса или кнопки для участника */}
                     {memberData?.team_code && selectedMk.tz && (() => {
                       // Проверяем, выбран ли трек команды для второго д/з (четвертый мастер-класс, индекс 3)
-                      const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk.title && mk.subtitle === selectedMk.subtitle);
+                      // Используем track для точного поиска, так как есть несколько вариантов с одинаковым subtitle
+                      const mkIndex = mk_list.findIndex(mk => 
+                        mk.title === selectedMk.title && 
+                        mk.subtitle === selectedMk.subtitle &&
+                        mk.track === selectedMk.track
+                      );
                       const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
                       const isSecondHomework = hwNumber === 2;
                       
@@ -2709,7 +2730,7 @@ const loadTeamData = async (teamCode: string) => {
                 }
                 
                 return filteredMkList.map((mk, index) => (
-                  <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
+                  <div key={`${index}-${mk.track || ''}`} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
                     <Card 
                       title={mk.title}
                       subtitle={mk.subtitle}
@@ -2740,13 +2761,13 @@ const loadTeamData = async (teamCode: string) => {
                 }
                 
                 return filteredMkList.map((_, index) => (
-                  <button 
-                    key={index}
-                    onClick={() => scrollToDotmk(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
-                    }`}
-                  />
+                <button 
+                  key={index}
+                  onClick={() => scrollToDotmk(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
+                  }`}
+                />
                 ));
               })()}
             </div>
@@ -2828,8 +2849,16 @@ const loadTeamData = async (teamCode: string) => {
           templink={selectedMk?.template}
           teamCode={memberData?.team_code ? String(memberData.team_code).trim() : undefined}
           homeworkNumber={(() => {
-            const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk?.title && mk.subtitle === selectedMk?.subtitle);
-            return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+            // Используем track для точного поиска, так как есть несколько вариантов с одинаковым subtitle
+            if (selectedMk) {
+              const mkIndex = mk_list.findIndex(mk => 
+                mk.title === selectedMk.title && 
+                mk.subtitle === selectedMk.subtitle &&
+                mk.track === selectedMk.track
+              );
+              return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+            }
+            return undefined;
           })()}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
