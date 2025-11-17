@@ -1923,7 +1923,19 @@ const getDownloadLink = (url: string) => {
                      <h2 className="text-lg font-bold text-brand mb-4 normal-case text-center">{selectedMk.title}</h2>
 
                      <div className='flex w-full lg:px-8 items-center justify-center text-left'>
-                       <img src={selectedMk.image} className="rounded-lg w-full lg:w-96 mb-6"></img>
+                       <img src={(() => {
+                         // Для четвертого мастер-класса используем картинку в зависимости от трека
+                         if ((selectedMk.subtitle === 'Бизнес - модель. Базовый трек' || selectedMk.subtitle === 'Бизнес - модель. Социальный трек' || selectedMk.subtitle === 'Бизнес - модель. Инновационный трек') && selectedMk.track) {
+                           if (selectedMk.track === 'Базовый') {
+                             return '/images/mkfourthbase.png';
+                           } else if (selectedMk.track === 'Социальный') {
+                             return '/images/mkfourthsoc.png';
+                           } else if (selectedMk.track === 'Инновационный') {
+                             return '/images/mkfourthinn.png';
+                           }
+                         }
+                         return selectedMk.image;
+                       })()} className="rounded-lg w-full lg:w-96 mb-6"></img>
                      </div>
 
                      <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
@@ -2001,15 +2013,29 @@ const getDownloadLink = (url: string) => {
                           [-webkit-overflow-scrolling:touch] pb-4 snap-x snap-mandatory"
               onScroll={handleScrollmk}
             >
-              {mk_list.map((mk, index) => (
-                <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
-                  <Card 
-                    title={mk.title}
-                    subtitle={mk.subtitle}
-                    image={mk.image}
-                  />
-                </div>
-              ))}
+              {mk_list.map((mk, index) => {
+                // Для четвертого мастер-класса используем картинку в зависимости от трека
+                let imageToShow = mk.image;
+                if (mk.subtitle === 'Бизнес - модель. Базовый трек' || mk.subtitle === 'Бизнес - модель. Социальный трек' || mk.subtitle === 'Бизнес - модель. Инновационный трек') {
+                  if (mk.track === 'Базовый') {
+                    imageToShow = '/images/mkfourthbase.png';
+                  } else if (mk.track === 'Социальный') {
+                    imageToShow = '/images/mkfourthsoc.png';
+                  } else if (mk.track === 'Инновационный') {
+                    imageToShow = '/images/mkfourthinn.png';
+                  }
+                }
+                
+                return (
+                  <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
+                    <Card 
+                      title={mk.title}
+                      subtitle={mk.subtitle}
+                      image={imageToShow}
+                    />
+                  </div>
+                );
+              })}
             </div>
             
             {/* Точки прогресса */}
