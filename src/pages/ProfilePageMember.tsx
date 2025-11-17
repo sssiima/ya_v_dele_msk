@@ -1028,9 +1028,6 @@ MVP возможно реализовать до конца курса в так
 
   const [showHomework, setShowHomework] = useState(false);
 
-  const handleButtonClick = () => {
-    setShowHomework(true);
-  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -2253,15 +2250,94 @@ const loadTeamData = async (teamCode: string) => {
                       )
                     })()}
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Второе д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      // Проверяем, выбран ли трек команды
+                      const hasTrack = teamData.track && 
+                        teamData.track.trim() !== '' && 
+                        teamData.track !== 'Будет доступен после 1 Воркшопа' &&
+                        (teamData.track === 'Базовый' || teamData.track === 'Социальный' || teamData.track === 'Инновационный')
+                      
+                      const homeworkStatus = getHomeworkStatus(2)
+                      const isUploaded = homeworkStatus.status === 'uploaded'
+                      const isReviewed = homeworkStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && homeworkStatus.comment && homeworkStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 2
+                      
+                      // Если трек не выбран, показываем заблокированное состояние
+                      if (!hasTrack) {
+                        return (
+                          <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-gray-100'>
+                            <span className="text-sm text-gray-500">Второе д/з</span>
+                            <div className="flex items-center gap-2">
+                              <button className="rounded flex items-center justify-center" disabled>
+                                <img src="/images/locked.png" alt="lock" className="w-3" />
+                              </button>
+                              <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
+                            </div>
+                          </div>
+                        )
+                      }
+                      
+                      // Если трек выбран, показываем обычное состояние
+                      return (
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 2, comment: homeworkStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 2, comment: homeworkStatus.comment! });
+                              }
+                            }
+                          }}
+                        >
+                          <span className="text-sm">Второе д/з</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                {homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{homeworkStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
+                            ) : (
+                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(2)}>
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                     
                     <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
                       <span className="text-sm text-black">Третье д/з</span>
@@ -2458,16 +2534,44 @@ const loadTeamData = async (teamCode: string) => {
                     })()}
                     
                     {/* Отображение статуса или кнопки для участника */}
-                    {memberData?.team_code && selectedMk.tz && (
-                      <div className="flex w-full justify-center mt-4">
-                        {mkHomeworkStatus !== null && (mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed') ? (
-                          <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full ${
-                            mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
-                              ? 'bg-white text-black' 
-                              : 'bg-brand text-white'
-                          }`}>
-                            <span className="text-sm">Статус выполнения</span>
-                            <div className="flex items-center gap-2">
+                    {memberData?.team_code && selectedMk.tz && (() => {
+                      // Проверяем, выбран ли трек команды для второго д/з (четвертый мастер-класс, индекс 3)
+                      const mkIndex = mk_list.findIndex(mk => mk.title === selectedMk.title && mk.subtitle === selectedMk.subtitle);
+                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
+                      const isSecondHomework = hwNumber === 2;
+                      
+                      const hasTrack = teamData.track && 
+                        teamData.track.trim() !== '' && 
+                        teamData.track !== 'Будет доступен после 1 Воркшопа' &&
+                        (teamData.track === 'Базовый' || teamData.track === 'Социальный' || teamData.track === 'Инновационный')
+                      
+                      // Если это второе д/з и трек не выбран, показываем заблокированное состояние
+                      if (isSecondHomework && !hasTrack) {
+                        return (
+                          <div className="flex w-full justify-center mt-4">
+                            <div className="flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full bg-gray-100">
+                              <span className="text-sm text-gray-500">Второе д/з</span>
+                              <div className="flex items-center gap-2">
+                                <button className="rounded flex items-center justify-center" disabled>
+                                  <img src="/images/locked.png" alt="lock" className="w-3" />
+                                </button>
+                                <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
+                      return (
+                        <div className="flex w-full justify-center mt-4">
+                          {mkHomeworkStatus !== null && (mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed') ? (
+                            <div className={`flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full ${
+                              mkHomeworkStatus.status === 'uploaded' || mkHomeworkStatus.status === 'reviewed' 
+                                ? 'bg-white text-black' 
+                                : 'bg-brand text-white'
+                            }`}>
+                              <span className="text-sm">Статус выполнения</span>
+                              <div className="flex items-center gap-2">
                               {mkHomeworkStatus.status === 'uploaded' ? (
                                 <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                               ) : mkHomeworkStatus.status === 'reviewed' ? (
@@ -2481,14 +2585,15 @@ const loadTeamData = async (teamCode: string) => {
                           </div>
                         ) : (
                           <button 
-                            onClick={handleButtonClick}
+                            onClick={() => setShowHomework(true)}
                             className='rounded-xl bg-brand text-white font-semibold p-3 text-xs w-2/3 lg:w-1/3 lg:text-lg'
                           >
                             Перейти к выполнению
                           </button>
                         )}
-                      </div>
-                    )}
+                        </div>
+                      );
+                    })()}
                     </div>
 
                    </div>
