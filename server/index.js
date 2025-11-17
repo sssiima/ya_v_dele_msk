@@ -1660,6 +1660,53 @@ app.post('/api/upload-homework', async (req, res) => {
       }
     }
 
+    // Если это второе д/з (Бизнес - модель), получаем трек из команды и сохраняем его
+    if (homeworkTitle === 'Бизнес - модель.' && finalTeamCode) {
+      try {
+        // Проверяем наличие поля track в таблице members и добавляем его, если нужно
+        await client.query(`
+          DO $$
+          BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='members' AND column_name='track') THEN
+              ALTER TABLE members ADD COLUMN track TEXT;
+            END IF;
+          END $$;
+        `);
+
+        // Проверяем наличие поля track в таблице teams и добавляем его, если нужно
+        await client.query(`
+          DO $$
+          BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='teams' AND column_name='track') THEN
+              ALTER TABLE teams ADD COLUMN track TEXT;
+            END IF;
+          END $$;
+        `);
+
+        // Получаем трек из команды
+        const teamResult = await client.query(
+          `SELECT track FROM teams WHERE code = $1 LIMIT 1`,
+          [finalTeamCode]
+        );
+
+        if (teamResult.rows.length > 0 && teamResult.rows[0].track) {
+          const teamTrack = teamResult.rows[0].track;
+
+          // Обновляем track в таблице homeworks для этого д/з
+          await client.query(
+            `UPDATE homeworks 
+             SET track = $1 
+             WHERE id = $2`,
+            [teamTrack, homeworkId]
+          );
+          console.log(`Updated track for homework ${homeworkId} with track ${teamTrack} from team ${finalTeamCode}`);
+        }
+      } catch (updateError) {
+        console.error('Error updating track for second homework:', updateError);
+        // Не прерываем выполнение, так как домашнее задание уже сохранено
+      }
+    }
+
     res.json({
       success: true,
       message: 'Файл успешно загружен и сохранен в базе данных',
