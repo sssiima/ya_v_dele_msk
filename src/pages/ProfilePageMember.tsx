@@ -66,7 +66,7 @@ interface MemberData {
   team_code: string;
   role: string;
   team_name: string;
-  mentor: string;
+  mentor: string; 
   track?: string;
 }
 
@@ -662,7 +662,7 @@ MVP возможно реализовать до конца курса в так
       { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthlock.png',
         pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
         description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
-        disabled: true, track: 'Базовый трек',
+        disabled: false, track: 'Базовый',
         criteria: '',
         tz: 'https://drive.google.com/file/d/1OBoQL-0RFGMyeiBA1dcWux3KqoIY3Q3R/view?usp=drive_link',
         template: '',
@@ -833,13 +833,47 @@ MVP возможно реализовать до конца курса в так
 
 3. Креативность и оригинальность идеи.
 Поддерживается творческий и нестандартный подход.`  },
-      // { title: "Второй мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourthsoc.png',
-      //   pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
-      //   description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
-      //   disabled: true, track: 'Социальный трек',
-      //   criteria: '',
-      //   tz: 'https://drive.google.com/file/d/1sH-5hekaOJifBTJh7i3hHJTtDhsK0N7w/view?usp=drive_link',
-      //   template: '', fulldesc: ''  },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthsoc.png',
+        pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
+        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+        disabled: false, track: 'Социальный',
+        criteria: '',
+        tz: 'https://drive.google.com/file/d/1sH-5hekaOJifBTJh7i3hHJTtDhsK0N7w/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 4: «Бизнес -
+модель»
+
+1. Правильность выбора элементов бизнес-модели
+Участник выбрал три разных элемента из списка, приведённого в теории.
+Каждый элемент чётко соответствует понятию бизнес-модели, отсутствуют
+повторения. Элементы классифицированы правильно, с соблюдением
+терминологии.
+
+2. Применимость к проекту
+Каждый элемент подробно описан с чётким объяснением, как он
+функционирует в рамках конкретного проекта. Участник демонстрирует
+глубокое понимание механики монетизации и её связи с проектом.
+
+3. Определение целевой аудитории
+Для каждого бизнес-элемента чётко указана и описана целевая аудитория,
+отличающаяся по характеру для разных элементов. Описание глубокое и
+релевантное.
+
+4. Анализ выгод для проекта
+В каждом элементе описаны конкретные, разнообразные выгоды —
+например, финансовые (доход, прибыль), стратегические
+(масштабируемость), операционные (снижение затрат), маркетинговые ]
+(привлечение клиентов).
+
+5. Понимание ценностного предложения
+В четвёрке каждого элемента раскрыт смысл ценностного предложения:
+почему клиент выбирает этот элемент, какую проблему решает проект,
+какова выгода. Используется или хотя бы отражается формула «помогает...
+решить... благодаря... даёт...».
+
+6. Дополнительный балл за оригинальность и глубину проработки
+Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
+творческий подход к применению элементов.`  },
       // { title: "Третий мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifthsoc.png',
       //   pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
       //   description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
@@ -854,13 +888,47 @@ MVP возможно реализовать до конца курса в так
       //   criteria: '',
       //   tz: 'https://drive.google.com/file/d/1YRlVOwsQHohX7QqdbF2d2SIEiFJNhPWc/view?usp=drive_link',
       //   template: '', fulldesc: ''  },
-      // { title: "Второй мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourthinn.png',
-      //   pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
-      //   description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
-      //   disabled: true, track: 'Инновационный трек',
-      //   criteria: '',
-      //   tz: 'https://drive.google.com/file/d/12YITLqF4tidK-OWnO1C8W7XbfkYRhsqq/view?usp=drive_link',
-      //   template: '', fulldesc: ''  },
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthinn.png',
+        pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
+        description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
+        disabled: false, track: 'Инновационный',
+        criteria: '',
+        tz: 'https://drive.google.com/file/d/12YITLqF4tidK-OWnO1C8W7XbfkYRhsqq/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 4: «Бизнес -
+модель»
+
+1. Правильность выбора элементов бизнес-модели
+Участник выбрал три разных элемента из списка, приведённого в теории.
+Каждый элемент чётко соответствует понятию бизнес-модели, отсутствуют
+повторения. Элементы классифицированы правильно, с соблюдением
+терминологии.
+
+2. Применимость к проекту
+Каждый элемент подробно описан с чётким объяснением, как он
+функционирует в рамках конкретного проекта. Участник демонстрирует
+глубокое понимание механики монетизации и её связи с проектом.
+
+3. Определение целевой аудитории
+Для каждого бизнес-элемента чётко указана и описана целевая аудитория,
+отличающаяся по характеру для разных элементов. Описание глубокое и
+релевантное.
+
+4. Анализ выгод для проекта
+В каждом элементе описаны конкретные, разнообразные выгоды —
+например, финансовые (доход, прибыль), стратегические
+(масштабируемость), операционные (снижение затрат), маркетинговые ]
+(привлечение клиентов).
+
+5. Понимание ценностного предложения
+В четвёрке каждого элемента раскрыт смысл ценностного предложения:
+почему клиент выбирает этот элемент, какую проблему решает проект,
+какова выгода. Используется или хотя бы отражается формула «помогает...
+решить... благодаря... даёт...».
+
+6. Дополнительный балл за оригинальность и глубину проработки
+Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
+творческий подход к применению элементов.`  },
       // { title: "Третий мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
       //   pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
       //   description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
@@ -1222,8 +1290,8 @@ MVP возможно реализовать до конца курса в так
             const homeworksResult = await homeworksApi.getByTeamCode(m.team_code)
             if (homeworksResult?.success && homeworksResult.data) {
               setTeamHomeworks(homeworksResult.data)
-            }
-          } catch (error) {
+        }
+      } catch (error) {
           }
         }
       } catch (error) {
@@ -1556,19 +1624,19 @@ const loadTeamData = async (teamCode: string) => {
                           <p><strong>Ссылка на ВКонтакте</strong></p>
                           <input value={vkLink} readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
                         </div>
-                      <div className='flex flex-row gap-2 mb-2'>
-                        <div className='flex-1'>
-                          <p><strong>Дата рождения</strong></p>
-                          <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                        <div className='flex flex-row gap-2 mb-2'>
+                          <div className='flex-1'>
+                            <p><strong>Дата рождения</strong></p>
+                            <input value={birthDate} type='date' readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
+                          <div className='flex-1'>
+                            <p><strong>Пол</strong></p>
+                            <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
+                             readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
+                          </div>
                         </div>
-                        <div className='flex-1'>
-                          <p><strong>Пол</strong></p>
-                          <input value={gender === 'F' ? 'Женский' : gender === 'M' ? 'Мужской' : gender}
-                           readOnly className="w-full px-4 py-3 border border-brand rounded-full bg-white h-[30px] flex items-center italic text-xs mt-1"/>
-                        </div>
-                      </div>
-                      
-                      <div className='w-full flex flex-col items-center lg:hidden'>
+                        
+                        <div className='w-full flex flex-col items-center lg:hidden'>
                           <button onClick={() => setIsProfileExpanded(false)}>
                             <img 
                               src='images/arrow.png' 
@@ -1701,11 +1769,11 @@ const loadTeamData = async (teamCode: string) => {
                                 onMouseDown={(e) => e.preventDefault()}
                               >
                                 {vus.vus}
-                              </div>
-                            ))}
-                          </div>
-                        )}
                       </div>
+                            ))}
+                        </div>
+                        )}
+                        </div>
                       <div className='mb-2'>
                         <p><strong>Уровень подготовки</strong></p>
                         <select 
@@ -2146,8 +2214,8 @@ const loadTeamData = async (teamCode: string) => {
                             }
                           }}
                         >
-                          <span className="text-sm">Первое д/з</span>
-                          <div className="flex items-center gap-2">
+                      <span className="text-sm">Первое д/з</span>
+                      <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
@@ -2161,11 +2229,11 @@ const loadTeamData = async (teamCode: string) => {
                                 )}
                               </span>
                             ) : (
-                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
-                                Загрузить
-                              </button>
+                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
+                          Загрузить
+                        </button>
                             )}
-                          </div>
+                      </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -2174,7 +2242,7 @@ const loadTeamData = async (teamCode: string) => {
                               style={{ maxWidth: 'calc(100vw - 2rem)' }}
                             >
                               <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
-                            </div>
+                    </div>
                           )}
                         </div>
                       )
@@ -2214,7 +2282,7 @@ const loadTeamData = async (teamCode: string) => {
                           }}
                         >
                           <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
@@ -2233,9 +2301,9 @@ const loadTeamData = async (teamCode: string) => {
                                 className="rounded-xl bg-brand text-white italic text-xs lg:text-sm py-1"
                               >
                                 Загрузить
-                              </button>
+                        </button>
                             )}
-                          </div>
+                      </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -2244,7 +2312,7 @@ const loadTeamData = async (teamCode: string) => {
                               style={{ maxWidth: 'calc(100vw - 2rem)' }}
                             >
                               <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{workshopStatus.comment}</p>
-                            </div>
+                    </div>
                           )}
                         </div>
                       )
@@ -2269,13 +2337,13 @@ const loadTeamData = async (teamCode: string) => {
                         return (
                           <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-gray-100'>
                             <span className="text-sm text-gray-500">Второе д/з</span>
-                            <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                               <button className="rounded flex items-center justify-center" disabled>
-                                <img src="/images/locked.png" alt="lock" className="w-3" />
-                              </button>
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
                               <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
-                            </div>
-                          </div>
+                      </div>
+                    </div>
                         )
                       }
                       
@@ -2461,14 +2529,14 @@ const loadTeamData = async (teamCode: string) => {
 
                      <a href={getDownloadLink(selectedMk.pres)} download className='text-brand italic hover:underline text-sm block'>Скачать презентацию</a>
                      {selectedMk.criteria && (
-                       <a href={getDownloadLink(selectedMk.criteria)} download className='text-brand italic hover:underline text-sm block'>Скачать критерии для выполнения д/з</a>
+                     <a href={getDownloadLink(selectedMk.criteria)} download className='text-brand italic hover:underline text-sm block'>Скачать критерии для выполнения д/з</a>
                      )}
                      {selectedMk.tz && (
-                       <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
+                     <a href={getDownloadLink(selectedMk.tz)} download className='text-brand italic hover:underline text-sm block'>Скачать описание задания</a>
                      )}
           
          
-                    <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
+                     <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
 
                     {/* Отображение статусов для структуры */}
                     {structureTeamsForMk.length > 0 && (
@@ -2507,8 +2575,8 @@ const loadTeamData = async (teamCode: string) => {
                         </div>
                       </div>
                     )}
-                    
-                    <div className="flex w-full flex-col">
+                     
+                     <div className="flex w-full flex-col">
                       <div className='w-full text-left'>
                         <p className="text-md font-semibold text-black mb-2">{selectedMk.tz ? 'Описание домашнего задания' : 'Описание'}</p>
                         <div className='rounded-lg border border-brand p-2'>
@@ -2540,17 +2608,23 @@ const loadTeamData = async (teamCode: string) => {
                       const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
                       const isSecondHomework = hwNumber === 2;
                       
+                      // Проверяем, является ли это четвертым мастер-классом (Бизнес - модель)
+                      const isFourthMk = selectedMk.subtitle === 'Бизнес - модель.';
+                      
                       const hasTrack = teamData.track && 
                         teamData.track.trim() !== '' && 
                         teamData.track !== 'Будет доступен после 1 Воркшопа' &&
                         (teamData.track === 'Базовый' || teamData.track === 'Социальный' || teamData.track === 'Инновационный')
                       
-                      // Если это второе д/з и трек не выбран, показываем заблокированное состояние
-                      if (isSecondHomework && !hasTrack) {
+                      // Проверяем соответствие трека мастер-класса треку команды
+                      const trackMatches = !isFourthMk || (selectedMk.track === teamData.track);
+                      
+                      // Если это второе д/з или четвертый мастер-класс и трек не выбран или не совпадает, показываем заблокированное состояние
+                      if ((isSecondHomework || isFourthMk) && (!hasTrack || !trackMatches)) {
                         return (
                           <div className="flex w-full justify-center mt-4">
                             <div className="flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full bg-gray-100">
-                              <span className="text-sm text-gray-500">Второе д/з</span>
+                              <span className="text-sm text-gray-500">{isSecondHomework ? 'Второе д/з' : 'Четвертый мастер-класс'}</span>
                               <div className="flex items-center gap-2">
                                 <button className="rounded flex items-center justify-center" disabled>
                                   <img src="/images/locked.png" alt="lock" className="w-3" />
@@ -2584,14 +2658,14 @@ const loadTeamData = async (teamCode: string) => {
                             </div>
                           </div>
                         ) : (
-                          <button 
+        <button 
                             onClick={() => setShowHomework(true)}
                             className='rounded-xl bg-brand text-white font-semibold p-3 text-xs w-2/3 lg:w-1/3 lg:text-lg'
-                          >
-                            Перейти к выполнению
-                          </button>
+        >
+          Перейти к выполнению
+        </button>
                         )}
-                        </div>
+                    </div>
                       );
                     })()}
                     </div>
@@ -2611,28 +2685,70 @@ const loadTeamData = async (teamCode: string) => {
                           [-webkit-overflow-scrolling:touch] pb-4 snap-x snap-mandatory"
               onScroll={handleScrollmk}
             >
-              {mk_list.map((mk, index) => (
-                <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
-                  <Card 
-                    title={mk.title}
-                    subtitle={mk.subtitle}
-                    image={mk.image}
-                  />
-                </div>
-              ))}
+              {(() => {
+                // Для участников фильтруем мастер-классы по треку команды
+                // Для структуры показываем все мастер-классы
+                const memberId = localStorage.getItem('member_id');
+                const structureCtid = localStorage.getItem('structure_ctid');
+                const isMember = !!memberId && !structureCtid;
+                
+                let filteredMkList = mk_list;
+                
+                if (isMember && teamData.track) {
+                  // Фильтруем четвертый мастер-класс по треку команды
+                  // Остальные мастер-классы показываем все
+                  filteredMkList = mk_list.filter(mk => {
+                    // Если это четвертый мастер-класс (Бизнес - модель)
+                    if (mk.subtitle === 'Бизнес - модель.') {
+                      // Показываем только тот, который соответствует треку команды
+                      return mk.track === teamData.track;
+                    }
+                    // Остальные мастер-классы показываем все
+                    return true;
+                  });
+                }
+                
+                return filteredMkList.map((mk, index) => (
+                  <div key={index} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
+                    <Card 
+                      title={mk.title}
+                      subtitle={mk.subtitle}
+                      image={mk.image}
+                    />
+                  </div>
+                ));
+              })()}
             </div>
             
             {/* Точки прогресса */}
             <div className="flex justify-center space-x-2 my-2 lg:hidden">
-              {mk_list.map((_, index) => (
-                <button 
-                  key={index}
-                  onClick={() => scrollToDotmk(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
+              {(() => {
+                // Используем тот же фильтр, что и для списка мастер-классов
+                const memberId = localStorage.getItem('member_id');
+                const structureCtid = localStorage.getItem('structure_ctid');
+                const isMember = !!memberId && !structureCtid;
+                
+                let filteredMkList = mk_list;
+                
+                if (isMember && teamData.track) {
+                  filteredMkList = mk_list.filter(mk => {
+                    if (mk.subtitle === 'Бизнес - модель.') {
+                      return mk.track === teamData.track;
+                    }
+                    return true;
+                  });
+                }
+                
+                return filteredMkList.map((_, index) => (
+                  <button 
+                    key={index}
+                    onClick={() => scrollToDotmk(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === activeDotmk ? 'bg-brand scale-125' : 'bg-gray-300'
+                    }`}
+                  />
+                ));
+              })()}
             </div>
           </div>
   
