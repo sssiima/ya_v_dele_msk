@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fileUploadApi } from '@/services/api';
+import { fileUploadApi, teamsApi } from '@/services/api';
 
 interface HomeworkLoadProps {
   title?: string;
@@ -39,9 +39,62 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   const deadline = getDeadline(homeworkNumber);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [teamTrack, setTeamTrack] = useState<string | null>(null);
+  const [loadingTrack, setLoadingTrack] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState<string>('');
+  const [showTrackSelector, setShowTrackSelector] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const trackSelectorRef = useRef<HTMLDivElement>(null);
   const lastUploadTimeRef = useRef<number>(0);
   const navigate = useNavigate();
+
+  const tracks = ['Базовый', 'Социальный', 'Инновационный'];
+
+  // Загружаем трек команды, если это второе д/з
+  useEffect(() => {
+    const loadTeamTrack = async () => {
+      if (homeworkNumber === 2 && teamCode) {
+        setLoadingTrack(true);
+        try {
+          const normalizedTeamCode = String(teamCode).trim();
+          if (normalizedTeamCode && normalizedTeamCode !== '' && normalizedTeamCode !== 'null' && normalizedTeamCode !== 'undefined') {
+            const teamResult = await teamsApi.getByCode(normalizedTeamCode);
+            if (teamResult?.success && teamResult.data?.track) {
+              const track = teamResult.data.track;
+              setTeamTrack(track);
+              // Если трек уже выбран, используем его
+              if (track && (track === 'Базовый' || track === 'Социальный' || track === 'Инновационный')) {
+                setSelectedTrack(track);
+              }
+            } else {
+              setTeamTrack(null);
+            }
+          }
+        } catch (error) {
+          setTeamTrack(null);
+        } finally {
+          setLoadingTrack(false);
+        }
+      }
+    };
+
+    loadTeamTrack();
+  }, [homeworkNumber, teamCode]);
+
+  // Обработка клика вне селектора трека
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (trackSelectorRef.current && !trackSelectorRef.current.contains(event.target as Node)) {
+        setShowTrackSelector(false);
+      }
+    };
+    if (showTrackSelector) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTrackSelector]);
 
 
   const extractFileId = (url: string) => {
@@ -83,6 +136,15 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
       return;
     }
 
+    // Для второго д/з проверяем наличие трека
+    if (homeworkNumber === 2) {
+      const finalTrack = selectedTrack || teamTrack;
+      if (!finalTrack || (finalTrack !== 'Базовый' && finalTrack !== 'Социальный' && finalTrack !== 'Инновационный')) {
+        alert('Пожалуйста, выберите трек перед загрузкой задания');
+        return;
+      }
+    }
+
     // Проверяем наличие teamCode перед загрузкой
     // teamCode может быть строкой или числом, нормализуем его
     let normalizedTeamCode: string | undefined = undefined;
@@ -101,7 +163,14 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
   
     setUploading(true);
     try {
-      const result = await fileUploadApi.uploadHomework(selectedFile, title || 'Домашнее задание', normalizedTeamCode);
+      // Для второго д/з передаем трек
+      const trackToSend = homeworkNumber === 2 ? (selectedTrack || teamTrack || undefined) : undefined;
+      const result = await fileUploadApi.uploadHomework(
+        selectedFile, 
+        title || 'Домашнее задание', 
+        normalizedTeamCode,
+        trackToSend
+      );
       
       if (result.success && result.data) {
         alert('Файл успешно загружен и сохранен в базе!');
@@ -200,6 +269,49 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
             </div>
           )}
 
+          {/* Выбор трека для второго д/з */}
+          {homeworkNumber === 2 && (
+            <div className="mb-4 relative" ref={trackSelectorRef}>
+              <label className="block text-sm font-semibold text-black mb-2">Трек</label>
+              {loadingTrack ? (
+                <div className="w-full px-4 py-2 border border-brand rounded-full bg-gray-50 text-center">
+                  <span className="text-xs text-gray-500">Загрузка...</span>
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowTrackSelector(!showTrackSelector)}
+                    className="w-full px-4 py-2 border border-brand rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {selectedTrack || teamTrack || 'Выберите трек'}
+                  </button>
+                  {showTrackSelector && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ maxHeight: '192px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                      {tracks.map((track) => (
+                        <button
+                          key={track}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTrack(track);
+                            setShowTrackSelector(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left hover:bg-gray-100 ${
+                            (selectedTrack === track || (!selectedTrack && teamTrack === track)) 
+                              ? 'bg-brand/10 border-l-4 border-brand' 
+                              : ''
+                          }`}
+                        >
+                          {track}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-row gap-2">
             <button 
               onClick={handleAttachFile}
@@ -209,7 +321,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
             </button>
             <button 
               onClick={handleUpload}
-              disabled={uploading || !selectedFile}
+              disabled={uploading || !selectedFile || (homeworkNumber === 2 && !selectedTrack && !teamTrack)}
               className='w-full rounded-xl bg-brand hover:bg-teal-600 text-white font-bold text-xs p-1 disabled:opacity-50 disabled:cursor-not-allowed'
             >
               {uploading ? 'Загрузка...' : 'Отправить на проверку'}

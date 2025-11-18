@@ -1660,7 +1660,7 @@ app.post('/api/upload-homework', async (req, res) => {
       }
     }
 
-    // Если это второе д/з (Бизнес - модель), получаем трек из команды и сохраняем его
+    // Если это второе д/з (Бизнес - модель), сохраняем трек в БД
     if (homeworkTitle === 'Бизнес - модель.' && finalTeamCode) {
       try {
         // Проверяем наличие поля track в таблице members и добавляем его, если нужно
@@ -1683,23 +1683,46 @@ app.post('/api/upload-homework', async (req, res) => {
           END $$;
         `);
 
-        // Получаем трек из команды
-        const teamResult = await client.query(
-          `SELECT track FROM teams WHERE code = $1 LIMIT 1`,
-          [finalTeamCode]
-        );
+        // Если трек передан в запросе, используем его, иначе получаем из команды
+        let trackToSave = track;
+        if (!trackToSave) {
+          const teamResult = await client.query(
+            `SELECT track FROM teams WHERE code = $1 LIMIT 1`,
+            [finalTeamCode]
+          );
+          if (teamResult.rows.length > 0 && teamResult.rows[0].track) {
+            trackToSave = teamResult.rows[0].track;
+          }
+        }
 
-        if (teamResult.rows.length > 0 && teamResult.rows[0].track) {
-          const teamTrack = teamResult.rows[0].track;
+        // Если трек есть, сохраняем его во все нужные таблицы
+        if (trackToSave && (trackToSave === 'Базовый' || trackToSave === 'Социальный' || trackToSave === 'Инновационный')) {
+          // Обновляем track для всех участников команды
+          const updateMembersResult = await client.query(
+            `UPDATE members 
+             SET track = $1 
+             WHERE team_code = $2 AND COALESCE(archived, false) = false`,
+            [trackToSave, finalTeamCode]
+          );
+          console.log(`Updated track for ${updateMembersResult.rowCount} members in team ${finalTeamCode}`);
+
+          // Обновляем track для команды
+          const updateTeamsResult = await client.query(
+            `UPDATE teams 
+             SET track = $1 
+             WHERE code = $2`,
+            [trackToSave, finalTeamCode]
+          );
+          console.log(`Updated track for team ${finalTeamCode}: ${updateTeamsResult.rowCount} row(s) affected`);
 
           // Обновляем track в таблице homeworks для этого д/з
           await client.query(
             `UPDATE homeworks 
              SET track = $1 
              WHERE id = $2`,
-            [teamTrack, homeworkId]
+            [trackToSave, homeworkId]
           );
-          console.log(`Updated track for homework ${homeworkId} with track ${teamTrack} from team ${finalTeamCode}`);
+          console.log(`Updated track for homework ${homeworkId} with track ${trackToSave}`);
         }
       } catch (updateError) {
         console.error('Error updating track for second homework:', updateError);
