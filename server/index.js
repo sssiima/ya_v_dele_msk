@@ -1965,6 +1965,52 @@ app.post('/api/mero-reg', async (req, res) => {
   }
 });
 
+// GET /api/users - получить всех пользователей (members и structure) с username и pos
+app.get('/api/users', async (_req, res) => {
+  try {
+    // Получаем всех участников (members) с username, устанавливаем pos = "участник"
+    const membersResult = await pool.query(`
+      SELECT 
+        username,
+        'участник' as pos
+      FROM members
+      WHERE COALESCE(archived, false) = false
+        AND username IS NOT NULL
+        AND username != ''
+      ORDER BY username
+    `);
+
+    // Получаем всех из структуры (structure) с username и pos
+    const structureResult = await pool.query(`
+      SELECT 
+        username,
+        pos
+      FROM structure
+      WHERE COALESCE(archived, false) = false
+        AND username IS NOT NULL
+        AND username != ''
+      ORDER BY username
+    `);
+
+    // Объединяем результаты
+    const allUsers = [
+      ...membersResult.rows,
+      ...structureResult.rows
+    ];
+
+    res.json({ 
+      success: true, 
+      data: allUsers 
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   // server started
