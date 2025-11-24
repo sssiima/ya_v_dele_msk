@@ -264,7 +264,7 @@ const CalendarPage = () => {
       return;
     }
     
-    if (willSpeak === 'yes' && selectedSlots.length < 2) {
+    if (isMember && willSpeak === 'yes' && selectedSlots.length < 2) {
       alert('Пожалуйста, выберите минимум 2 слота для выступления');
       return;
     }
@@ -273,6 +273,19 @@ const CalendarPage = () => {
     
     try {
       const eventName = selectedEvent?.id === 3 ? 'Промежуточный воркшоп' : 'Финальный воркшоп';
+      
+      // Формируем comment: ВУЗ + информация о выступлении
+      let commentParts: string[] = [];
+      if (isMember && vusValue && vusValue.trim() !== '') {
+        commentParts.push(vusValue.trim());
+      }
+      if (isMember && selectedEvent?.id === 5) {
+        if (willSpeak === 'yes') {
+          commentParts.push('Будет выступать');
+        } else if (willSpeak === 'no') {
+          commentParts.push('Не будет выступать');
+        }
+      }
       
       const registrationData = {
         mero: eventName,
@@ -286,8 +299,8 @@ const CalendarPage = () => {
         team_name: isMember ? teamName : null,
         date: isMember && selectedEvent?.id === 3 
           ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) 
-          : (willSpeak === 'yes' && selectedSlots.length > 0 ? selectedSlots.join(', ') : null),
-        comment: willSpeak === 'yes' ? 'Будет выступать' : (willSpeak === 'no' ? 'Не будет выступать' : null)
+          : (isMember && willSpeak === 'yes' && selectedSlots.length > 0 ? selectedSlots.join(', ') : null),
+        comment: commentParts.length > 0 ? commentParts.join('; ') : null
       };
       
       const result = await meroRegApi.register(registrationData);
@@ -299,6 +312,7 @@ const CalendarPage = () => {
         setSelectedDays([]);
         setWillSpeak('');
         setSelectedSlots([]);
+        setVusValue('');
         setConfirmParticipation(false);
       } else {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
@@ -663,19 +677,6 @@ const CalendarPage = () => {
                     />
                   </div>
 
-                        {/* Название команды - только для участников */}
-                        {isMember && (
-                          <div>
-                            <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
-                            <input 
-                              value={teamName}
-                              onChange={(e) => setTeamName(e.target.value)}
-                              className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              required
-                            />
-                          </div>
-                        )}
-
                         <div>
                           <label className="block text-sm font-semibold text-white mb-2">Паспортные данные</label>
                           <input 
@@ -750,8 +751,8 @@ const CalendarPage = () => {
                           </div>
                         )}
 
-                        {/* Вопрос "Будете ли вы выступать?" - только для финального воркшопа */}
-                        {selectedEvent?.id === 5 && (
+                        {/* Вопрос "Будете ли вы выступать?" - только для участников финального воркшопа */}
+                        {isMember && selectedEvent?.id === 5 && (
                           <>
                           <div>
                             <label className="block text-sm font-semibold text-white mb-2">Будете ли вы выступать?</label>
