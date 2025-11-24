@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { membersApi, structureApi, teamsApi, meroRegApi, homeworksApi } from '@/services/api';
+import { membersApi, structureApi, teamsApi, meroRegApi, homeworksApi, vusesApi } from '@/services/api';
 
 interface Event {
   id: number;
@@ -32,6 +32,14 @@ const CalendarPage = () => {
   const daySelectorRef = useRef<HTMLDivElement>(null);
   const slotSelectorRef = useRef<HTMLDivElement>(null);
   
+  // Состояния для ВУЗ
+  const [vuses, setVuses] = useState<{ id: number; vus: string }[]>([]);
+  const [filteredVuses, setFilteredVuses] = useState<{ id: number; vus: string }[]>([]);
+  const [showVusSuggestions, setShowVusSuggestions] = useState(false);
+  const [vusValue, setVusValue] = useState('');
+  const [vusLoading, setVusLoading] = useState(false);
+  const vusInputRef = useRef<HTMLInputElement>(null);
+  
   // Данные пользователя для отправки
   const [userEmail, setUserEmail] = useState('');
   const [userPos, setUserPos] = useState('');
@@ -54,6 +62,43 @@ const CalendarPage = () => {
     '7 декабря 18:15-19:45',
     '7 декабря 20:00-21:30'
   ];
+  
+  // Загружаем ВУЗы
+  useEffect(() => {
+    const fetchVuses = async () => {
+      setVusLoading(true);
+      try {
+        const response = await vusesApi.getAll();
+        if (response.success) {
+          setVuses(response.data);
+          setFilteredVuses(response.data);
+        }
+      } catch (error) {
+        // noop
+      } finally {
+        setVusLoading(false);
+      }
+    };
+
+    if (selectedEvent?.id === 3 || selectedEvent?.id === 5) {
+      fetchVuses();
+    }
+  }, [selectedEvent]);
+
+  // Фильтруем ВУЗы по введенному тексту
+  useEffect(() => {
+    if (vusValue && vusValue.length > 1) {
+      const filtered = vuses.filter(vus => 
+        vus.vus.toLowerCase().includes(vusValue.toLowerCase())
+      );
+      setFilteredVuses(filtered);
+      setShowVusSuggestions(true);
+    } else {
+      setFilteredVuses(vuses);
+      setShowVusSuggestions(false);
+    }
+  }, [vusValue, vuses]);
+
   // Определяем, является ли пользователь участником и загружаем данные
   useEffect(() => {
     const loadUserData = async () => {
@@ -75,6 +120,11 @@ const CalendarPage = () => {
             // Для участников pos = role (captain или member)
             setUserPos(member.role || 'member');
             setUserTeamCode(member.team_code || null);
+            
+            // Загружаем ВУЗ из профиля
+            if (member.education && member.education !== 'не обучаюсь в вузе') {
+              setVusValue(member.education);
+            }
             
             // Загружаем название команды
             if (member.team_code) {
@@ -161,14 +211,22 @@ const CalendarPage = () => {
       if (slotSelectorRef.current && !slotSelectorRef.current.contains(event.target as Node)) {
         setShowSlotSelector(false);
       }
+      if (vusInputRef.current && !vusInputRef.current.closest('.relative')?.contains(event.target as Node)) {
+        setShowVusSuggestions(false);
+      }
     };
-    if (showDaySelector || showSlotSelector) {
+    if (showDaySelector || showSlotSelector || showVusSuggestions) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showDaySelector, showSlotSelector]);
+  }, [showDaySelector, showSlotSelector, showVusSuggestions]);
+  
+  const handleVusSelect = (vusName: string) => {
+    setVusValue(vusName);
+    setShowVusSuggestions(false);
+  };
   
   const toggleDay = (day: string) => {
     setSelectedDays(prev => 
@@ -440,19 +498,6 @@ const CalendarPage = () => {
                         />
                       </div>
 
-                      {/* Название команды - только для участников */}
-                      {isMember && (
-                        <div>
-                          <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
-                          <input 
-                            value={teamName}
-                            onChange={(e) => setTeamName(e.target.value)}
-                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                          />
-                        </div>
-                      )}
-
                       <div>
                         <label className="block text-sm font-semibold text-white mb-2">Паспортные данные</label>
                         <input 
@@ -463,6 +508,69 @@ const CalendarPage = () => {
                           required
                         />
                       </div>
+
+                      {/* ВУЗ - только для участников */}
+                      {isMember && (
+                        <div className="relative">
+                          <label className="block text-sm font-semibold text-white mb-2">ВУЗ</label>
+                          <input 
+                            ref={vusInputRef}
+                            value={vusValue}
+                            onChange={(e) => setVusValue(e.target.value)}
+                            placeholder="не обучаюсь в вузе"
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            autoComplete="off"
+                            onFocus={() => vusValue && vusValue.length > 1 && setShowVusSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowVusSuggestions(false), 200)}
+                          />
+                          
+                          {showVusSuggestions && filteredVuses.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              {filteredVuses.map((vus) => (
+                                <div
+                                  key={vus.id}
+                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-800"
+                                  onClick={() => handleVusSelect(vus.vus)}
+                                  onMouseDown={(e) => e.preventDefault()}
+                                >
+                                  {vus.vus}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {vusLoading && (
+                            <div className="absolute right-3 top-10">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Название команды - только для участников */}
+                      {isMember && (
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
+                          <input 
+                            value={teamName}
+                            onChange={(e) => setTeamName(e.target.value)}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
+                            readOnly
+                          />
+                        </div>
+                      )}
+
+                      {/* Код команды - только для участников */}
+                      {isMember && (
+                        <div>
+                          <label className="block text-sm font-semibold text-white mb-2">Код команды</label>
+                          <input 
+                            value={userTeamCode || ''}
+                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
+                            readOnly
+                          />
+                        </div>
+                      )}
 
                       {/* Выбор дня и волны - только для участников промежуточного воркшопа */}
                       {isMember && selectedEvent?.id === 3 && (
@@ -578,6 +686,69 @@ const CalendarPage = () => {
                             required
                           />
                         </div>
+
+                        {/* ВУЗ - только для участников */}
+                        {isMember && (
+                          <div className="relative">
+                            <label className="block text-sm font-semibold text-white mb-2">ВУЗ</label>
+                            <input 
+                              ref={vusInputRef}
+                              value={vusValue}
+                              onChange={(e) => setVusValue(e.target.value)}
+                              placeholder="не обучаюсь в вузе"
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              autoComplete="off"
+                              onFocus={() => vusValue && vusValue.length > 1 && setShowVusSuggestions(true)}
+                              onBlur={() => setTimeout(() => setShowVusSuggestions(false), 200)}
+                            />
+                            
+                            {showVusSuggestions && filteredVuses.length > 0 && (
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                {filteredVuses.map((vus) => (
+                                  <div
+                                    key={vus.id}
+                                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm text-gray-800"
+                                    onClick={() => handleVusSelect(vus.vus)}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                  >
+                                    {vus.vus}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {vusLoading && (
+                              <div className="absolute right-3 top-10">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Название команды - только для участников */}
+                        {isMember && (
+                          <div>
+                            <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
+                            <input 
+                              value={teamName}
+                              onChange={(e) => setTeamName(e.target.value)}
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
+                              readOnly
+                            />
+                          </div>
+                        )}
+
+                        {/* Код команды - только для участников */}
+                        {isMember && (
+                          <div>
+                            <label className="block text-sm font-semibold text-white mb-2">Код команды</label>
+                            <input 
+                              value={userTeamCode || ''}
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed"
+                              readOnly
+                            />
+                          </div>
+                        )}
 
                         {/* Вопрос "Будете ли вы выступать?" - только для финального воркшопа */}
                         {selectedEvent?.id === 5 && (
