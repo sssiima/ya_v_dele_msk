@@ -25,22 +25,12 @@ const CalendarPage = () => {
   const [passportData, setPassportData] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [showDaySelector, setShowDaySelector] = useState(false);
-  const [selectedSpheres, setSelectedSpheres] = useState<string[]>([]);
-  const [showSphereSelector, setShowSphereSelector] = useState(false);
-  const [customSphere, setCustomSphere] = useState('');
+  const [willSpeak, setWillSpeak] = useState<'yes' | 'no' | ''>('');
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
+  const [showSlotSelector, setShowSlotSelector] = useState(false);
   const [confirmParticipation, setConfirmParticipation] = useState(false);
   const daySelectorRef = useRef<HTMLDivElement>(null);
-  const sphereSelectorRef = useRef<HTMLDivElement>(null);
-  
-  const spheres = [
-    'Медицинские проекты',
-    'Спортивные проекты',
-    'Робототехнические проекты',
-    'Городские проекты',
-    'Образовательные проекты',
-    'Творческие проекты',
-    'Ни одна сфера не подходит'
-  ];
+  const slotSelectorRef = useRef<HTMLDivElement>(null);
   
   // Данные пользователя для отправки
   const [userEmail, setUserEmail] = useState('');
@@ -55,6 +45,14 @@ const CalendarPage = () => {
     '18 ноября 16:30-17:30',
     '18 ноября 18:15-19:45',
     '18 ноября 20:00-21:30'
+  ];
+  
+  const availableSlots = ['6 декабря 16:00-17:30',
+    '6 декабря 17:45-19:15',
+    '6 декабря 19:30-21:00',
+    '7 декабря 16:30-17:30',
+    '7 декабря 18:15-19:45',
+    '7 декабря 20:00-21:30'
   ];
   // Определяем, является ли пользователь участником и загружаем данные
   useEffect(() => {
@@ -160,17 +158,17 @@ const CalendarPage = () => {
       if (daySelectorRef.current && !daySelectorRef.current.contains(event.target as Node)) {
         setShowDaySelector(false);
       }
-      if (sphereSelectorRef.current && !sphereSelectorRef.current.contains(event.target as Node)) {
-        setShowSphereSelector(false);
+      if (slotSelectorRef.current && !slotSelectorRef.current.contains(event.target as Node)) {
+        setShowSlotSelector(false);
       }
     };
-    if (showDaySelector || showSphereSelector) {
+    if (showDaySelector || showSlotSelector) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showDaySelector, showSphereSelector]);
+  }, [showDaySelector, showSlotSelector]);
   
   const toggleDay = (day: string) => {
     setSelectedDays(prev => 
@@ -180,30 +178,12 @@ const CalendarPage = () => {
     );
   };
 
-  const handleSphereToggle = (sphere: string) => {
-    if (sphere === 'Ни одна сфера не подходит') {
-      // Если выбрана эта опция, очищаем все остальные
-      setSelectedSpheres(['Ни одна сфера не подходит']);
-      setCustomSphere(''); // Очищаем поле ввода при выборе
-    } else {
-      // Проверяем, была ли выбрана "Ни одна сфера не подходит" до изменения
-      const hadNoSphereOption = selectedSpheres.includes('Ни одна сфера не подходит');
-      
-      // Убираем "Ни одна сфера не подходит" если она была выбрана
-      const newSpheres = selectedSpheres.filter(s => s !== 'Ни одна сфера не подходит');
-      
-      // Переключаем выбранную сферу
-      if (newSpheres.includes(sphere)) {
-        setSelectedSpheres(newSpheres.filter(s => s !== sphere));
-      } else {
-        setSelectedSpheres([...newSpheres, sphere]);
-      }
-      
-      // Если убрали "Ни одна сфера не подходит", очищаем поле ввода
-      if (hadNoSphereOption) {
-        setCustomSphere('');
-      }
-    }
+  const toggleSlot = (slot: string) => {
+    setSelectedSlots(prev => 
+      prev.includes(slot) 
+        ? prev.filter(s => s !== slot)
+        : [...prev, slot]
+    );
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -221,8 +201,13 @@ const CalendarPage = () => {
       return;
     }
     
-    if (isMember && selectedDays.length === 0) {
+    if (isMember && selectedEvent?.id === 3 && selectedDays.length === 0) {
       alert('Пожалуйста, выберите день и волну для выступления');
+      return;
+    }
+    
+    if (willSpeak === 'yes' && selectedSlots.length < 2) {
+      alert('Пожалуйста, выберите минимум 2 слота для выступления');
       return;
     }
     
@@ -241,12 +226,10 @@ const CalendarPage = () => {
         pos: userPos,
         passport: passportData,
         team_name: isMember ? teamName : null,
-        date: isMember ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) : null,
-        comment: isMember && selectedSpheres.length > 0 
-          ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim() 
-              ? customSphere.trim() 
-              : selectedSpheres.join(', '))
-          : null
+        date: isMember && selectedEvent?.id === 3 
+          ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) 
+          : (willSpeak === 'yes' && selectedSlots.length > 0 ? selectedSlots.join(', ') : null),
+        comment: willSpeak === 'yes' ? 'Будет выступать' : (willSpeak === 'no' ? 'Не будет выступать' : null)
       };
       
       const result = await meroRegApi.register(registrationData);
@@ -256,8 +239,8 @@ const CalendarPage = () => {
         // Очищаем форму
         setPassportData('');
         setSelectedDays([]);
-        setSelectedSpheres([]);
-        setCustomSphere('');
+        setWillSpeak('');
+        setSelectedSlots([]);
         setConfirmParticipation(false);
       } else {
         throw new Error(result?.message || 'Ошибка при отправке заявки');
@@ -481,57 +464,8 @@ const CalendarPage = () => {
                         />
                       </div>
 
-                      {/* Выбор сфер - только для участников */}
-                      {isMember && (
-                        <div className="relative" ref={sphereSelectorRef}>
-                          <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
-                          <button
-                            type="button"
-                            onClick={() => setShowSphereSelector(!showSphereSelector)}
-                            className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            {selectedSpheres.length > 0 
-                              ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim()
-                                  ? customSphere.trim()
-                                  : selectedSpheres.join(', '))
-                              : 'Выберите сферы'}
-                          </button>
-                          {showSphereSelector && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                              {spheres.map((sphere) => (
-                                <label
-                                  key={sphere}
-                                  className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedSpheres.includes(sphere)}
-                                    onChange={() => handleSphereToggle(sphere)}
-                                    className="mr-2"
-                                  />
-                                  <span className="text-sm text-black">{sphere}</span>
-                                </label>
-                              ))}
-                            </div>
-                          )}
-                          {/* Поле для ввода своей сферы, если выбрано "Ни одна сфера не подходит" */}
-                          {selectedSpheres.includes('Ни одна сфера не подходит') && (
-                            <div className="mt-3">
-                              <label className="block text-sm font-semibold text-white mb-2">Укажите вашу сферу:</label>
-                              <input
-                                type="text"
-                                value={customSphere}
-                                onChange={(e) => setCustomSphere(e.target.value)}
-                                placeholder="Введите название сферы"
-                                className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Выбор дня и волны - только для участников */}
-                      {isMember && (
+                      {/* Выбор дня и волны - только для участников промежуточного воркшопа */}
+                      {isMember && selectedEvent?.id === 3 && (
                         <div className="relative" ref={daySelectorRef}>
                           <label className="block text-sm font-semibold text-white mb-2">Выбери день и волну для выступления</label>
                           <button
@@ -645,57 +579,80 @@ const CalendarPage = () => {
                           />
                         </div>
 
-                        {/* Выбор сфер - только для участников */}
-                        {isMember && (
-                          <div className="relative" ref={sphereSelectorRef}>
-                            <label className="block text-sm font-semibold text-white mb-2">К какой сфере вы бы могли отнести ваш проект?</label>
-                            <button
-                              type="button"
-                              onClick={() => setShowSphereSelector(!showSphereSelector)}
-                              className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                              {selectedSpheres.length > 0 
-                                ? (selectedSpheres.includes('Ни одна сфера не подходит') && customSphere.trim()
-                                    ? customSphere.trim()
-                                    : selectedSpheres.join(', '))
-                                : 'Выберите сферы'}
-                            </button>
-                            {showSphereSelector && (
-                              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                                {spheres.map((sphere) => (
-                                  <label
-                                    key={sphere}
-                                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedSpheres.includes(sphere)}
-                                      onChange={() => handleSphereToggle(sphere)}
-                                      className="mr-2"
-                                    />
-                                    <span className="text-sm text-black">{sphere}</span>
-                                  </label>
-                                ))}
+                        {/* Вопрос "Будете ли вы выступать?" - только для финального воркшопа */}
+                        {selectedEvent?.id === 5 && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-semibold text-white mb-2">Будете ли вы выступать?</label>
+                              <div className="flex gap-4">
+                                <label className="flex items-center cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    name="willSpeak"
+                                    value="yes"
+                                    checked={willSpeak === 'yes'}
+                                    onChange={() => {
+                                      setWillSpeak('yes');
+                                    }}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-white">Да</span>
+                                </label>
+                                <label className="flex items-center cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    name="willSpeak"
+                                    value="no"
+                                    checked={willSpeak === 'no'}
+                                    onChange={() => {
+                                      setWillSpeak('no');
+                                      setSelectedSlots([]);
+                                    }}
+                                    className="mr-2"
+                                  />
+                                  <span className="text-white">Нет</span>
+                                </label>
+                              </div>
+                            </div>
+
+                            {/* Выбор слотов - показывается только если выбрано "Да" */}
+                            {willSpeak === 'yes' && (
+                              <div className="relative" ref={slotSelectorRef}>
+                                <label className="block text-sm font-semibold text-white mb-2">Выберите слоты для выступления (минимум 2)</label>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowSlotSelector(!showSlotSelector)}
+                                  className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                  {selectedSlots.length > 0 
+                                    ? selectedSlots.join(', ') 
+                                    : 'Выберите слоты'}
+                                </button>
+                                {showSlotSelector && (
+                                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                    {availableSlots.map((slot) => (
+                                      <label
+                                        key={slot}
+                                        className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedSlots.includes(slot)}
+                                          onChange={() => toggleSlot(slot)}
+                                          className="mr-2"
+                                        />
+                                        <span className="text-sm text-black">{slot}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             )}
-                            {/* Поле для ввода своей сферы, если выбрано "Ни одна сфера не подходит" */}
-                            {selectedSpheres.includes('Ни одна сфера не подходит') && (
-                              <div className="mt-3">
-                                <label className="block text-sm font-semibold text-white mb-2">Укажите вашу сферу:</label>
-                                <input
-                                  type="text"
-                                  value={customSphere}
-                                  onChange={(e) => setCustomSphere(e.target.value)}
-                                  placeholder="Введите название сферы"
-                                  className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                              </div>
-                            )}
-                          </div>
+                          </>
                         )}
 
-                        {/* Выбор дня и волны - только для участников */}
-                        {isMember && (
+                        {/* Выбор дня и волны - только для участников промежуточного воркшопа */}
+                        {isMember && selectedEvent?.id === 3 && (
                           <div className="relative" ref={daySelectorRef}>
                             <label className="block text-sm font-semibold text-white mb-2">Выбери день и волну для выступления</label>
                             <button
