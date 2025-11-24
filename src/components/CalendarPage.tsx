@@ -44,6 +44,7 @@ const CalendarPage = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userPos, setUserPos] = useState('');
   const [userTeamCode, setUserTeamCode] = useState<string | null>(null);
+  const [teamTrack, setTeamTrack] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [hasWorkshopHomework, setHasWorkshopHomework] = useState<boolean | null>(null);
   
@@ -126,12 +127,13 @@ const CalendarPage = () => {
               setVusValue(member.education);
             }
             
-            // Загружаем название команды
+            // Загружаем название команды и трек
             if (member.team_code) {
               try {
                 const teamResp = await teamsApi.getByCode(member.team_code);
                 if (teamResp?.success && teamResp.data) {
                   setTeamName(teamResp.data.name || '');
+                  setTeamTrack(teamResp.data.track || null);
                 } else if (member.team_name) {
                   // Если не удалось получить через API, используем team_name из данных участника
                   setTeamName(member.team_name || '');
@@ -297,6 +299,7 @@ const CalendarPage = () => {
         pos: userPos,
         passport: passportData,
         team_name: isMember ? teamName : null,
+        track: isMember ? teamTrack : null,
         date: isMember && selectedEvent?.id === 3 
           ? (selectedDays.length > 0 ? selectedDays.join(', ') : null) 
           : (isMember && willSpeak === 'yes' && selectedSlots.length > 0 ? selectedSlots.join(', ') : null),

@@ -554,6 +554,7 @@ export interface MeroRegData {
   pos: string
   passport: string
   team_name?: string | null
+  track?: string | null
   date?: string | null
   comment?: string | null
 }

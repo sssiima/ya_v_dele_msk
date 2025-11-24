@@ -1890,6 +1890,7 @@ app.post('/api/mero-reg', async (req, res) => {
       pos,
       passport,
       team_name,
+      track,
       date,
       comment
     } = req.body;
@@ -1924,8 +1925,8 @@ app.post('/api/mero-reg', async (req, res) => {
     // Вставка данных в таблицу mero-reg (имя таблицы с дефисом нужно заключать в кавычки)
     const query = `
       INSERT INTO "mero-reg" (
-        mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, date, comment
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        mero, last_name, first_name, patronymic, email, team_code, pos, passport, team_name, track, date, comment
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING id
     `;
 
@@ -1942,6 +1943,7 @@ app.post('/api/mero-reg', async (req, res) => {
       pos,
       passport,
       team_name || null,
+      track || null,
       dateValue,
       comment || null
     ];
