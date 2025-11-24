@@ -427,7 +427,13 @@ const CalendarPage = () => {
               <img 
                 src={selectedEvent.image} 
                 className="rounded-lg h-48 mb-6 object-cover w-full"
-                style={selectedEvent.id === 4 && isDesktop ? { objectPosition: 'center top 33%' } : undefined}
+                style={
+                  selectedEvent.id === 4 && isDesktop 
+                    ? { objectPosition: 'center top 33%' } 
+                    : (selectedEvent.id === 3 || selectedEvent.id === 5)
+                    ? { objectPosition: 'center top 40%' }
+                    : undefined
+                }
               ></img>
             </div>
 
