@@ -139,8 +139,8 @@ const CalendarPage = () => {
       }
     };
     
-    // Загружаем данные только если открыта форма регистрации (промежуточный воркшоп)
-    if (selectedEvent?.id === 3) {
+    // Загружаем данные только если открыта форма регистрации (промежуточный или финальный воркшоп)
+    if (selectedEvent?.id === 3 || selectedEvent?.id === 5) {
       loadUserData();
     }
   }, [selectedEvent]);
@@ -229,8 +229,10 @@ const CalendarPage = () => {
     setSubmitting(true);
     
     try {
+      const eventName = selectedEvent?.id === 3 ? 'Промежуточный воркшоп' : 'Финальный воркшоп';
+      
       const registrationData = {
-        mero: 'Промежуточный воркшоп',
+        mero: eventName,
         last_name: lastName,
         first_name: firstName,
         patronymic: patronymic || null,
@@ -286,15 +288,15 @@ const CalendarPage = () => {
     //   location: 'ЦДП (ул. Покровка, д. 47)',
     //   time: '16:00',
     // },
-    {
-      id: 3,
-      title: 'Промежуточный воркшоп',
-      date: '15 и 18 ноября',
-      image: 'images/vsh.png',
-      description: 'Время подвести итоги и скорректировать курс. Команды представят первые результаты и получат обратную связь от экспертов, чтобы двигаться дальше ещё увереннее.',
-      location: 'РЭУ им.Плеханова',
-      time: 'Выберите удобное',
-    },
+    // {
+    //   id: 3,
+    //   title: 'Промежуточный воркшоп',
+    //   date: '15 и 18 ноября',
+    //   image: 'images/vsh.png',
+    //   description: 'Время подвести итоги и скорректировать курс. Команды представят первые результаты и получат обратную связь от экспертов, чтобы двигаться дальше ещё увереннее.',
+    //   location: 'РЭУ им.Плеханова',
+    //   time: 'Выберите удобное',
+    // },
     {
       id: 4,
       title: '«Прожарка от Сбера»',
@@ -304,15 +306,15 @@ const CalendarPage = () => {
       location: 'СберСити',
       time: '10:00',
     },
-    // {
-    //   id: 5,
-    //   title: 'Финальный воркшоп',
-    //   date: '6-7 декабря',
-    //   image: 'images/event2.jpeg',
-    //   description: 'Последние штрихи перед главным событием. Финальные репетиции, доработка презентаций и советы от менторов — всё ради яркого выступления на Битве проектов.',
-    //   location: '',
-    //   time: '',
-    // },
+    {
+      id: 5,
+      title: 'Финальный воркшоп',
+      date: '6-7 декабря',
+      image: 'images/event2.jpeg',
+      description: 'Последние штрихи перед главным событием. Финальные репетиции, доработка презентаций и советы от менторов — всё ради яркого выступления на Битве проектов.',
+      location: '',
+      time: 'Выберите удобное',
+    },
     // {
     //   id: 6,
     //   title: 'Битва проектов',
@@ -409,48 +411,49 @@ const CalendarPage = () => {
               </div>
             </div>
 
-            {/* Форма регистрации только для промежуточного воркшопа */}
-            {selectedEvent.id === 3 && (
+            {/* Форма регистрации для промежуточного и финального воркшопа */}
+            {(selectedEvent.id === 3 || selectedEvent.id === 5) && (
               <>
                 <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4 mt-6" />
 
-                <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
+            <h3 className='text-lg font-bold text-brand mb-4 normal-case text-center mt-4'>Регистрация на событие</h3>
                 <div className='flex items-center justify-center mb-48'>
-                  <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">
-                    {/* Для участников: проверяем наличие домашнего задания */}
-                    {isMember ? (
+              <div className="card w-full lg:mx-80 bg-brand rounded-2xl shadow-lg p-6">        
+                    {/* Для участников: проверяем наличие домашнего задания только для промежуточного воркшопа */}
+                    {/* Для финального воркшопа форма доступна всем */}
+                    {isMember && selectedEvent.id === 3 ? (
                       hasWorkshopHomework === false ? (
                         <p className="text-white text-center">
                           Регистрация будет доступна после загрузки презентации в ДЗ "Промежуточный ВШ"
                         </p>
                       ) : hasWorkshopHomework === true ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
-                        <input 
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
+                    <input 
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
-                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          required
-                        />
-                      </div>
+                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-white mb-2">Имя</label>
-                        <input 
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">Имя</label>
+                    <input 
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
-                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          required
-                        />
-                      </div>
+                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
-                        <input 
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">Отчество</label>
+                    <input 
                           value={patronymic}
                           onChange={(e) => setPatronymic(e.target.value)}
-                          className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
 
@@ -582,12 +585,12 @@ const CalendarPage = () => {
                       >
                         <h2 className="uppercase text-white">{submitting ? 'Отправка...' : 'Отправить заявку'}</h2>
                       </button>
-                        </form>
+                      </form>
                       ) : (
                         <p className="text-gray-400 text-center">Загрузка...</p>
                       )
                     ) : (
-                      // Для структуры форма всегда доступна
+                      // Для финального воркшопа или структуры форма всегда доступна
                       <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                           <label className="block text-sm font-semibold text-white mb-2">Фамилия</label>
@@ -596,16 +599,16 @@ const CalendarPage = () => {
                             onChange={(e) => setLastName(e.target.value)}
                             className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
-                          />
-                        </div>
+                    />
+                  </div>
 
-                        <div>
+                  <div>
                           <label className="block text-sm font-semibold text-white mb-2">Имя</label>
-                          <input 
+                    <input 
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
+                      required
                           />
                         </div>
 
@@ -614,9 +617,22 @@ const CalendarPage = () => {
                           <input 
                             value={patronymic}
                             onChange={(e) => setPatronymic(e.target.value)}
-                            className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
+                      className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                        {/* Название команды - только для участников */}
+                        {isMember && (
+                          <div>
+                            <label className="block text-sm font-semibold text-white mb-2">Название команды</label>
+                            <input 
+                              value={teamName}
+                              onChange={(e) => setTeamName(e.target.value)}
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                          </div>
+                        )}
 
                         <div>
                           <label className="block text-sm font-semibold text-white mb-2">Паспортные данные</label>
@@ -678,31 +694,65 @@ const CalendarPage = () => {
                           </div>
                         )}
 
-                        <div className="flex items-start">
-                          <input 
-                            type="checkbox"
+                        {/* Выбор дня и волны - только для участников */}
+                        {isMember && (
+                          <div className="relative" ref={daySelectorRef}>
+                            <label className="block text-sm font-semibold text-white mb-2">Выбери день и волну для выступления</label>
+                            <button
+                              type="button"
+                              onClick={() => setShowDaySelector(!showDaySelector)}
+                              className="w-full px-4 py-1 border border-gray-300 rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              {selectedDays.length > 0 
+                                ? selectedDays.join(', ') 
+                                : 'Выберите дни'}
+                            </button>
+                            {showDaySelector && (
+                              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                {availableDays.map((day) => (
+                                  <label
+                                    key={day}
+                                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedDays.includes(day)}
+                                      onChange={() => toggleDay(day)}
+                                      className="mr-2"
+                                    />
+                                    <span className="text-sm text-black">{day}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                  <div className="flex items-start">
+                    <input 
+                      type="checkbox"
                             id="confirm-participation"
                             checked={confirmParticipation}
                             onChange={(e) => setConfirmParticipation(e.target.checked)}
                             className="mr-3 mt-1"
-                            required
-                          />
+                      required
+                    />
                           <label htmlFor="confirm-participation" className="text-xs text-white italic">
-                            Нажимая на кнопку, вы подтверждаете свое участие
-                          </label>
-                        </div>
+                      Нажимая на кнопку, вы подтверждаете свое участие
+                    </label>
+                  </div>
 
-                        <button 
-                          type="submit"
+                  <button 
+                    type="submit"
                           disabled={submitting}
                           className="w-full text-white font-bold py-2 px-6 rounded-full transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                  >
                           <h2 className="uppercase text-white">{submitting ? 'Отправка...' : 'Отправить заявку'}</h2>
-                        </button>
-                      </form>
+                  </button>
+                </form>
                     )}
                   </div>
-                </div>
+              </div>
               </>
             )}
           </div>
