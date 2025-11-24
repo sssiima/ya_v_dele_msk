@@ -582,38 +582,46 @@ const CalendarPage = () => {
                         {/* Вопрос "Будете ли вы выступать?" - только для финального воркшопа */}
                         {selectedEvent?.id === 5 && (
                           <>
-                            <div>
-                              <label className="block text-sm font-semibold text-white mb-2">Будете ли вы выступать?</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name="willSpeak"
-                                    value="yes"
-                                    checked={willSpeak === 'yes'}
-                                    onChange={() => {
-                                      setWillSpeak('yes');
-                                    }}
-                                    className="mr-2"
-                                  />
-                                  <span className="text-white">Да</span>
-                                </label>
-                                <label className="flex items-center cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name="willSpeak"
-                                    value="no"
-                                    checked={willSpeak === 'no'}
-                                    onChange={() => {
-                                      setWillSpeak('no');
-                                      setSelectedSlots([]);
-                                    }}
-                                    className="mr-2"
-                                  />
-                                  <span className="text-white">Нет</span>
-                                </label>
-                              </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-white mb-2">Будете ли вы выступать?</label>
+                            <div className="flex gap-4">
+                              <label className={`flex items-center cursor-pointer px-4 py-2 rounded-full border-2 transition-colors ${
+                                willSpeak === 'yes' 
+                                  ? 'border-white bg-white/20' 
+                                  : 'border-gray-300'
+                              }`}>
+                                <input
+                                  type="radio"
+                                  name="willSpeak"
+                                  value="yes"
+                                  checked={willSpeak === 'yes'}
+                                  onChange={() => {
+                                    setWillSpeak('yes');
+                                  }}
+                                  className="mr-2"
+                                />
+                                <span className="text-white">Да</span>
+                              </label>
+                              <label className={`flex items-center cursor-pointer px-4 py-2 rounded-full border-2 transition-colors ${
+                                willSpeak === 'no' 
+                                  ? 'border-white bg-white/20' 
+                                  : 'border-gray-300'
+                              }`}>
+                                <input
+                                  type="radio"
+                                  name="willSpeak"
+                                  value="no"
+                                  checked={willSpeak === 'no'}
+                                  onChange={() => {
+                                    setWillSpeak('no');
+                                    setSelectedSlots([]);
+                                  }}
+                                  className="mr-2"
+                                />
+                                <span className="text-white">Нет</span>
+                              </label>
                             </div>
+                          </div>
 
                             {/* Выбор слотов - показывается только если выбрано "Да" */}
                             {willSpeak === 'yes' && (
