@@ -467,12 +467,24 @@ const ProfilePageMember = () => {
 
   const handleMkClick = async (mk: Mk) => {
     if (!mk.disabled) {
+      // Проверяем, что участник может открыть только мастер-классы своего трека
+      const memberId = localStorage.getItem('member_id');
+      const structureCtid = localStorage.getItem('structure_ctid');
+      const isMember = !!memberId && !structureCtid;
+      
+      if (isMember && teamData.track) {
+        // Если у мастер-класса есть трек, проверяем соответствие
+        if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+          if (mk.track !== teamData.track) {
+            // Мастер-класс не соответствует треку команды - не открываем
+            return;
+          }
+        }
+      }
+      
       setSelectedMk(mk);
       
       // Загружаем статусы домашних заданий для этого мастер-класса
-      const memberId = localStorage.getItem('member_id');
-      const structureCtid = localStorage.getItem('structure_ctid');
-      
       if (memberId && memberData?.team_code) {
         // Участник - загружаем статус его команды
         try {
@@ -2516,10 +2528,13 @@ const loadTeamData = async (teamCode: string) => {
                       const hasComment = isReviewed && workshopStatus.comment && workshopStatus.comment.trim() !== ''
                       const isHovered = hoveredHomework?.number === 'workshop'
                       
+                      // Если заблокировано, используем белый фон
+                      const isBlocked = !isUploaded && !isReviewed;
+                      
                       return (
                         <div 
                           data-homework-item
-                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isBlocked ? 'bg-white text-black' : (isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white')}`}
                           onMouseEnter={() => {
                             if (hasComment && isDesktop) {
                               setHoveredHomework({ number: 'workshop', comment: workshopStatus.comment! });
@@ -2541,7 +2556,7 @@ const loadTeamData = async (teamCode: string) => {
                             }
                           }}
                         >
-                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
+                          <span className={`text-sm ${isBlocked ? 'text-black' : (isWhiteBg ? 'text-black' : 'text-white')}`}>Промежуточный ВШ</span>
                       <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
@@ -3090,7 +3105,8 @@ const loadTeamData = async (teamCode: string) => {
                       // Проверяем соответствие трека мастер-класса треку команды
                       const trackMatches = !mkHasTrack || (selectedMk.track === teamData.track);
                       
-                      // Проверяем, является ли это четвертым МК (Бизнес - модель) для участников
+                      // Проверяем, является ли это третьим МК (MVP. HADI - циклы) или четвертым МК (Бизнес - модель) для участников
+                      const isThirdMk = selectedMk.subtitle === 'MVP. HADI - циклы.';
                       const isFourthMk = selectedMk.subtitle === 'Бизнес - модель.';
                       
                       // Если мастер-класс имеет трек и трек команды не выбран или не совпадает, показываем заблокированное состояние
@@ -3110,8 +3126,8 @@ const loadTeamData = async (teamCode: string) => {
                         );
                       }
                       
-                      // Для четвертого МК у участников не показываем кнопку "Перейти к выполнению"
-                      if (isFourthMk && memberData?.team_code) {
+                      // Для третьего и четвертого МК у участников не показываем кнопку "Перейти к выполнению"
+                      if ((isThirdMk || isFourthMk) && memberData?.team_code) {
                         return null;
                       }
                       
@@ -3173,7 +3189,7 @@ const loadTeamData = async (teamCode: string) => {
                 
                 let filteredMkList = mk_list;
                 
-                if (isMember && teamData.track) {
+                if (isMember && teamData.track && teamData.track.trim() !== '' && teamData.track !== 'Будет доступен после 1 Воркшопа') {
                   // Фильтруем мастер-классы с треком по треку команды
                   // Мастер-классы без трека показываем все
                   filteredMkList = mk_list.filter(mk => {
@@ -3241,7 +3257,7 @@ const loadTeamData = async (teamCode: string) => {
                 
                 let filteredMkList = mk_list;
                 
-                if (isMember && teamData.track) {
+                if (isMember && teamData.track && teamData.track.trim() !== '' && teamData.track !== 'Будет доступен после 1 Воркшопа') {
                   // Фильтруем мастер-классы с треком по треку команды
                   // Мастер-классы без трека показываем все
                   filteredMkList = mk_list.filter(mk => {
