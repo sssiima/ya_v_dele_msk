@@ -689,7 +689,7 @@ MVP возможно реализовать до конца курса в так
 Промт чётко структурирован, содержит все необходимые параметры (описание проекта, ограничения по времени/ресурсам, требуемый функционал MVP), написан понятным языком.
 
 3. Соответствие MVP сути проекта MVP демонстрирует ключевую ценность проекта, показывает основную функцию или решает главную проблему целевой аудитории.`  },
-      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthlock.png',
+      { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthbase.png',
         pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
         description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
         disabled: false, track: 'Базовый',
@@ -3251,9 +3251,21 @@ const loadTeamData = async (teamCode: string) => {
                       return false;
                     }
                     
-                    // Показываем только тот, который соответствует треку команды
-                    const matches = mkTrack === teamTrack;
-                    return matches;
+                    // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: проверяем соответствие по окончанию картинки
+                    const imagePath = String(mk.image || '').toLowerCase();
+                    let imageTrackMatch = false;
+                    
+                    if (teamTrack === 'Базовый') {
+                      imageTrackMatch = imagePath.endsWith('base.png');
+                    } else if (teamTrack === 'Социальный') {
+                      imageTrackMatch = imagePath.endsWith('soc.png');
+                    } else if (teamTrack === 'Инновационный') {
+                      imageTrackMatch = imagePath.endsWith('inn.png');
+                    }
+                    
+                    // Показываем только тот, который соответствует треку команды И по треку, И по картинке
+                    const trackMatches = mkTrack === teamTrack;
+                    return trackMatches && imageTrackMatch;
                   });
                 }
                 
