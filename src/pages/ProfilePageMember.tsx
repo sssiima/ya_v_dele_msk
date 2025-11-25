@@ -3231,32 +3231,29 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  if (validTrack) {
-                    // Фильтруем мастер-классы с треком по треку команды
-                    // Мастер-классы без трека показываем все
-                    filteredMkList = mk_list.filter(mk => {
-                      // Если у мастер-класса нет трека, показываем его (МК 1-3)
-                      if (!mk.track) {
-                        return true;
-                      }
-                      
-                      // Если у мастер-класса есть трек, нормализуем его
-                      const mkTrack = String(mk.track).trim();
-                      
-                      // Если трек не валидный, не показываем
-                      if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
-                        return false;
-                      }
-                      
-                      // Показываем только тот, который соответствует треку команды
-                      return mkTrack === teamTrack;
-                    });
-                  } else {
-                    // Если трек не валиден, показываем только мастер-классы без трека (1-3)
-                    filteredMkList = mk_list.filter(mk => {
-                      return !mk.track;
-                    });
-                  }
+                  // ВСЕГДА фильтруем для участников - даже если трек не валиден
+                  filteredMkList = mk_list.filter(mk => {
+                    // Если у мастер-класса нет трека, показываем его (МК 1-3)
+                    if (!mk.track) {
+                      return true;
+                    }
+                    
+                    // Если у мастер-класса есть трек, нормализуем его
+                    const mkTrack = String(mk.track).trim();
+                    
+                    // Если трек не валидный, не показываем
+                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
+                      return false;
+                    }
+                    
+                    // Если трек команды не валиден, не показываем МК с треком
+                    if (!validTrack) {
+                      return false;
+                    }
+                    
+                    // Показываем только тот, который соответствует треку команды
+                    return mkTrack === teamTrack;
+                  });
                 }
                 
                 return filteredMkList.map((mk, index) => {
@@ -3324,26 +3321,29 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  if (validTrack) {
-                    // Фильтруем мастер-классы с треком по треку команды
-                    // Мастер-классы без трека показываем все
-                    filteredMkList = mk_list.filter(mk => {
-                      // Если у мастер-класса есть трек
-                      const mkTrack = mk.track ? String(mk.track).trim() : '';
-                      if (mkTrack && (mkTrack === 'Базовый' || mkTrack === 'Социальный' || mkTrack === 'Инновационный')) {
-                        // Показываем только тот, который соответствует треку команды
-                        return mkTrack === teamTrack;
-                      }
-                      // Мастер-классы без трека показываем все
+                  // ВСЕГДА фильтруем для участников - даже если трек не валиден
+                  filteredMkList = mk_list.filter(mk => {
+                    // Если у мастер-класса нет трека, показываем его (МК 1-3)
+                    if (!mk.track) {
                       return true;
-                    });
-                  } else {
-                    // Если трек не валиден, показываем только мастер-классы без трека (1-3)
-                    filteredMkList = mk_list.filter(mk => {
-                      const mkTrack = mk.track ? String(mk.track).trim() : '';
-                      return !mkTrack || (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный');
-                    });
-                  }
+                    }
+                    
+                    // Если у мастер-класса есть трек, нормализуем его
+                    const mkTrack = String(mk.track).trim();
+                    
+                    // Если трек не валидный, не показываем
+                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
+                      return false;
+                    }
+                    
+                    // Если трек команды не валиден, не показываем МК с треком
+                    if (!validTrack) {
+                      return false;
+                    }
+                    
+                    // Показываем только тот, который соответствует треку команды
+                    return mkTrack === teamTrack;
+                  });
                 }
                 
                 return filteredMkList.map((_, index) => (
