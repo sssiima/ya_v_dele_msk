@@ -1666,7 +1666,7 @@ const loadTeamData = async (teamCode: string) => {
     try {
       const teamResp = await teamsApi.getByCode(teamCode)
       if (teamResp?.success && teamResp.data?.track) {
-        teamTrack = teamResp.data.track
+        teamTrack = String(teamResp.data.track).trim()
       }
     } catch (error) {
     }
@@ -3202,7 +3202,10 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const teamTrack = (teamData.track || memberData?.track || '').trim();
+                  const rawTrack = teamData.track || memberData?.track || '';
+                  const teamTrack = String(rawTrack).trim();
+                  
+                  // Строгая проверка валидности трека
                   const validTrack = teamTrack && 
                     teamTrack !== '' && 
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
@@ -3213,9 +3216,10 @@ const loadTeamData = async (teamCode: string) => {
                     // Мастер-классы без трека показываем все
                     filteredMkList = mk_list.filter(mk => {
                       // Если у мастер-класса есть трек
-                      if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                      const mkTrack = mk.track ? String(mk.track).trim() : '';
+                      if (mkTrack && (mkTrack === 'Базовый' || mkTrack === 'Социальный' || mkTrack === 'Инновационный')) {
                         // Показываем только тот, который соответствует треку команды
-                        return mk.track === teamTrack;
+                        return mkTrack === teamTrack;
                       }
                       // Мастер-классы без трека показываем все
                       return true;
@@ -3223,7 +3227,8 @@ const loadTeamData = async (teamCode: string) => {
                   } else {
                     // Если трек не валиден, показываем только мастер-классы без трека (1-3)
                     filteredMkList = mk_list.filter(mk => {
-                      return !mk.track || (mk.track !== 'Базовый' && mk.track !== 'Социальный' && mk.track !== 'Инновационный');
+                      const mkTrack = mk.track ? String(mk.track).trim() : '';
+                      return !mkTrack || (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный');
                     });
                   }
                 }
@@ -3284,7 +3289,10 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const teamTrack = (teamData.track || memberData?.track || '').trim();
+                  const rawTrack = teamData.track || memberData?.track || '';
+                  const teamTrack = String(rawTrack).trim();
+                  
+                  // Строгая проверка валидности трека
                   const validTrack = teamTrack && 
                     teamTrack !== '' && 
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
@@ -3295,9 +3303,10 @@ const loadTeamData = async (teamCode: string) => {
                     // Мастер-классы без трека показываем все
                     filteredMkList = mk_list.filter(mk => {
                       // Если у мастер-класса есть трек
-                      if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                      const mkTrack = mk.track ? String(mk.track).trim() : '';
+                      if (mkTrack && (mkTrack === 'Базовый' || mkTrack === 'Социальный' || mkTrack === 'Инновационный')) {
                         // Показываем только тот, который соответствует треку команды
-                        return mk.track === teamTrack;
+                        return mkTrack === teamTrack;
                       }
                       // Мастер-классы без трека показываем все
                       return true;
@@ -3305,7 +3314,8 @@ const loadTeamData = async (teamCode: string) => {
                   } else {
                     // Если трек не валиден, показываем только мастер-классы без трека (1-3)
                     filteredMkList = mk_list.filter(mk => {
-                      return !mk.track || (mk.track !== 'Базовый' && mk.track !== 'Социальный' && mk.track !== 'Инновационный');
+                      const mkTrack = mk.track ? String(mk.track).trim() : '';
+                      return !mkTrack || (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный');
                     });
                   }
                 }
