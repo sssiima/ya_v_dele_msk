@@ -395,12 +395,31 @@ const ProfilePageMember = () => {
     };
   }, [hoveredHomework, isDesktop]);
 
-  // Функция для получения номера д/з по индексу мастер-класса
-  const getHomeworkNumberByMkIndex = (mkIndex: number): number | null => {
+  // Функция для получения номера д/з по индексу или subtitle мастер-класса
+  const getHomeworkNumberByMkIndex = (mkIndex: number, subtitle?: string): number | null => {
+    // Если передан subtitle, определяем по нему
+    if (subtitle) {
+      if (subtitle === 'MVP. HADI - циклы.') return 1; // Третий МК -> ДЗ 1
+      if (subtitle === 'Бизнес - модель.') return 2; // Четвертый МК -> ДЗ 2
+      if (subtitle === 'Финансы.') return 3; // Пятый МК -> ДЗ 3
+      if (subtitle === 'Маркетинг.') return 4; // Шестой МК -> ДЗ 4
+      return null;
+    }
+    
+    // Если subtitle не передан, используем индекс (для обратной совместимости)
     // Первые два мастер-класса (индексы 0 и 1) не имеют д/з
-    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3), д/з 3 -> мк 5 (индекс 4), д/з 4 -> мк 6 (индекс 5)
     if (mkIndex < 2) return null;
-    return mkIndex - 1; // Индекс 2 -> ДЗ 1, индекс 3 -> ДЗ 2, индекс 4 -> ДЗ 3, индекс 5 -> ДЗ 4
+    
+    // Находим МК по индексу и определяем по subtitle
+    const mk = mk_list[mkIndex];
+    if (mk && mk.subtitle) {
+      if (mk.subtitle === 'MVP. HADI - циклы.') return 1;
+      if (mk.subtitle === 'Бизнес - модель.') return 2;
+      if (mk.subtitle === 'Финансы.') return 3;
+      if (mk.subtitle === 'Маркетинг.') return 4;
+    }
+    
+    return null;
   };
 
   // Функция для получения дедлайна по номеру д/з
@@ -416,35 +435,35 @@ const ProfilePageMember = () => {
 
   // Функция для проверки статуса домашнего задания по номеру
   const getHomeworkStatus = (homeworkNumber: number): { status: 'uploaded' | 'reviewed' | null, mark?: number, comment?: string | null } => {
-    // По номеру домашки обращаемся к соответствующей записи из массива mk_list
-    // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
-    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
-    const mkIndex = homeworkNumber + 1
-    if (!mk_list[mkIndex]) return { status: null }
+    // Определяем subtitle по номеру д/з
+    let targetSubtitle = '';
+    if (homeworkNumber === 1) targetSubtitle = 'MVP. HADI - циклы.';
+    else if (homeworkNumber === 2) targetSubtitle = 'Бизнес - модель.';
+    else if (homeworkNumber === 3) targetSubtitle = 'Финансы.';
+    else if (homeworkNumber === 4) targetSubtitle = 'Маркетинг.';
+    else return { status: null };
     
-    const mkItem = mk_list[mkIndex]
-    const mkSubtitle = mkItem?.subtitle
-    if (!mkSubtitle) return { status: null }
+    if (!targetSubtitle) return { status: null };
     
     // Сверяем subtitle с hw_name в записи в БД
     // Нормализуем строки для более надежного сопоставления (убираем лишние пробелы)
-    const normalizedSubtitle = mkSubtitle.trim()
+    const normalizedSubtitle = targetSubtitle.trim();
     const homework = teamHomeworks.find(hw => {
-      const normalizedHwName = (hw.hw_name || '').trim()
-      return normalizedHwName === normalizedSubtitle
-    })
+      const normalizedHwName = (hw.hw_name || '').trim();
+      return normalizedHwName === normalizedSubtitle;
+    });
     
     // Если у этой записи статус uploaded, возвращаем 'uploaded'
     if (homework && homework.status === 'uploaded') {
-      return { status: 'uploaded' }
+      return { status: 'uploaded' };
     }
     
     // Если у этой записи статус reviewed, возвращаем 'reviewed' с баллом и комментарием
     if (homework && homework.status === 'reviewed') {
-      return { status: 'reviewed', mark: homework.mark, comment: homework.comment || null }
+      return { status: 'reviewed', mark: homework.mark, comment: homework.comment || null };
     }
     
-    return { status: null }
+    return { status: null };
   }
   
   // Функция для проверки статуса промежуточного воркшопа
@@ -2464,13 +2483,13 @@ const loadTeamData = async (teamCode: string) => {
                             className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-white text-black`}
                           >
                             <span className="text-sm text-black">Первое д/з</span>
-                            <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                               <button className="rounded flex items-center justify-center" disabled>
                                 <img src="/images/locked.png" alt="lock" className="w-3" />
-                              </button>
+                        </button>
                               <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
-                            </div>
-                          </div>
+                      </div>
+                    </div>
                         );
                       }
                       
@@ -2582,12 +2601,12 @@ const loadTeamData = async (teamCode: string) => {
                             ) : (
                               <div className="flex items-center gap-2">
                                 <button className="rounded flex items-center justify-center" disabled>
-                                  <img src="/images/locked.png" alt="lock" className="w-3" />
-                                </button>
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
                                 <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
-                              </div>
-                            )}
                       </div>
+                            )}
+                    </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -2659,7 +2678,7 @@ const loadTeamData = async (teamCode: string) => {
                           }}
                         >
                           <span className="text-sm text-black">Второе д/з</span>
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
@@ -2675,12 +2694,12 @@ const loadTeamData = async (teamCode: string) => {
                             ) : (
                               <div className="flex items-center gap-2">
                                 <button className="rounded flex items-center justify-center" disabled>
-                                  <img src="/images/locked.png" alt="lock" className="w-3" />
-                                </button>
+                          <img src="/images/locked.png" alt="lock" className="w-3" />
+                        </button>
                                 <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
-                              </div>
+                      </div>
                             )}
-                          </div>
+                    </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -2729,7 +2748,7 @@ const loadTeamData = async (teamCode: string) => {
                           }}
                         >
                           <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Третье д/з</span>
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
@@ -2761,9 +2780,9 @@ const loadTeamData = async (teamCode: string) => {
                                 setCurrentHomeworkView(5);
                               }}>
                                 Загрузить
-                              </button>
+                        </button>
                             )}
-                          </div>
+                      </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -2772,7 +2791,7 @@ const loadTeamData = async (teamCode: string) => {
                               style={{ maxWidth: 'calc(100vw - 2rem)' }}
                             >
                               <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
-                            </div>
+                    </div>
                           )}
                         </div>
                       )
@@ -2896,9 +2915,10 @@ const loadTeamData = async (teamCode: string) => {
                 mk.subtitle === selectedMk.subtitle &&
                 mk.track === selectedMk.track
               );
-              return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+              return getHomeworkNumberByMkIndex(mkIndex, selectedMk.subtitle) || undefined;
             }
-            return getHomeworkNumberByMkIndex(currentHomeworkView - 1) || undefined;
+            const mkForView = mk_list[currentHomeworkView - 1];
+            return getHomeworkNumberByMkIndex(currentHomeworkView - 1, mkForView?.subtitle) || undefined;
           })()}
           onSuccess={async () => {
             // Обновляем список домашних заданий после успешной загрузки
@@ -3077,7 +3097,7 @@ const loadTeamData = async (teamCode: string) => {
                         mk.subtitle === selectedMk.subtitle &&
                         mk.track === selectedMk.track
                       );
-                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
+                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex, selectedMk.subtitle);
                       const deadline = hwNumber ? getDeadline(hwNumber) : null;
                       return deadline ? (
                         <div className="mb-4 mt-4 p-3 border border-brand rounded-lg bg-gray-50">
@@ -3100,7 +3120,7 @@ const loadTeamData = async (teamCode: string) => {
                         mk.subtitle === selectedMk.subtitle &&
                         mk.track === selectedMk.track
                       );
-                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
+                      const hwNumber = getHomeworkNumberByMkIndex(mkIndex, selectedMk.subtitle);
                       
                       // Проверяем, имеет ли мастер-класс трек
                       const mkHasTrack = selectedMk.track && 
@@ -3215,20 +3235,26 @@ const loadTeamData = async (teamCode: string) => {
                     // Фильтруем мастер-классы с треком по треку команды
                     // Мастер-классы без трека показываем все
                     filteredMkList = mk_list.filter(mk => {
-                      // Если у мастер-класса есть трек
-                      const mkTrack = mk.track ? String(mk.track).trim() : '';
-                      if (mkTrack && (mkTrack === 'Базовый' || mkTrack === 'Социальный' || mkTrack === 'Инновационный')) {
-                        // Показываем только тот, который соответствует треку команды
-                        return mkTrack === teamTrack;
+                      // Если у мастер-класса нет трека, показываем его (МК 1-3)
+                      if (!mk.track) {
+                        return true;
                       }
-                      // Мастер-классы без трека показываем все
-                      return true;
+                      
+                      // Если у мастер-класса есть трек, нормализуем его
+                      const mkTrack = String(mk.track).trim();
+                      
+                      // Если трек не валидный, не показываем
+                      if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
+                        return false;
+                      }
+                      
+                      // Показываем только тот, который соответствует треку команды
+                      return mkTrack === teamTrack;
                     });
                   } else {
                     // Если трек не валиден, показываем только мастер-классы без трека (1-3)
                     filteredMkList = mk_list.filter(mk => {
-                      const mkTrack = mk.track ? String(mk.track).trim() : '';
-                      return !mkTrack || (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный');
+                      return !mk.track;
                     });
                   }
                 }
@@ -3416,7 +3442,7 @@ const loadTeamData = async (teamCode: string) => {
                 mk.subtitle === selectedMk.subtitle &&
                 mk.track === selectedMk.track
               );
-              return getHomeworkNumberByMkIndex(mkIndex) || undefined;
+              return getHomeworkNumberByMkIndex(mkIndex, selectedMk.subtitle) || undefined;
             }
             return undefined;
           })()}
