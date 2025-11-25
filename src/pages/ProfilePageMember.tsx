@@ -3222,7 +3222,7 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const rawTrack = teamData.track || memberData?.track || '';
+                  const rawTrack = (teamData && teamData.track) || (memberData && memberData.track) || '';
                   const teamTrack = String(rawTrack).trim();
                   
                   // Строгая проверка валидности трека
@@ -3233,8 +3233,8 @@ const loadTeamData = async (teamCode: string) => {
                   
                   // ВСЕГДА фильтруем для участников - даже если трек не валиден
                   filteredMkList = mk_list.filter(mk => {
-                    // Если у мастер-класса нет трека, показываем его (МК 1-3)
-                    if (!mk.track) {
+                    // Если у мастер-класса нет трека (undefined, null, пустая строка), показываем его (МК 1-3)
+                    if (!mk.track || mk.track === '' || mk.track === undefined || mk.track === null) {
                       return true;
                     }
                     
@@ -3252,7 +3252,8 @@ const loadTeamData = async (teamCode: string) => {
                     }
                     
                     // Показываем только тот, который соответствует треку команды
-                    return mkTrack === teamTrack;
+                    const matches = mkTrack === teamTrack;
+                    return matches;
                   });
                 }
                 
