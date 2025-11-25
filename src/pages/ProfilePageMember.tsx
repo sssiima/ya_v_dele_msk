@@ -3231,31 +3231,28 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  // ВСЕГДА фильтруем для участников
+                  // Фильтруем для участников
                   filteredMkList = mk_list.filter(mk => {
-                    const imagePath = String(mk.image || '').toLowerCase();
-                    
-                    // Если у мастер-класса нет трека (undefined, null, пустая строка), показываем его (МК 1-3)
-                    // Проверяем по картинке - если не заканчивается на base/soc/inn, значит это МК без трека
-                    if (!imagePath.endsWith('base.png') && !imagePath.endsWith('soc.png') && !imagePath.endsWith('inn.png')) {
-                      return true; // МК 1-3 без трека
+                    // Если у мастер-класса нет трека - показываем (МК 1-3)
+                    if (!mk.track || mk.track === '' || mk.track === undefined || mk.track === null) {
+                      return true;
                     }
                     
-                    // Если трек команды не валиден, не показываем МК с треком
+                    // Если трек команды не валиден - не показываем МК с треком
                     if (!validTrack) {
                       return false;
                     }
                     
-                    // Фильтруем ТОЛЬКО по окончанию картинки - это самый надежный способ
-                    if (teamTrack === 'Базовый') {
-                      return imagePath.endsWith('base.png');
-                    } else if (teamTrack === 'Социальный') {
-                      return imagePath.endsWith('soc.png');
-                    } else if (teamTrack === 'Инновационный') {
-                      return imagePath.endsWith('inn.png');
+                    // Нормализуем трек мастер-класса
+                    const mkTrack = String(mk.track).trim();
+                    
+                    // Проверяем соответствие трека
+                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
+                      return false;
                     }
                     
-                    return false;
+                    // Показываем только если трек МК совпадает с треком команды
+                    return mkTrack === teamTrack;
                   });
                 }
                 
@@ -3324,31 +3321,28 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  // ВСЕГДА фильтруем для участников
+                  // Фильтруем для участников
                   filteredMkList = mk_list.filter(mk => {
-                    const imagePath = String(mk.image || '').toLowerCase();
-                    
-                    // Если у мастер-класса нет трека (undefined, null, пустая строка), показываем его (МК 1-3)
-                    // Проверяем по картинке - если не заканчивается на base/soc/inn, значит это МК без трека
-                    if (!imagePath.endsWith('base.png') && !imagePath.endsWith('soc.png') && !imagePath.endsWith('inn.png')) {
-                      return true; // МК 1-3 без трека
+                    // Если у мастер-класса нет трека - показываем (МК 1-3)
+                    if (!mk.track || mk.track === '' || mk.track === undefined || mk.track === null) {
+                      return true;
                     }
                     
-                    // Если трек команды не валиден, не показываем МК с треком
+                    // Если трек команды не валиден - не показываем МК с треком
                     if (!validTrack) {
                       return false;
                     }
                     
-                    // Фильтруем ТОЛЬКО по окончанию картинки - это самый надежный способ
-                    if (teamTrack === 'Базовый') {
-                      return imagePath.endsWith('base.png');
-                    } else if (teamTrack === 'Социальный') {
-                      return imagePath.endsWith('soc.png');
-                    } else if (teamTrack === 'Инновационный') {
-                      return imagePath.endsWith('inn.png');
+                    // Нормализуем трек мастер-класса
+                    const mkTrack = String(mk.track).trim();
+                    
+                    // Проверяем соответствие трека
+                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
+                      return false;
                     }
                     
-                    return false;
+                    // Показываем только если трек МК совпадает с треком команды
+                    return mkTrack === teamTrack;
                   });
                 }
                 
