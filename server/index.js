@@ -411,7 +411,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const result = await pool.query(
-      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, COALESCE(archived,false) as archived, created_at FROM members WHERE id = $1 AND COALESCE(archived,false) = false`,
+      `SELECT id, last_name, first_name, patronymic, birth_date, gender, vk_link, phone, education, level, grade, format, faculty, specialty, username, mentor, team_code, team_name, role, track, COALESCE(archived,false) as archived, created_at FROM members WHERE id = $1 AND COALESCE(archived,false) = false`,
       [id]
     )
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' })

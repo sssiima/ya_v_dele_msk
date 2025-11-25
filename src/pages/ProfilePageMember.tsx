@@ -3202,9 +3202,9 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const teamTrack = teamData.track || memberData?.track || '';
+                  const teamTrack = (teamData.track || memberData?.track || '').trim();
                   const validTrack = teamTrack && 
-                    teamTrack.trim() !== '' && 
+                    teamTrack !== '' && 
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
@@ -3219,6 +3219,11 @@ const loadTeamData = async (teamCode: string) => {
                       }
                       // Мастер-классы без трека показываем все
                       return true;
+                    });
+                  } else {
+                    // Если трек не валиден, показываем только мастер-классы без трека (1-3)
+                    filteredMkList = mk_list.filter(mk => {
+                      return !mk.track || (mk.track !== 'Базовый' && mk.track !== 'Социальный' && mk.track !== 'Инновационный');
                     });
                   }
                 }
@@ -3279,9 +3284,9 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const teamTrack = teamData.track || memberData?.track || '';
+                  const teamTrack = (teamData.track || memberData?.track || '').trim();
                   const validTrack = teamTrack && 
-                    teamTrack.trim() !== '' && 
+                    teamTrack !== '' && 
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
@@ -3296,6 +3301,11 @@ const loadTeamData = async (teamCode: string) => {
                       }
                       // Мастер-классы без трека показываем все
                       return true;
+                    });
+                  } else {
+                    // Если трек не валиден, показываем только мастер-классы без трека (1-3)
+                    filteredMkList = mk_list.filter(mk => {
+                      return !mk.track || (mk.track !== 'Базовый' && mk.track !== 'Социальный' && mk.track !== 'Инновационный');
                     });
                   }
                 }
