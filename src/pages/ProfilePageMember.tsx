@@ -409,7 +409,7 @@ const ProfilePageMember = () => {
       1: '17 ноября 2025',
       2: '24 ноября 2025',
       3: '1 декабря 2025',
-      4: '8 декабря 2025'
+      4: '5 декабря 2025'
     };
     return deadlines[hwNumber] || null;
   };
@@ -2447,7 +2447,7 @@ const loadTeamData = async (teamCode: string) => {
                               <button className="rounded flex items-center justify-center" disabled>
                                 <img src="/images/locked.png" alt="lock" className="w-3" />
                               </button>
-                              <span className="text-xs lg:text-sm text-black italic">Заблокировано</span>
+                              <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
                             </div>
                           </div>
                         );
@@ -2560,7 +2560,7 @@ const loadTeamData = async (teamCode: string) => {
                                 <button className="rounded flex items-center justify-center" disabled>
                                   <img src="/images/locked.png" alt="lock" className="w-3" />
                                 </button>
-                                <span className={`text-xs lg:text-sm italic ${isWhiteBg ? 'text-black' : 'text-white'}`}>Заблокировано</span>
+                                <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
                               </div>
                             )}
                       </div>
@@ -2653,7 +2653,7 @@ const loadTeamData = async (teamCode: string) => {
                                 <button className="rounded flex items-center justify-center" disabled>
                                   <img src="/images/locked.png" alt="lock" className="w-3" />
                                 </button>
-                                <span className="text-xs lg:text-sm text-black italic">Заблокировано</span>
+                                <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
                               </div>
                             )}
                           </div>
@@ -2671,25 +2671,171 @@ const loadTeamData = async (teamCode: string) => {
                       )
                     })()}
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Третье д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const homeworkStatus = getHomeworkStatus(3)
+                      const isUploaded = homeworkStatus.status === 'uploaded'
+                      const isReviewed = homeworkStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && homeworkStatus.comment && homeworkStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 3
+                      
+                      return (
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 3, comment: homeworkStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 3, comment: homeworkStatus.comment! });
+                              }
+                            }
+                          }}
+                        >
+                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Третье д/з</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                {homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{homeworkStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
+                            ) : (
+                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => {
+                                // Д/з 3 -> мк 5 (subtitle: 'Финансы.')
+                                // Находим правильный мастер-класс с учетом трека команды
+                                if (teamData.track) {
+                                  const mk = mk_list.find(m => m.subtitle === 'Финансы.' && m.track === teamData.track);
+                                  if (mk) {
+                                    setSelectedMk(mk);
+                                  }
+                                } else {
+                                  // Если трек не выбран, используем первый доступный вариант
+                                  const mk = mk_list.find(m => m.subtitle === 'Финансы.');
+                                  if (mk) {
+                                    setSelectedMk(mk);
+                                  }
+                                }
+                                setCurrentHomeworkView(5);
+                              }}>
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Четвертое д/з</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const homeworkStatus = getHomeworkStatus(4)
+                      const isUploaded = homeworkStatus.status === 'uploaded'
+                      const isReviewed = homeworkStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && homeworkStatus.comment && homeworkStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 4
+                      
+                      return (
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 4, comment: homeworkStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 4, comment: homeworkStatus.comment! });
+                              }
+                            }
+                          }}
+                        >
+                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Четвертое д/з</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                {homeworkStatus.mark !== null && homeworkStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{homeworkStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
+                            ) : (
+                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => {
+                                // Д/з 4 -> мк 6 (subtitle: 'Маркетинг.')
+                                // Находим правильный мастер-класс с учетом трека команды
+                                if (teamData.track) {
+                                  const mk = mk_list.find(m => m.subtitle === 'Маркетинг.' && m.track === teamData.track);
+                                  if (mk) {
+                                    setSelectedMk(mk);
+                                  }
+                                } else {
+                                  // Если трек не выбран, используем первый доступный вариант
+                                  const mk = mk_list.find(m => m.subtitle === 'Маркетинг.');
+                                  if (mk) {
+                                    setSelectedMk(mk);
+                                  }
+                                }
+                                setCurrentHomeworkView(6);
+                              }}>
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                     
 
                     
@@ -3096,10 +3242,15 @@ const loadTeamData = async (teamCode: string) => {
                 let filteredMkList = mk_list;
                 
                 if (isMember && teamData.track) {
+                  // Фильтруем мастер-классы с треком по треку команды
+                  // Мастер-классы без трека показываем все
                   filteredMkList = mk_list.filter(mk => {
-                    if (mk.subtitle === 'Бизнес - модель.') {
+                    // Если у мастер-класса есть трек
+                    if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                      // Показываем только тот, который соответствует треку команды
                       return mk.track === teamData.track;
                     }
+                    // Мастер-классы без трека показываем все
                     return true;
                   });
                 }
