@@ -3231,19 +3231,14 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  // ВСЕГДА фильтруем для участников - даже если трек не валиден
+                  // ВСЕГДА фильтруем для участников
                   filteredMkList = mk_list.filter(mk => {
+                    const imagePath = String(mk.image || '').toLowerCase();
+                    
                     // Если у мастер-класса нет трека (undefined, null, пустая строка), показываем его (МК 1-3)
-                    if (!mk.track || mk.track === '' || mk.track === undefined || mk.track === null) {
-                      return true;
-                    }
-                    
-                    // Если у мастер-класса есть трек, нормализуем его
-                    const mkTrack = String(mk.track).trim();
-                    
-                    // Если трек не валидный, не показываем
-                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
-                      return false;
+                    // Проверяем по картинке - если не заканчивается на base/soc/inn, значит это МК без трека
+                    if (!imagePath.endsWith('base.png') && !imagePath.endsWith('soc.png') && !imagePath.endsWith('inn.png')) {
+                      return true; // МК 1-3 без трека
                     }
                     
                     // Если трек команды не валиден, не показываем МК с треком
@@ -3251,21 +3246,16 @@ const loadTeamData = async (teamCode: string) => {
                       return false;
                     }
                     
-                    // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: проверяем соответствие по окончанию картинки
-                    const imagePath = String(mk.image || '').toLowerCase();
-                    let imageTrackMatch = false;
-                    
+                    // Фильтруем ТОЛЬКО по окончанию картинки - это самый надежный способ
                     if (teamTrack === 'Базовый') {
-                      imageTrackMatch = imagePath.endsWith('base.png');
+                      return imagePath.endsWith('base.png');
                     } else if (teamTrack === 'Социальный') {
-                      imageTrackMatch = imagePath.endsWith('soc.png');
+                      return imagePath.endsWith('soc.png');
                     } else if (teamTrack === 'Инновационный') {
-                      imageTrackMatch = imagePath.endsWith('inn.png');
+                      return imagePath.endsWith('inn.png');
                     }
                     
-                    // Показываем только тот, который соответствует треку команды И по треку, И по картинке
-                    const trackMatches = mkTrack === teamTrack;
-                    return trackMatches && imageTrackMatch;
+                    return false;
                   });
                 }
                 
@@ -3325,7 +3315,7 @@ const loadTeamData = async (teamCode: string) => {
                 
                 if (isMember) {
                   // Используем трек из memberData или teamData (приоритет teamData)
-                  const rawTrack = teamData.track || memberData?.track || '';
+                  const rawTrack = (teamData && teamData.track) || (memberData && memberData.track) || '';
                   const teamTrack = String(rawTrack).trim();
                   
                   // Строгая проверка валидности трека
@@ -3334,19 +3324,14 @@ const loadTeamData = async (teamCode: string) => {
                     teamTrack !== 'Будет доступен после 1 Воркшопа' &&
                     (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
                   
-                  // ВСЕГДА фильтруем для участников - даже если трек не валиден
+                  // ВСЕГДА фильтруем для участников
                   filteredMkList = mk_list.filter(mk => {
-                    // Если у мастер-класса нет трека, показываем его (МК 1-3)
-                    if (!mk.track) {
-                      return true;
-                    }
+                    const imagePath = String(mk.image || '').toLowerCase();
                     
-                    // Если у мастер-класса есть трек, нормализуем его
-                    const mkTrack = String(mk.track).trim();
-                    
-                    // Если трек не валидный, не показываем
-                    if (mkTrack !== 'Базовый' && mkTrack !== 'Социальный' && mkTrack !== 'Инновационный') {
-                      return false;
+                    // Если у мастер-класса нет трека (undefined, null, пустая строка), показываем его (МК 1-3)
+                    // Проверяем по картинке - если не заканчивается на base/soc/inn, значит это МК без трека
+                    if (!imagePath.endsWith('base.png') && !imagePath.endsWith('soc.png') && !imagePath.endsWith('inn.png')) {
+                      return true; // МК 1-3 без трека
                     }
                     
                     // Если трек команды не валиден, не показываем МК с треком
@@ -3354,8 +3339,16 @@ const loadTeamData = async (teamCode: string) => {
                       return false;
                     }
                     
-                    // Показываем только тот, который соответствует треку команды
-                    return mkTrack === teamTrack;
+                    // Фильтруем ТОЛЬКО по окончанию картинки - это самый надежный способ
+                    if (teamTrack === 'Базовый') {
+                      return imagePath.endsWith('base.png');
+                    } else if (teamTrack === 'Социальный') {
+                      return imagePath.endsWith('soc.png');
+                    } else if (teamTrack === 'Инновационный') {
+                      return imagePath.endsWith('inn.png');
+                    }
+                    
+                    return false;
                   });
                 }
                 
