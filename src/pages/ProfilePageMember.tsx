@@ -472,12 +472,21 @@ const ProfilePageMember = () => {
       const structureCtid = localStorage.getItem('structure_ctid');
       const isMember = !!memberId && !structureCtid;
       
-      if (isMember && teamData.track) {
-        // Если у мастер-класса есть трек, проверяем соответствие
-        if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
-          if (mk.track !== teamData.track) {
-            // Мастер-класс не соответствует треку команды - не открываем
-            return;
+      if (isMember) {
+        // Используем трек из memberData или teamData (приоритет teamData)
+        const teamTrack = teamData.track || memberData?.track || '';
+        const validTrack = teamTrack && 
+          teamTrack.trim() !== '' && 
+          teamTrack !== 'Будет доступен после 1 Воркшопа' &&
+          (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
+        
+        if (validTrack) {
+          // Если у мастер-класса есть трек, проверяем соответствие
+          if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+            if (mk.track !== teamTrack) {
+              // Мастер-класс не соответствует треку команды - не открываем
+              return;
+            }
           }
         }
       }
@@ -3097,13 +3106,15 @@ const loadTeamData = async (teamCode: string) => {
                       const mkHasTrack = selectedMk.track && 
                         (selectedMk.track === 'Базовый' || selectedMk.track === 'Социальный' || selectedMk.track === 'Инновационный');
                       
-                      const hasTrack = teamData.track && 
-                        teamData.track.trim() !== '' && 
-                        teamData.track !== 'Будет доступен после 1 Воркшопа' &&
-                        (teamData.track === 'Базовый' || teamData.track === 'Социальный' || teamData.track === 'Инновационный')
+                      // Используем трек из memberData или teamData (приоритет teamData)
+                      const teamTrack = teamData.track || memberData?.track || '';
+                      const hasTrack = teamTrack && 
+                        teamTrack.trim() !== '' && 
+                        teamTrack !== 'Будет доступен после 1 Воркшопа' &&
+                        (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный')
                       
                       // Проверяем соответствие трека мастер-класса треку команды
-                      const trackMatches = !mkHasTrack || (selectedMk.track === teamData.track);
+                      const trackMatches = !mkHasTrack || (selectedMk.track === teamTrack);
                       
                       // Проверяем, является ли это третьим МК (MVP. HADI - циклы) или четвертым МК (Бизнес - модель) для участников
                       const isThirdMk = selectedMk.subtitle === 'MVP. HADI - циклы.';
@@ -3189,18 +3200,27 @@ const loadTeamData = async (teamCode: string) => {
                 
                 let filteredMkList = mk_list;
                 
-                if (isMember && teamData.track && teamData.track.trim() !== '' && teamData.track !== 'Будет доступен после 1 Воркшопа') {
-                  // Фильтруем мастер-классы с треком по треку команды
-                  // Мастер-классы без трека показываем все
-                  filteredMkList = mk_list.filter(mk => {
-                    // Если у мастер-класса есть трек
-                    if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
-                      // Показываем только тот, который соответствует треку команды
-                      return mk.track === teamData.track;
-                    }
+                if (isMember) {
+                  // Используем трек из memberData или teamData (приоритет teamData)
+                  const teamTrack = teamData.track || memberData?.track || '';
+                  const validTrack = teamTrack && 
+                    teamTrack.trim() !== '' && 
+                    teamTrack !== 'Будет доступен после 1 Воркшопа' &&
+                    (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
+                  
+                  if (validTrack) {
+                    // Фильтруем мастер-классы с треком по треку команды
                     // Мастер-классы без трека показываем все
-                    return true;
-                  });
+                    filteredMkList = mk_list.filter(mk => {
+                      // Если у мастер-класса есть трек
+                      if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                        // Показываем только тот, который соответствует треку команды
+                        return mk.track === teamTrack;
+                      }
+                      // Мастер-классы без трека показываем все
+                      return true;
+                    });
+                  }
                 }
                 
                 return filteredMkList.map((mk, index) => {
@@ -3257,18 +3277,27 @@ const loadTeamData = async (teamCode: string) => {
                 
                 let filteredMkList = mk_list;
                 
-                if (isMember && teamData.track && teamData.track.trim() !== '' && teamData.track !== 'Будет доступен после 1 Воркшопа') {
-                  // Фильтруем мастер-классы с треком по треку команды
-                  // Мастер-классы без трека показываем все
-                  filteredMkList = mk_list.filter(mk => {
-                    // Если у мастер-класса есть трек
-                    if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
-                      // Показываем только тот, который соответствует треку команды
-                      return mk.track === teamData.track;
-                    }
+                if (isMember) {
+                  // Используем трек из memberData или teamData (приоритет teamData)
+                  const teamTrack = teamData.track || memberData?.track || '';
+                  const validTrack = teamTrack && 
+                    teamTrack.trim() !== '' && 
+                    teamTrack !== 'Будет доступен после 1 Воркшопа' &&
+                    (teamTrack === 'Базовый' || teamTrack === 'Социальный' || teamTrack === 'Инновационный');
+                  
+                  if (validTrack) {
+                    // Фильтруем мастер-классы с треком по треку команды
                     // Мастер-классы без трека показываем все
-                    return true;
-                  });
+                    filteredMkList = mk_list.filter(mk => {
+                      // Если у мастер-класса есть трек
+                      if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                        // Показываем только тот, который соответствует треку команды
+                        return mk.track === teamTrack;
+                      }
+                      // Мастер-классы без трека показываем все
+                      return true;
+                    });
+                  }
                 }
                 
                 return filteredMkList.map((_, index) => (
