@@ -50,10 +50,10 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
 
   const tracks = ['Базовый', 'Социальный', 'Инновационный'];
 
-  // Загружаем трек команды, если это второе д/з
+  // Загружаем трек команды, если это д/з, связанное с МК, имеющим трек (2, 4, 5)
   useEffect(() => {
     const loadTeamTrack = async () => {
-      if (homeworkNumber === 2 && teamCode) {
+      if ((homeworkNumber === 2 || homeworkNumber === 4 || homeworkNumber === 5) && teamCode) {
         setLoadingTrack(true);
         try {
           const normalizedTeamCode = String(teamCode).trim();
@@ -136,8 +136,8 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
       return;
     }
 
-    // Для второго д/з проверяем наличие трека
-    if (homeworkNumber === 2) {
+    // Для д/з, связанных с МК, имеющими трек (2, 4, 5), проверяем наличие трека
+    if (homeworkNumber === 2 || homeworkNumber === 4 || homeworkNumber === 5) {
       const finalTrack = selectedTrack || teamTrack;
       if (!finalTrack || (finalTrack !== 'Базовый' && finalTrack !== 'Социальный' && finalTrack !== 'Инновационный')) {
         alert('Пожалуйста, выберите трек перед загрузкой задания');
@@ -164,7 +164,7 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
     setUploading(true);
     try {
       // Для второго д/з передаем трек
-      const trackToSend = homeworkNumber === 2 ? (selectedTrack || teamTrack || undefined) : undefined;
+      const trackToSend = (homeworkNumber === 2 || homeworkNumber === 4 || homeworkNumber === 5) ? (selectedTrack || teamTrack || undefined) : undefined;
       const result = await fileUploadApi.uploadHomework(
         selectedFile, 
         title || 'Домашнее задание', 
@@ -269,8 +269,8 @@ const HomeworkLoad: React.FC<HomeworkLoadProps> = ({
             </div>
           )}
 
-          {/* Выбор трека для второго д/з */}
-          {homeworkNumber === 2 && (
+          {/* Выбор трека для д/з, связанных с МК, имеющими трек (2, 4, 5) */}
+          {(homeworkNumber === 2 || homeworkNumber === 4 || homeworkNumber === 5) && (
             <div className="mb-4 relative" ref={trackSelectorRef}>
               <label className="block text-sm font-semibold text-black mb-2">Трек</label>
               {loadingTrack ? (

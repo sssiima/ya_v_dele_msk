@@ -395,22 +395,12 @@ const ProfilePageMember = () => {
     };
   }, [hoveredHomework, isDesktop]);
 
-  const handleHomeworkClick = (homeworkNumber: number) => {
-    // Первые два мастер-класса (индексы 0 и 1) не имеют д/з, поэтому используем homeworkNumber + 1
-    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
-    setCurrentHomeworkView(homeworkNumber + 2);
-  };
-  
-  const handleWorkshopHomeworkClick = () => {
-    setShowWorkshopHomework(true);
-  };
-
   // Функция для получения номера д/з по индексу мастер-класса
   const getHomeworkNumberByMkIndex = (mkIndex: number): number | null => {
     // Первые два мастер-класса (индексы 0 и 1) не имеют д/з
-    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3) и т.д.
+    // Д/з 1 -> мк 3 (индекс 2), д/з 2 -> мк 4 (индекс 3), д/з 3 -> мк 5 (индекс 4), д/з 4 -> мк 6 (индекс 5)
     if (mkIndex < 2) return null;
-    return mkIndex - 1; // Индекс 2 -> ДЗ 1, индекс 3 -> ДЗ 2, и т.д.
+    return mkIndex - 1; // Индекс 2 -> ДЗ 1, индекс 3 -> ДЗ 2, индекс 4 -> ДЗ 3, индекс 5 -> ДЗ 4
   };
 
   // Функция для получения дедлайна по номеру д/з
@@ -700,10 +690,10 @@ MVP возможно реализовать до конца курса в так
 6. Дополнительный балл за оригинальность и глубину проработки
 Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
 творческий подход к применению элементов.`  },
-      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthlock.png',
+      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthbase.png',
         pres: 'https://drive.google.com/file/d/1KZEn8Clb9KC1Lh4dR5GRtiI3YrU7CX_6/view?usp=drive_link',
         description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-        disabled: true, track: 'Базовый трек',
+        disabled: false, track: 'Базовый',
         criteria: '',
         tz: 'https://drive.google.com/file/d/1gC70ikWO7mt4GmWMfSbW4HaIVAcfQGZ9/view?usp=drive_link',
         template: '',
@@ -776,10 +766,10 @@ MVP возможно реализовать до конца курса в так
 Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
 оформлена аккуратно, содержит пояснения, цвета или группировки для
 наглядности. Присутствует краткий итог с ключевыми выводами.`  },
-      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthlock.png',
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthbase.png',
         pres: 'https://drive.google.com/file/d/1-ICPM2FI3bkJuMimfSe2SUr2w8OPrcOE/view?usp=drive_link',
-        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-        disabled: true, track: 'Базовый трек',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: false, track: 'Базовый',
         criteria: '',
         tz: 'https://drive.google.com/file/d/1NdI0WnrllO2GpxIeRIBDflf876xjdDDy/view?usp=drive_link',
         template: '',
@@ -929,20 +919,276 @@ MVP возможно реализовать до конца курса в так
 6. Дополнительный балл за оригинальность и глубину проработки
 Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
 творческий подход к применению элементов.`  },
-      // { title: "Третий мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
-      //   pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
-      //   description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-      //   disabled: true, track: 'Инновационный трек',
-      //   criteria: '',
-      //   tz: 'https://drive.google.com/file/d/19QSMPcsMBtjyJdLJon0YfzNgHhn50mX9/view?usp=drive_link',
-      //   template: '', fulldesc: ''  },
-      // { title: "Четвертый мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixthinn.png',
-      //   pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
-      //   description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-      //   disabled: true, track: 'Инновационный трек',
-      //   criteria: '',
-      //   tz: 'https://drive.google.com/file/d/1gULz1yHW8kMc1vYekqmFMbwcj2g3OAM8/view?usp=drive_link',
-      //   template: '', fulldesc: ''  },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthsoc.png',
+        pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
+        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+        disabled: false, track: 'Социальный',
+        criteria: '',
+        method: 'https://drive.google.com/file/d/1mcU4RSJkvnfJMDKz9wGOGkdx5-m87_pd/view?usp=drive_link',
+        tz: 'https://drive.google.com/file/d/18l90yVyIsOemFnkyQcFAh3pxyZzS0pLG/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 5:
+«Финансы»
+
+Критерии оценки «Unit-экономика»
+
+1. Корректность расчётов и понимание формул
+Участник правильно использует формулы расчёта Unit Contribution и LTV. Все
+значения логически согласованы между собой, отсутствуют арифметические
+ошибки. Чётко видна связь между средним чеком, себестоимостью, CAC и
+итоговыми метриками.
+
+2. Разработка трёх сценариев
+Построены три реалистичных сценария — оптимистичный, реалистичный и
+пессимистичный. Отличия между ними логично объяснены и количественно
+обоснованы (например, через динамику удержания или CAC).
+
+3. Интерпретация показателей и выводы
+Участник не просто приводит цифры, но объясняет, что они означают для
+бизнеса: где «узкое место», в каком сценарии проект становится
+прибыльным, что влияет на устойчивость модели.
+
+4. Сравнение LTV и CAC
+Показано соотношение LTV/CAC, сделаны выводы о целесообразности
+бизнеса. Участник аргументирует, почему показатель выше или ниже
+единицы, и какие управленческие решения можно принять на основе
+данных.
+
+5. Применимость к проекту
+Все данные и гипотезы связаны с конкретным продуктом или идеей. Нет
+«абстрактных» чисел — чувствуется логика реального бизнеса (откуда берутся
+данные, какие каналы привлечения, какая структура цен).
+
+Дополнительный балл за аналитичность и визуализацию
+В таблице или слайде присутствует график/диаграмма, показывающий
+динамику или сравнение сценариев. Отчёт аккуратен, выводы кратки, но
+точны и осмысленны.
+
+Критерии оценки «Себестоимость под микроскопом»
+
+1. Полнота разбора себестоимости
+Себестоимость продукта разложена на отдельные элементы: материалы,
+упаковку, аренду, рекламу, труд и прочие расходы. Указаны конкретные цены
+и источники данных (магазины, прайс-листы, сайты поставщиков).
+
+2. Реалистичность и точность данных
+Все значения основаны на реальных рыночных данных. Расчёты корректны,
+логика формирования итоговой себестоимости понятна. Пропорции между
+статьями затрат соответствуют типу продукта.
+
+3. Сравнение с рыночной ценой
+Выполнено сопоставление итоговой себестоимости с ценами конкурентов
+или средними рыночными значениями. Участник объясняет, за что клиент
+платит и как формируется цена.
+
+4. Анализ издержек и возможностей оптимизации
+Для каждой статьи указаны точки оптимизации: где можно сократить
+расходы, не ухудшая качество, а где экономия нежелательна. Участник
+демонстрирует понимание приоритетов — что важно для ценности продукта.
+
+5. Осмысление ценностного предложения
+В работе объясняется, почему клиент готов платить эту цену — какие
+эмоциональные, функциональные или имиджевые выгоды получает.
+Участник показывает понимание связи между себестоимостью, ценой и
+восприятием продукта.
+
+6. Дополнительный балл за визуализацию и структурность
+Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
+оформлена аккуратно, содержит пояснения, цвета или группировки для
+наглядности. Присутствует краткий итог с ключевыми выводами.`  },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthsoc.png',
+        pres: 'https://drive.google.com/file/d/1-bKB_NEDgbMvLkJpAvRq2b-3XDHTxawY/view?usp=drive_link',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: false, track: 'Социальный',
+        criteria: '',
+        method: 'https://drive.google.com/file/d/1xlyLJVaxC_loHbwZOUTzaqxf6oSCeiI8/view?usp=drive_link',
+        tz: 'https://drive.google.com/file/d/1YRlVOwsQHohX7QqdbF2d2SIEiFJNhPWc/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 6: «Маркетинг»
+
+Задание 1: Анализ маркетингового кейса
+
+1. Глубина анализа проблемы
+Участники демонстрируют глубокий анализ:
+— Выявляют все ключевые психологические триггеры (социальное
+доказательство, FOMO, принадлежность к сообществу, игровой элемент)
+— Объясняют, почему именно эти триггеры сработали именно с молодежью
+— Приводят конкретные примеры из кейса, подтверждающие анализ
+— Ссылаются на теории маркетинга или поведения потребителей
+
+2. Понимание механики вирусности рекламы
+— Четко описано, в какой момент зритель становится участником
+— Названы все условия, необходимые для вирусности (простота
+воспроизведения, эмоциональность, социальная ценность контента,
+возможность адаптации)
+— Объяснено, почему другим брендам выгодно было поддержать кампанию
+
+3. Анализ рисков
+— Выявлены несколько серьезных рисков (потеря контроля над нарративом,
+критика, черный пиар, негативные коннотации, непредсказуемость толпы и
+т.д.)
+— Для каждого риска объяснено, как его можно было минимизировать
+
+4. Адаптация под собственный продукт
+— Выбран конкретный продукт и четко описана его суть
+Аналог билборда оригинален и уместен для продукта
+— Выбранный психологический механизм релевантен и хорошо объяснен
+— Персонажи (имена, характеристики) продуманы и логичны для целевой
+аудитории
+
+5. Измеримость результатов
+— Названо минимум 5 конкретных метрик (установки приложения, показы в
+соцсетях, CTR, конверсия, упоминания бренда, engagement и т.д.)
+— Четко определена самая важная метрика и объяснено почему
+— Описаны KPI для остановки кампании (например, падение engagement
+ниже 5% или отрицательный sentiment)
+
+Задание 2: Создание рекламного ролика для собственного продукта (дополнительное)
+
+1. Глубина раскрытия сути проекта.
+Смотря рекламу можно без проблем понять, о чем и для кого создан
+продукт/услуга.
+
+2. Способность увлечь.
+Реклама запоминается, завлекает внимание зрителя с первых секунд.
+
+3. Креативность и оригинальность идеи.
+Поддерживается творческий и нестандартный подход.`  },
+      { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthinn.png',
+        pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
+        description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
+        disabled: false, track: 'Инновационный',
+        criteria: '',
+        method: 'https://drive.google.com/file/d/1MICAFnuaKzXGYfQImAHM-v5plljCqHZJ/view?usp=drive_link',
+        tz: 'https://drive.google.com/file/d/19QSMPcsMBtjyJdLJon0YfzNgHhn50mX9/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 5:
+«Финансы»
+
+Критерии оценки «Unit-экономика»
+
+1. Корректность расчётов и понимание формул
+Участник правильно использует формулы расчёта Unit Contribution и LTV. Все
+значения логически согласованы между собой, отсутствуют арифметические
+ошибки. Чётко видна связь между средним чеком, себестоимостью, CAC и
+итоговыми метриками.
+
+2. Разработка трёх сценариев
+Построены три реалистичных сценария — оптимистичный, реалистичный и
+пессимистичный. Отличия между ними логично объяснены и количественно
+обоснованы (например, через динамику удержания или CAC).
+
+3. Интерпретация показателей и выводы
+Участник не просто приводит цифры, но объясняет, что они означают для
+бизнеса: где «узкое место», в каком сценарии проект становится
+прибыльным, что влияет на устойчивость модели.
+
+4. Сравнение LTV и CAC
+Показано соотношение LTV/CAC, сделаны выводы о целесообразности
+бизнеса. Участник аргументирует, почему показатель выше или ниже
+единицы, и какие управленческие решения можно принять на основе
+данных.
+
+5. Применимость к проекту
+Все данные и гипотезы связаны с конкретным продуктом или идеей. Нет
+«абстрактных» чисел — чувствуется логика реального бизнеса (откуда берутся
+данные, какие каналы привлечения, какая структура цен).
+
+Дополнительный балл за аналитичность и визуализацию
+В таблице или слайде присутствует график/диаграмма, показывающий
+динамику или сравнение сценариев. Отчёт аккуратен, выводы кратки, но
+точны и осмысленны.
+
+Критерии оценки «Себестоимость под микроскопом»
+
+1. Полнота разбора себестоимости
+Себестоимость продукта разложена на отдельные элементы: материалы,
+упаковку, аренду, рекламу, труд и прочие расходы. Указаны конкретные цены
+и источники данных (магазины, прайс-листы, сайты поставщиков).
+
+2. Реалистичность и точность данных
+Все значения основаны на реальных рыночных данных. Расчёты корректны,
+логика формирования итоговой себестоимости понятна. Пропорции между
+статьями затрат соответствуют типу продукта.
+
+3. Сравнение с рыночной ценой
+Выполнено сопоставление итоговой себестоимости с ценами конкурентов
+или средними рыночными значениями. Участник объясняет, за что клиент
+платит и как формируется цена.
+
+4. Анализ издержек и возможностей оптимизации
+Для каждой статьи указаны точки оптимизации: где можно сократить
+расходы, не ухудшая качество, а где экономия нежелательна. Участник
+демонстрирует понимание приоритетов — что важно для ценности продукта.
+
+5. Осмысление ценностного предложения
+В работе объясняется, почему клиент готов платить эту цену — какие
+эмоциональные, функциональные или имиджевые выгоды получает.
+Участник показывает понимание связи между себестоимостью, ценой и
+восприятием продукта.
+
+6. Дополнительный балл за визуализацию и структурность
+Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
+оформлена аккуратно, содержит пояснения, цвета или группировки для
+наглядности. Присутствует краткий итог с ключевыми выводами.`  },
+      { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthinn.png',
+        pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
+        description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+        disabled: false, track: 'Инновационный',
+        criteria: '',
+        method: 'https://drive.google.com/file/d/19vrlI9yMKf31pyzoJtFbSZd3RxW5PTNK/view?usp=drive_link',
+        tz: 'https://drive.google.com/file/d/1gULz1yHW8kMc1vYekqmFMbwcj2g3OAM8/view?usp=drive_link',
+        template: '',
+        fulldesc: `Критерии оценки домашнего задания No 6: «Маркетинг»
+
+Задание 1: Анализ маркетингового кейса
+
+1. Глубина анализа проблемы
+Участники демонстрируют глубокий анализ:
+— Выявляют все ключевые психологические триггеры (социальное
+доказательство, FOMO, принадлежность к сообществу, игровой элемент)
+— Объясняют, почему именно эти триггеры сработали именно с молодежью
+— Приводят конкретные примеры из кейса, подтверждающие анализ
+— Ссылаются на теории маркетинга или поведения потребителей
+
+2. Понимание механики вирусности рекламы
+— Четко описано, в какой момент зритель становится участником
+— Названы все условия, необходимые для вирусности (простота
+воспроизведения, эмоциональность, социальная ценность контента,
+возможность адаптации)
+— Объяснено, почему другим брендам выгодно было поддержать кампанию
+
+3. Анализ рисков
+— Выявлены несколько серьезных рисков (потеря контроля над нарративом,
+критика, черный пиар, негативные коннотации, непредсказуемость толпы и
+т.д.)
+— Для каждого риска объяснено, как его можно было минимизировать
+
+4. Адаптация под собственный продукт
+— Выбран конкретный продукт и четко описана его суть
+Аналог билборда оригинален и уместен для продукта
+— Выбранный психологический механизм релевантен и хорошо объяснен
+— Персонажи (имена, характеристики) продуманы и логичны для целевой
+аудитории
+
+5. Измеримость результатов
+— Названо минимум 5 конкретных метрик (установки приложения, показы в
+соцсетях, CTR, конверсия, упоминания бренда, engagement и т.д.)
+— Четко определена самая важная метрика и объяснено почему
+— Описаны KPI для остановки кампании (например, падение engagement
+ниже 5% или отрицательный sentiment)
+
+Задание 2: Создание рекламного ролика для собственного продукта (дополнительное)
+
+1. Глубина раскрытия сути проекта.
+Смотря рекламу можно без проблем понять, о чем и для кого создан
+продукт/услуга.
+
+2. Способность увлечь.
+Реклама запоминается, завлекает внимание зрителя с первых секунд.
+
+3. Креативность и оригинальность идеи.
+Поддерживается творческий и нестандартный подход.`  },
   ]
 
   const project_list = [
@@ -2189,6 +2435,24 @@ const loadTeamData = async (teamCode: string) => {
                       const hasComment = isReviewed && homeworkStatus.comment && homeworkStatus.comment.trim() !== ''
                       const isHovered = hoveredHomework?.number === 1
                       
+                      // Для первого д/з всегда показываем "Заблокировано", если не отправлено
+                      if (!isUploaded && !isReviewed) {
+                        return (
+                          <div 
+                            data-homework-item
+                            className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 bg-white text-black`}
+                          >
+                            <span className="text-sm text-black">Первое д/з</span>
+                            <div className="flex items-center gap-2">
+                              <button className="rounded flex items-center justify-center" disabled>
+                                <img src="/images/locked.png" alt="lock" className="w-3" />
+                              </button>
+                              <span className="text-xs lg:text-sm text-black italic">Заблокировано</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
                       return (
                         <div 
                           data-homework-item
@@ -2228,11 +2492,7 @@ const loadTeamData = async (teamCode: string) => {
                                   'Оценено'
                                 )}
                               </span>
-                            ) : (
-                        <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(1)}>
-                          Загрузить
-                        </button>
-                            )}
+                            ) : null}
                       </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
@@ -2242,7 +2502,7 @@ const loadTeamData = async (teamCode: string) => {
                               style={{ maxWidth: 'calc(100vw - 2rem)' }}
                             >
                               <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{homeworkStatus.comment}</p>
-                    </div>
+                            </div>
                           )}
                         </div>
                       )
@@ -2296,12 +2556,12 @@ const loadTeamData = async (teamCode: string) => {
                                 )}
                               </span>
                             ) : (
-                              <button 
-                                onClick={handleWorkshopHomeworkClick}
-                                className="rounded-xl bg-brand text-white italic text-xs lg:text-sm py-1"
-                              >
-                                Загрузить
-                        </button>
+                              <div className="flex items-center gap-2">
+                                <button className="rounded flex items-center justify-center" disabled>
+                                  <img src="/images/locked.png" alt="lock" className="w-3" />
+                                </button>
+                                <span className={`text-xs lg:text-sm italic ${isWhiteBg ? 'text-black' : 'text-white'}`}>Заблокировано</span>
+                              </div>
                             )}
                       </div>
                           {/* Всплывающее окно с комментарием */}
@@ -2348,10 +2608,11 @@ const loadTeamData = async (teamCode: string) => {
                       }
                       
                       // Если трек выбран, показываем обычное состояние
+                      // Для второго д/з всегда показываем "Заблокировано", если не отправлено
                       return (
                         <div 
                           data-homework-item
-                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-white text-black'}`}
                           onMouseEnter={() => {
                             if (hasComment && isDesktop) {
                               setHoveredHomework({ number: 2, comment: homeworkStatus.comment! });
@@ -2373,7 +2634,7 @@ const loadTeamData = async (teamCode: string) => {
                             }
                           }}
                         >
-                          <span className="text-sm">Второе д/з</span>
+                          <span className="text-sm text-black">Второе д/з</span>
                           <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
@@ -2388,9 +2649,12 @@ const loadTeamData = async (teamCode: string) => {
                                 )}
                               </span>
                             ) : (
-                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => handleHomeworkClick(2)}>
-                                Загрузить
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button className="rounded flex items-center justify-center" disabled>
+                                  <img src="/images/locked.png" alt="lock" className="w-3" />
+                                </button>
+                                <span className="text-xs lg:text-sm text-black italic">Заблокировано</span>
+                              </div>
                             )}
                           </div>
                           {/* Всплывающее окно с комментарием */}
@@ -2546,6 +2810,34 @@ const loadTeamData = async (teamCode: string) => {
                              return '/images/mkfourthinn.png';
                            }
                          }
+                         // Для мастер-классов с треком используем картинку в зависимости от трека
+                         if (selectedMk.track && (selectedMk.track === 'Базовый' || selectedMk.track === 'Социальный' || selectedMk.track === 'Инновационный')) {
+                           if (selectedMk.subtitle === 'Бизнес - модель.') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mkfourthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mkfourthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mkfourthinn.png';
+                             }
+                           } else if (selectedMk.subtitle === 'Финансы.') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mkfifthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mkfifthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mkfifthinn.png';
+                             }
+                           } else if (selectedMk.subtitle === 'Маркетинг.') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mksixthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mksixthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mksixthinn.png';
+                             }
+                           }
+                         }
                          return selectedMk.image;
                        })()} className="rounded-lg w-full lg:w-96 mb-6"></img>
                      </div>
@@ -2631,7 +2923,7 @@ const loadTeamData = async (teamCode: string) => {
                     
                     {/* Отображение статуса или кнопки для участника */}
                     {memberData?.team_code && selectedMk.tz && (() => {
-                      // Проверяем, выбран ли трек команды для второго д/з (четвертый мастер-класс, индекс 3)
+                      // Проверяем, выбран ли трек команды для д/з, связанных с МК, имеющими трек
                       // Используем track для точного поиска, так как есть несколько вариантов с одинаковым subtitle
                       const mkIndex = mk_list.findIndex(mk => 
                         mk.title === selectedMk.title && 
@@ -2639,10 +2931,10 @@ const loadTeamData = async (teamCode: string) => {
                         mk.track === selectedMk.track
                       );
                       const hwNumber = getHomeworkNumberByMkIndex(mkIndex);
-                      const isSecondHomework = hwNumber === 2;
                       
-                      // Проверяем, является ли это четвертым мастер-классом (Бизнес - модель)
-                      const isFourthMk = selectedMk.subtitle === 'Бизнес - модель.';
+                      // Проверяем, имеет ли мастер-класс трек
+                      const mkHasTrack = selectedMk.track && 
+                        (selectedMk.track === 'Базовый' || selectedMk.track === 'Социальный' || selectedMk.track === 'Инновационный');
                       
                       const hasTrack = teamData.track && 
                         teamData.track.trim() !== '' && 
@@ -2650,14 +2942,17 @@ const loadTeamData = async (teamCode: string) => {
                         (teamData.track === 'Базовый' || teamData.track === 'Социальный' || teamData.track === 'Инновационный')
                       
                       // Проверяем соответствие трека мастер-класса треку команды
-                      const trackMatches = !isFourthMk || (selectedMk.track === teamData.track);
+                      const trackMatches = !mkHasTrack || (selectedMk.track === teamData.track);
                       
-                      // Если это второе д/з или четвертый мастер-класс и трек не выбран или не совпадает, показываем заблокированное состояние
-                      if ((isSecondHomework || isFourthMk) && (!hasTrack || !trackMatches)) {
+                      // Проверяем, является ли это четвертым МК (Бизнес - модель) для участников
+                      const isFourthMk = selectedMk.subtitle === 'Бизнес - модель.';
+                      
+                      // Если мастер-класс имеет трек и трек команды не выбран или не совпадает, показываем заблокированное состояние
+                      if (mkHasTrack && (!hasTrack || !trackMatches)) {
                         return (
                           <div className="flex w-full justify-center mt-4">
                             <div className="flex justify-between items-center border border-brand rounded-full p-2 px-4 w-full bg-gray-100">
-                              <span className="text-sm text-gray-500">{isSecondHomework ? 'Второе д/з' : 'Четвертый мастер-класс'}</span>
+                              <span className="text-sm text-gray-500">{hwNumber ? `Д/з ${hwNumber}` : selectedMk.title}</span>
                               <div className="flex items-center gap-2">
                                 <button className="rounded flex items-center justify-center" disabled>
                                   <img src="/images/locked.png" alt="lock" className="w-3" />
@@ -2667,6 +2962,11 @@ const loadTeamData = async (teamCode: string) => {
                             </div>
                           </div>
                         );
+                      }
+                      
+                      // Для четвертого МК у участников не показываем кнопку "Перейти к выполнению"
+                      if (isFourthMk && memberData?.team_code) {
+                        return null;
                       }
                       
                       return (
@@ -2728,40 +3028,58 @@ const loadTeamData = async (teamCode: string) => {
                 let filteredMkList = mk_list;
                 
                 if (isMember && teamData.track) {
-                  // Фильтруем четвертый мастер-класс по треку команды
-                  // Остальные мастер-классы показываем все
+                  // Фильтруем мастер-классы с треком по треку команды
+                  // Мастер-классы без трека показываем все
                   filteredMkList = mk_list.filter(mk => {
-                    // Если это четвертый мастер-класс (Бизнес - модель)
-                    if (mk.subtitle === 'Бизнес - модель.') {
+                    // Если у мастер-класса есть трек
+                    if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
                       // Показываем только тот, который соответствует треку команды
                       return mk.track === teamData.track;
                     }
-                    // Остальные мастер-классы показываем все
+                    // Мастер-классы без трека показываем все
                     return true;
                   });
                 }
                 
                 return filteredMkList.map((mk, index) => {
-                  // Для четвертого мастер-класса используем картинку в зависимости от трека
+                  // Для мастер-классов с треком используем картинку в зависимости от трека
                   let imageToShow = mk.image;
-                  if (mk.subtitle === 'Бизнес - модель.' && mk.track) {
-                    if (mk.track === 'Базовый') {
-                      imageToShow = '/images/mkfourthbase.png';
-                    } else if (mk.track === 'Социальный') {
-                      imageToShow = '/images/mkfourthsoc.png';
-                    } else if (mk.track === 'Инновационный') {
-                      imageToShow = '/images/mkfourthinn.png';
+                  if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                    if (mk.subtitle === 'Бизнес - модель.') {
+                      if (mk.track === 'Базовый') {
+                        imageToShow = '/images/mkfourthbase.png';
+                      } else if (mk.track === 'Социальный') {
+                        imageToShow = '/images/mkfourthsoc.png';
+                      } else if (mk.track === 'Инновационный') {
+                        imageToShow = '/images/mkfourthinn.png';
+                      }
+                    } else if (mk.subtitle === 'Финансы.') {
+                      if (mk.track === 'Базовый') {
+                        imageToShow = '/images/mkfifthbase.png';
+                      } else if (mk.track === 'Социальный') {
+                        imageToShow = '/images/mkfifthsoc.png';
+                      } else if (mk.track === 'Инновационный') {
+                        imageToShow = '/images/mkfifthinn.png';
+                      }
+                    } else if (mk.subtitle === 'Маркетинг.') {
+                      if (mk.track === 'Базовый') {
+                        imageToShow = '/images/mksixthbase.png';
+                      } else if (mk.track === 'Социальный') {
+                        imageToShow = '/images/mksixthsoc.png';
+                      } else if (mk.track === 'Инновационный') {
+                        imageToShow = '/images/mksixthinn.png';
+                      }
                     }
                   }
                   
                   return (
                     <div key={`${index}-${mk.track || ''}`} className="snap-start cursor-pointer" onClick={() => handleMkClick(mk)}>
-                      <Card 
-                        title={mk.title}
-                        subtitle={mk.subtitle}
+                  <Card 
+                    title={mk.title}
+                    subtitle={mk.subtitle}
                         image={imageToShow}
-                      />
-                    </div>
+                  />
+                </div>
                   );
                 });
               })()}

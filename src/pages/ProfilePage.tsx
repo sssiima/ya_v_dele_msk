@@ -147,7 +147,7 @@ const ProfilePage = () => {
     Промт чётко структурирован, содержит все необходимые параметры (описание проекта, ограничения по времени/ресурсам, требуемый функционал MVP), написан понятным языком.
     
     3. Соответствие MVP сути проекта MVP демонстрирует ключевую ценность проекта, показывает основную функцию или решает главную проблему целевой аудитории.`  },
-          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Базовый трек', image: '/images/mkfourthbase.png',
+          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthbase.png',
             pres: 'https://drive.google.com/file/d/15mRrdWcEHA_NtpT0QEaNv_pmSs9UJZAN/view?usp=drive_link',
             description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
             disabled: false, track: 'Базовый',
@@ -189,10 +189,10 @@ const ProfilePage = () => {
     6. Дополнительный балл за оригинальность и глубину проработки
     Ответ глубоко проработан, оригинален, содержит нестандартные идеи,
     творческий подход к применению элементов.`  },
-          { title: "Пятый мастер-класс", subtitle: 'Финансы. Базовый трек', image: '/images/mkfifthbase.png',
+          { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthbase.png',
             pres: 'https://drive.google.com/file/d/1KZEn8Clb9KC1Lh4dR5GRtiI3YrU7CX_6/view?usp=drive_link',
             description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-            disabled: true, track: 'Базовый трек',
+            disabled: false, track: 'Базовый',
             criteria: '',
             method: 'https://drive.google.com/file/d/11bUS0HCCpJCF8BBnOqdHh8bYnXvLKDBE/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/1gC70ikWO7mt4GmWMfSbW4HaIVAcfQGZ9/view?usp=drive_link',
@@ -266,10 +266,10 @@ const ProfilePage = () => {
     Себестоимость представлена в виде схемы (Canva, Miro, таблица). Работа
     оформлена аккуратно, содержит пояснения, цвета или группировки для
     наглядности. Присутствует краткий итог с ключевыми выводами.`  },
-          { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Базовый трек', image: '/images/mksixthbase.png',
+          { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthbase.png',
             pres: 'https://drive.google.com/file/d/1-ICPM2FI3bkJuMimfSe2SUr2w8OPrcOE/view?usp=drive_link',
-            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-            disabled: true, track: 'Базовый трек',
+            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+            disabled: false, track: 'Базовый',
             criteria: '',
             method: 'https://drive.google.com/file/d/1z6bero0MFzAoajn_yn8QuayVtvG2FLHz/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/1NdI0WnrllO2GpxIeRIBDflf876xjdDDy/view?usp=drive_link',
@@ -324,7 +324,7 @@ const ProfilePage = () => {
     
     3. Креативность и оригинальность идеи.
     Поддерживается творческий и нестандартный подход.`  },
-          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Социальный трек', image: '/images/mkfourthsoc.png',
+          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthsoc.png',
             pres: 'https://drive.google.com/file/d/1kjEMVwHUYcX9UvqyAJizJohVFVeX_R0K/view?usp=drive_link',
             description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
             disabled: false, track: 'Социальный',
@@ -332,23 +332,23 @@ const ProfilePage = () => {
             method: 'https://drive.google.com/file/d/1xYaAB6w8U_p_-TSIv8cN0a0zl6Kid7NH/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/1sH-5hekaOJifBTJh7i3hHJTtDhsK0N7w/view?usp=drive_link',
             template: '', fulldesc: ''  },
-          { title: "Пятый мастер-класс", subtitle: 'Финансы. Социальный трек', image: '/images/mkfifthsoc.png',
+          { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthsoc.png',
             pres: 'https://drive.google.com/file/d/1wJeZcuuyTVpy4pOunOH_5Z92d6eaxSMT/view?usp=drive_link',
             description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-            disabled: true, track: 'Социальный трек',
+            disabled: false, track: 'Социальный',
             criteria: '',
             method: 'https://drive.google.com/file/d/1mcU4RSJkvnfJMDKz9wGOGkdx5-m87_pd/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/18l90yVyIsOemFnkyQcFAh3pxyZzS0pLG/view?usp=drive_link',
             template: '', fulldesc: ''  },
-          { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Социальный трек', image: '/images/mksixthsoc.png',
+          { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthsoc.png',
             pres: 'https://drive.google.com/file/d/1-bKB_NEDgbMvLkJpAvRq2b-3XDHTxawY/view?usp=drive_link',
-            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-            disabled: true, track: 'Социальный трек',
+            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+            disabled: false, track: 'Социальный',
             criteria: '',
             method: 'https://drive.google.com/file/d/1xlyLJVaxC_loHbwZOUTzaqxf6oSCeiI8/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/1YRlVOwsQHohX7QqdbF2d2SIEiFJNhPWc/view?usp=drive_link',
             template: '', fulldesc: ''  },
-          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель. Инновационный трек', image: '/images/mkfourthinn.png',
+          { title: "Четвертый мастер-класс", subtitle: 'Бизнес - модель.', image: '/images/mkfourthinn.png',
             pres: 'https://drive.google.com/file/d/1O4tW61bHzY1YWLAqJ6bzGq09-VGUIKy5/view?usp=drive_link',
             description: 'Поздравляем вас с прохождением половины предпринимательского курса! Теперь готовимся к финишной прямой - начинаем усердную подготовку к воркшопу. В этой домашней работе вы изучите идею проекта через призму различных элементов бизнес-модели. Это поможет вам увидеть возможности монетизации с разных сторон и понять, какие варианты заработка лучше всего подходят именно вашему проекту.',
             disabled: false, track: 'Инновационный',
@@ -356,18 +356,18 @@ const ProfilePage = () => {
             method: 'https://drive.google.com/file/d/1qvYNoSvrr4RtpPGqImgyNgLWbw1VxGAq/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/12YITLqF4tidK-OWnO1C8W7XbfkYRhsqq/view?usp=drive_link',
             template: '', fulldesc: ''  },
-          { title: "Пятый мастер-класс", subtitle: 'Финансы. Инновационный трек', image: '/images/mkfifthinn.png',
+          { title: "Пятый мастер-класс", subtitle: 'Финансы.', image: '/images/mkfifthinn.png',
             pres: 'https://drive.google.com/file/d/1eEB2WVfku9Wg5x5salXk2Bh7Cc9rUUHv/view?usp=drive_link',
             description: 'Друзья, пришло время примерить на себя роль настоящих финансовых гениев! Сегодня вы не просто будете считать - вы станете финансовыми детективами, стратегами и магами цифр.',
-            disabled: true, track: 'Инновационный трек',
+            disabled: false, track: 'Инновационный',
             criteria: '',
             method: 'https://drive.google.com/file/d/1MICAFnuaKzXGYfQImAHM-v5plljCqHZJ/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/19QSMPcsMBtjyJdLJon0YfzNgHhn50mX9/view?usp=drive_link',
             template: '', fulldesc: ''  },
-          { title: "Шестой мастер-класс", subtitle: 'Маркетинг. Инновационный трек', image: '/images/mksixthinn.png',
+          { title: "Шестой мастер-класс", subtitle: 'Маркетинг.', image: '/images/mksixthinn.png',
             pres: 'https://drive.google.com/file/d/1Q48DKHZL36Rql5eG-7mzT2TfA1bpfuvO/view?usp=drive_link',
-            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу “Мерси, благодарю тебя...” и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
-            disabled: true, track: 'Инновационный трек',
+            description: 'Помните ли вы завирусившуюся рекламу Тантум Верде Форте? А скитлстрянку? Или, быть может, легко можете напеть фразу "Мерси, благодарю тебя..." и даже вспомните её продолжение. Задумывались ли вы когда-то, почему эти фразы так въелись в вашу память? Все дело в качественно построенном маркетинге продукта и его удачной рекламной компании.',
+            disabled: false, track: 'Инновационный',
             criteria: '',
             method: 'https://drive.google.com/file/d/19vrlI9yMKf31pyzoJtFbSZd3RxW5PTNK/view?usp=drive_link',
             tz: 'https://drive.google.com/file/d/1gULz1yHW8kMc1vYekqmFMbwcj2g3OAM8/view?usp=drive_link',
@@ -1924,14 +1924,32 @@ const getDownloadLink = (url: string) => {
 
                      <div className='flex w-full lg:px-8 items-center justify-center text-left'>
                        <img src={(() => {
-                         // Для четвертого мастер-класса используем картинку в зависимости от трека
-                         if ((selectedMk.subtitle === 'Бизнес - модель. Базовый трек' || selectedMk.subtitle === 'Бизнес - модель. Социальный трек' || selectedMk.subtitle === 'Бизнес - модель. Инновационный трек') && selectedMk.track) {
-                           if (selectedMk.track === 'Базовый') {
-                             return '/images/mkfourthbase.png';
-                           } else if (selectedMk.track === 'Социальный') {
-                             return '/images/mkfourthsoc.png';
-                           } else if (selectedMk.track === 'Инновационный') {
-                             return '/images/mkfourthinn.png';
+                         // Для мастер-классов с треком используем картинку в зависимости от трека
+                         if (selectedMk.track && (selectedMk.track === 'Базовый' || selectedMk.track === 'Социальный' || selectedMk.track === 'Инновационный')) {
+                           if (selectedMk.subtitle === 'Бизнес - модель.' || selectedMk.subtitle === 'Бизнес - модель. Базовый трек' || selectedMk.subtitle === 'Бизнес - модель. Социальный трек' || selectedMk.subtitle === 'Бизнес - модель. Инновационный трек') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mkfourthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mkfourthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mkfourthinn.png';
+                             }
+                           } else if (selectedMk.subtitle === 'Финансы.' || selectedMk.subtitle === 'Финансы. Базовый трек' || selectedMk.subtitle === 'Финансы. Социальный трек' || selectedMk.subtitle === 'Финансы. Инновационный трек') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mkfifthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mkfifthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mkfifthinn.png';
+                             }
+                           } else if (selectedMk.subtitle === 'Маркетинг.' || selectedMk.subtitle === 'Маркетинг. Базовый трек' || selectedMk.subtitle === 'Маркетинг. Социальный трек' || selectedMk.subtitle === 'Маркетинг. Инновационный трек') {
+                             if (selectedMk.track === 'Базовый') {
+                               return '/images/mksixthbase.png';
+                             } else if (selectedMk.track === 'Социальный') {
+                               return '/images/mksixthsoc.png';
+                             } else if (selectedMk.track === 'Инновационный') {
+                               return '/images/mksixthinn.png';
+                             }
                            }
                          }
                          return selectedMk.image;
@@ -2014,15 +2032,33 @@ const getDownloadLink = (url: string) => {
               onScroll={handleScrollmk}
             >
               {mk_list.map((mk, index) => {
-                // Для четвертого мастер-класса используем картинку в зависимости от трека
+                // Для мастер-классов с треком используем картинку в зависимости от трека
                 let imageToShow = mk.image;
-                if (mk.subtitle === 'Бизнес - модель. Базовый трек' || mk.subtitle === 'Бизнес - модель. Социальный трек' || mk.subtitle === 'Бизнес - модель. Инновационный трек') {
-                  if (mk.track === 'Базовый') {
-                    imageToShow = '/images/mkfourthbase.png';
-                  } else if (mk.track === 'Социальный') {
-                    imageToShow = '/images/mkfourthsoc.png';
-                  } else if (mk.track === 'Инновационный') {
-                    imageToShow = '/images/mkfourthinn.png';
+                if (mk.track && (mk.track === 'Базовый' || mk.track === 'Социальный' || mk.track === 'Инновационный')) {
+                  if (mk.subtitle === 'Бизнес - модель.' || mk.subtitle === 'Бизнес - модель. Базовый трек' || mk.subtitle === 'Бизнес - модель. Социальный трек' || mk.subtitle === 'Бизнес - модель. Инновационный трек') {
+                    if (mk.track === 'Базовый') {
+                      imageToShow = '/images/mkfourthbase.png';
+                    } else if (mk.track === 'Социальный') {
+                      imageToShow = '/images/mkfourthsoc.png';
+                    } else if (mk.track === 'Инновационный') {
+                      imageToShow = '/images/mkfourthinn.png';
+                    }
+                  } else if (mk.subtitle === 'Финансы.' || mk.subtitle === 'Финансы. Базовый трек' || mk.subtitle === 'Финансы. Социальный трек' || mk.subtitle === 'Финансы. Инновационный трек') {
+                    if (mk.track === 'Базовый') {
+                      imageToShow = '/images/mkfifthbase.png';
+                    } else if (mk.track === 'Социальный') {
+                      imageToShow = '/images/mkfifthsoc.png';
+                    } else if (mk.track === 'Инновационный') {
+                      imageToShow = '/images/mkfifthinn.png';
+                    }
+                  } else if (mk.subtitle === 'Маркетинг.' || mk.subtitle === 'Маркетинг. Базовый трек' || mk.subtitle === 'Маркетинг. Социальный трек' || mk.subtitle === 'Маркетинг. Инновационный трек') {
+                    if (mk.track === 'Базовый') {
+                      imageToShow = '/images/mksixthbase.png';
+                    } else if (mk.track === 'Социальный') {
+                      imageToShow = '/images/mksixthsoc.png';
+                    } else if (mk.track === 'Инновационный') {
+                      imageToShow = '/images/mksixthinn.png';
+                    }
                   }
                 }
                 
