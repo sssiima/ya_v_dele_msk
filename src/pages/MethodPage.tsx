@@ -653,28 +653,37 @@ const MethodPage = () => {
                     Ввести балл {selectedMark !== null ? `(${selectedMark})` : ''}
                   </button>
                   
-                  {showMarkSelector && (
-                    <div className="absolute top-full left-0 mt-2 bg-white border border-brand rounded-lg p-2 shadow-lg z-10">
-                      <div className="grid grid-cols-4 gap-2">
-                        {Array.from({ length: 16 }, (_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => {
-                              setSelectedMark(i)
-                              setShowMarkSelector(false)
-                            }}
-                            className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                              selectedMark === i
-                                ? 'bg-brand text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                          >
-                            {i}
-                          </button>
-                        ))}
+                  {showMarkSelector && (() => {
+                    // Проверяем, является ли задание воркшопом
+                    const hwName = selectedHomework?.hw_name || '';
+                    const isWorkshop = hwName === 'Промежуточный ВШ' || hwName === 'Промежуточный воркшоп' || 
+                                      hwName === 'Финальный воркшоп' || hwName === 'Финальный ВШ' ||
+                                      hwName.includes('Промежуточный') || hwName.includes('Финальный');
+                    const maxMark = isWorkshop ? 21 : 15;
+                    
+                    return (
+                      <div className="absolute top-full left-0 mt-2 bg-white border border-brand rounded-lg p-2 shadow-lg z-10">
+                        <div className="grid grid-cols-4 gap-2">
+                          {Array.from({ length: maxMark + 1 }, (_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => {
+                                setSelectedMark(i)
+                                setShowMarkSelector(false)
+                              }}
+                              className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                                selectedMark === i
+                                  ? 'bg-brand text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {i}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
                 
                 <button
