@@ -101,12 +101,14 @@ interface WorkshopHomeworkLoadProps {
   teamCode?: string;
   onSuccess?: () => void;
   workshopType?: 'intermediate' | 'final'; // 'intermediate' для промежуточного, 'final' для финального
+  teamTrack?: string; // Трек команды для финального ВШ
 }
 
 const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({ 
   teamCode,
   onSuccess,
-  workshopType = 'intermediate'
+  workshopType = 'intermediate',
+  teamTrack
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -167,8 +169,15 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
       return;
     }
 
-    if (!selectedTrack) {
-      alert('Пожалуйста, выберите трек');
+    // Для финального ВШ используем трек команды, для промежуточного - выбранный трек
+    const trackToUse = workshopType === 'final' ? (teamTrack || '') : selectedTrack;
+
+    if (!trackToUse) {
+      if (workshopType === 'final') {
+        alert('Трек команды не определен');
+      } else {
+        alert('Пожалуйста, выберите трек');
+      }
       return;
     }
 
@@ -182,7 +191,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         selectedFile, 
         hwName, 
         teamCode || undefined,
-        selectedTrack
+        trackToUse
       );
 
       if (result.success && result.data) {
@@ -285,41 +294,43 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
           </div>
         </div>
 
-        {/* Выбор трека */}
-        <div className="mb-48 relative" ref={trackSelectorRef}>
-          <label className="block text-sm font-semibold text-black mb-2">Трек</label>
-          <button
-            type="button"
-            onClick={() => setShowTrackSelector(!showTrackSelector)}
-            className="w-full px-4 py-2 border border-brand rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {selectedTrack || 'Выберите трек'}
-          </button>
-          {showTrackSelector && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ maxHeight: '192px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              {tracks.map((track) => (
-                <button
-                  key={track}
-                  type="button"
-                  onClick={() => {
-                    setSelectedTrack(track);
-                    setShowTrackSelector(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                    selectedTrack === track ? 'bg-brand text-white' : 'text-black'
-                  }`}
-                >
-                  {track}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Выбор трека - только для промежуточного ВШ */}
+        {workshopType === 'intermediate' && (
+          <div className="mb-48 relative" ref={trackSelectorRef}>
+            <label className="block text-sm font-semibold text-black mb-2">Трек</label>
+            <button
+              type="button"
+              onClick={() => setShowTrackSelector(!showTrackSelector)}
+              className="w-full px-4 py-2 border border-brand rounded-full bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {selectedTrack || 'Выберите трек'}
+            </button>
+            {showTrackSelector && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-brand rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ maxHeight: '192px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                {tracks.map((track) => (
+                  <button
+                    key={track}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTrack(track);
+                      setShowTrackSelector(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                      selectedTrack === track ? 'bg-brand text-white' : 'text-black'
+                    }`}
+                  >
+                    {track}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Кнопка отправить */}
         <button 
           onClick={handleSubmit}
-          disabled={uploading || !selectedFile || !selectedTrack}
+          disabled={uploading || !selectedFile || (workshopType === 'intermediate' && !selectedTrack) || (workshopType === 'final' && !teamTrack)}
           className='w-full rounded-xl bg-brand hover:bg-teal-600 text-white font-bold text-sm p-3 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           {uploading ? 'Загрузка...' : 'Отправить'}
@@ -2316,6 +2327,7 @@ const loadTeamData = async (teamCode: string) => {
                 <WorkshopHomeworkLoad
                   teamCode={memberData?.team_code}
                   workshopType="final"
+                  teamTrack={teamData.track || memberData?.track || ''}
                   onSuccess={async () => {
                     // Обновляем список домашних заданий после успешной загрузки
                     if (memberData?.team_code) {
@@ -2953,7 +2965,7 @@ const loadTeamData = async (teamCode: string) => {
                       return (
                         <div 
                           data-homework-item
-                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
                           onMouseEnter={() => {
                             if (hasComment && isDesktop) {
                               setHoveredHomework({ number: 'final-workshop', comment: finalWorkshopStatus.comment! });
@@ -2998,7 +3010,7 @@ const loadTeamData = async (teamCode: string) => {
                                   e.stopPropagation();
                                   setShowFinalWorkshopHomework(true);
                                 }}
-                                className="rounded-full bg-brand hover:bg-teal-600 text-white font-bold text-xs px-4 py-1.5 flex items-center gap-1"
+                                className="rounded-full bg-brand hover:bg-teal-600 text-white font-bold text-xs px-3 py-1 flex items-center gap-1"
                               >
                                 <img src="/images/upload.png" alt="upload" className="w-3" />
                                 Загрузить
