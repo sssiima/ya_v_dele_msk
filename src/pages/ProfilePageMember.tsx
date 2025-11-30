@@ -100,11 +100,13 @@ const Card = ({ title, subtitle, image, link, disabled }: { title?: string, subt
 interface WorkshopHomeworkLoadProps {
   teamCode?: string;
   onSuccess?: () => void;
+  workshopType?: 'intermediate' | 'final'; // 'intermediate' для промежуточного, 'final' для финального
 }
 
 const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({ 
   teamCode,
-  onSuccess
+  onSuccess,
+  workshopType = 'intermediate'
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -172,10 +174,13 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
 
     setUploading(true);
     try {
+      // Определяем название воркшопа
+      const hwName = workshopType === 'final' ? 'Финальный ВШ' : 'Промежуточный ВШ';
+      
       // Загружаем файл с треком
       const result = await fileUploadApi.uploadHomework(
         selectedFile, 
-        'Промежуточный ВШ', 
+        hwName, 
         teamCode || undefined,
         selectedTrack
       );
@@ -222,7 +227,7 @@ const WorkshopHomeworkLoad: React.FC<WorkshopHomeworkLoadProps> = ({
         />
 
         <h2 className="text-lg font-bold text-brand normal-case text-center mb-4">
-          Промежуточный воркшоп
+          {workshopType === 'final' ? 'Финальный воркшоп' : 'Промежуточный воркшоп'}
         </h2>
 
         <div style={{ backgroundColor: '#08A6A5'}} className="h-px w-auto my-4" />
@@ -351,6 +356,7 @@ const ProfilePageMember = () => {
 
   const [currentHomeworkView, setCurrentHomeworkView] = useState<number | null>(null);
   const [showWorkshopHomework, setShowWorkshopHomework] = useState(false);
+  const [showFinalWorkshopHomework, setShowFinalWorkshopHomework] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   
   // Состояния для статусов мастер-классов
@@ -359,7 +365,7 @@ const ProfilePageMember = () => {
   const [teamsHomeworksForMk, setTeamsHomeworksForMk] = useState<{[teamCode: string]: Homework[]}>({});
   
   // Состояние для всплывающего окна с комментарием
-  const [hoveredHomework, setHoveredHomework] = useState<{ number: number | 'workshop', comment: string } | null>(null);
+  const [hoveredHomework, setHoveredHomework] = useState<{ number: number | 'workshop' | 'final-workshop', comment: string } | null>(null);
   const commentTooltipRef = useRef<HTMLDivElement>(null);
 
   // Обработка клика вне всплывающего окна (для мобильных устройств)
@@ -471,6 +477,24 @@ const ProfilePageMember = () => {
     const homework = teamHomeworks.find(hw => {
       const normalizedHwName = (hw.hw_name || '').trim()
       return normalizedHwName === 'Промежуточный ВШ'
+    })
+    
+    if (homework && homework.status === 'uploaded') {
+      return { status: 'uploaded' }
+    }
+    
+    if (homework && homework.status === 'reviewed') {
+      return { status: 'reviewed', mark: homework.mark, comment: homework.comment || null }
+    }
+    
+    return { status: null }
+  }
+
+  // Функция для проверки статуса финального воркшопа
+  const getFinalWorkshopHomeworkStatus = (): { status: 'uploaded' | 'reviewed' | null, mark?: number, comment?: string | null } => {
+    const homework = teamHomeworks.find(hw => {
+      const normalizedHwName = (hw.hw_name || '').trim()
+      return normalizedHwName === 'Финальный ВШ' || normalizedHwName === 'Финальный воркшоп'
     })
     
     if (homework && homework.status === 'uploaded') {
@@ -2256,6 +2280,7 @@ const loadTeamData = async (teamCode: string) => {
               <div className="w-full">
                 <WorkshopHomeworkLoad
                   teamCode={memberData?.team_code}
+                  workshopType="intermediate"
                   onSuccess={async () => {
                     // Обновляем список домашних заданий после успешной загрузки
                     if (memberData?.team_code) {
@@ -2281,6 +2306,41 @@ const loadTeamData = async (teamCode: string) => {
                       }
                     }
                     setShowWorkshopHomework(false); // Возвращаем к списку заданий
+                  }}
+                />
+              </div>
+            </div>
+          ) : showFinalWorkshopHomework ? (
+            <div className="w-full lg:flex lg:justify-center">
+              <div className="w-full">
+                <WorkshopHomeworkLoad
+                  teamCode={memberData?.team_code}
+                  workshopType="final"
+                  onSuccess={async () => {
+                    // Обновляем список домашних заданий после успешной загрузки
+                    if (memberData?.team_code) {
+                      try {
+                        const homeworksResult = await homeworksApi.getByTeamCode(memberData.team_code)
+                        if (homeworksResult?.success && homeworksResult.data) {
+                          setTeamHomeworks(homeworksResult.data)
+                        }
+                        
+                        // Обновляем данные участника
+                        const memberId = localStorage.getItem('member_id')
+                        if (memberId) {
+                          const memberResp = await membersApi.getById(Number(memberId))
+                          const updatedMember = memberResp?.data
+                          if (updatedMember) {
+                            setMemberData(updatedMember)
+                          }
+                        }
+                        
+                        // Обновляем данные команды, чтобы получить обновленный трек
+                        await loadTeamData(memberData.team_code)
+                      } catch (error) {
+                      }
+                    }
+                    setShowFinalWorkshopHomework(false); // Возвращаем к списку заданий
                   }}
                 />
               </div>
@@ -2882,15 +2942,82 @@ const loadTeamData = async (teamCode: string) => {
                     
 
                     
-                    <div className='flex justify-between items-center border border-brand rounded-full p-2 px-4'>
-                      <span className="text-sm text-black">Финальный ВШ</span>
-                      <div className="flex items-center gap-2">
-                        <button className="rounded flex items-center justify-center">
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                        <span className="text-xs lg:text-sm  text-brand italic">Заблокировано</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const finalWorkshopStatus = getFinalWorkshopHomeworkStatus()
+                      const isUploaded = finalWorkshopStatus.status === 'uploaded'
+                      const isReviewed = finalWorkshopStatus.status === 'reviewed'
+                      const isWhiteBg = isUploaded || isReviewed
+                      const hasComment = isReviewed && finalWorkshopStatus.comment && finalWorkshopStatus.comment.trim() !== ''
+                      const isHovered = hoveredHomework?.number === 'final-workshop'
+                      
+                      return (
+                        <div 
+                          data-homework-item
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-2 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
+                          onMouseEnter={() => {
+                            if (hasComment && isDesktop) {
+                              setHoveredHomework({ number: 'final-workshop', comment: finalWorkshopStatus.comment! });
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (isDesktop) {
+                              setHoveredHomework(null);
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (hasComment && !isDesktop) {
+                              if (isHovered) {
+                                setHoveredHomework(null);
+                              } else {
+                                setHoveredHomework({ number: 'final-workshop', comment: finalWorkshopStatus.comment! });
+                              }
+                            }
+                            if (!isUploaded && !isReviewed) {
+                              setShowFinalWorkshopHomework(true);
+                            }
+                          }}
+                        >
+                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Финальный ВШ</span>
+                          <div className="flex items-center gap-2">
+                            {isUploaded ? (
+                              <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
+                            ) : isReviewed ? (
+                              <span className="text-xs lg:text-sm text-brand">
+                                {finalWorkshopStatus.mark !== null && finalWorkshopStatus.mark !== undefined ? (
+                                  <>
+                                    <span className="font-bold">{finalWorkshopStatus.mark}</span> баллов
+                                  </>
+                                ) : (
+                                  'Оценено'
+                                )}
+                              </span>
+                            ) : (
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowFinalWorkshopHomework(true);
+                                }}
+                                className="rounded-full bg-brand hover:bg-teal-600 text-white font-bold text-xs px-4 py-1.5 flex items-center gap-1"
+                              >
+                                <img src="/images/upload.png" alt="upload" className="w-3" />
+                                Загрузить
+                              </button>
+                            )}
+                          </div>
+                          {/* Всплывающее окно с комментарием */}
+                          {isHovered && hasComment && (
+                            <div 
+                              ref={commentTooltipRef}
+                              className="absolute z-50 right-0 top-full mt-2 w-64 p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+                              style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                            >
+                              <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{finalWorkshopStatus.comment}</p>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                   </div>
                 </div>
               </div>
@@ -3201,7 +3328,7 @@ const loadTeamData = async (teamCode: string) => {
                </div>
           )}
           
-          { !selectedMk && !showHomework && !showWorkshopHomework && (<div>
+          { !selectedMk && !showHomework && !showWorkshopHomework && !showFinalWorkshopHomework && (<div>
           <h3 className="text-left normal-case text-brand font-extrabold text-[18px] uppercase py-3">Мастер-классы</h3>
     
           <div className="relative">
