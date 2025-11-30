@@ -2628,13 +2628,10 @@ const loadTeamData = async (teamCode: string) => {
                       const hasComment = isReviewed && workshopStatus.comment && workshopStatus.comment.trim() !== ''
                       const isHovered = hoveredHomework?.number === 'workshop'
                       
-                      // Если заблокировано, используем белый фон
-                      const isBlocked = !isUploaded && !isReviewed;
-                      
                       return (
                         <div 
                           data-homework-item
-                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isBlocked ? 'bg-white text-black' : (isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white')}`}
+                          className={`relative flex justify-between items-center border border-brand rounded-full p-1.5 px-4 ${isWhiteBg ? 'bg-white text-black' : 'bg-brand text-white'}`}
                           onMouseEnter={() => {
                             if (hasComment && isDesktop) {
                               setHoveredHomework({ number: 'workshop', comment: workshopStatus.comment! });
@@ -2656,7 +2653,7 @@ const loadTeamData = async (teamCode: string) => {
                             }
                           }}
                         >
-                          <span className={`text-sm ${isBlocked ? 'text-black' : (isWhiteBg ? 'text-black' : 'text-white')}`}>Промежуточный ВШ</span>
+                          <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Промежуточный ВШ</span>
                       <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
@@ -2671,12 +2668,11 @@ const loadTeamData = async (teamCode: string) => {
                                 )}
                               </span>
                             ) : (
-                              <div className="flex items-center gap-2">
-                                <button className="rounded flex items-center justify-center" disabled>
-                          <img src="/images/locked.png" alt="lock" className="w-3" />
-                        </button>
-                                <span className="text-xs lg:text-sm text-brand italic">Заблокировано</span>
-                      </div>
+                              <button className="rounded flex items-center justify-center italic text-xs lg:text-sm" onClick={() => {
+                                setShowWorkshopHomework(true);
+                              }}>
+                                Загрузить
+                              </button>
                             )}
                     </div>
                           {/* Всплывающее окно с комментарием */}
@@ -2991,7 +2987,7 @@ const loadTeamData = async (teamCode: string) => {
                           }}
                         >
                           <span className={`text-sm ${isWhiteBg ? 'text-black' : 'text-white'}`}>Финальный ВШ</span>
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                             {isUploaded ? (
                               <span className="text-xs lg:text-sm italic text-[#FF5500]">На проверке</span>
                             ) : isReviewed ? (
@@ -3006,17 +3002,16 @@ const loadTeamData = async (teamCode: string) => {
                               </span>
                             ) : (
                               <button 
+                                className="rounded flex items-center justify-center italic text-xs lg:text-sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setShowFinalWorkshopHomework(true);
                                 }}
-                                className="rounded-full bg-brand hover:bg-teal-600 text-white font-bold text-xs px-3 py-1 flex items-center gap-1"
                               >
-                                <img src="/images/upload.png" alt="upload" className="w-3" />
                                 Загрузить
-                              </button>
+                        </button>
                             )}
-                          </div>
+                      </div>
                           {/* Всплывающее окно с комментарием */}
                           {isHovered && hasComment && (
                             <div 
@@ -3025,7 +3020,7 @@ const loadTeamData = async (teamCode: string) => {
                               style={{ maxWidth: 'calc(100vw - 2rem)' }}
                             >
                               <p className="text-xs text-gray-700 whitespace-pre-wrap break-words">{finalWorkshopStatus.comment}</p>
-                            </div>
+                    </div>
                           )}
                         </div>
                       )
